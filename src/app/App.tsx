@@ -1,11 +1,10 @@
 import { DynamicSidebar } from './components/DynamicSidebar';
 import { Router, Route, useRouter } from './components/router';
 import { RouteGuard } from './components/RouteGuard';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ToastProvider } from './components/ui/toast';
-import { getActiveRole, setActiveRole, subscribeToRoleChanges } from './state/roleStore';
 import { getDefaultRouteForRole } from './nav/getNavForRole';
-import type { RoleKey } from './state/roleStore';
+import { getUserRoleLabel } from './security/rolePresentation';
 import { ChatDockProvider, ChatDock } from './components/chat-dock';
 import { ExecutionOSProvider } from './contexts/ExecutionOSContext';
 import { LoginScreen } from './components/screens/auth/LoginScreen';
@@ -27,12 +26,12 @@ import { generateRoutes, validateRouteRegistry } from './navigation';
 
 function RoleBasedRedirect() {
   const { navigate } = useRouter();
+  const { activeRole } = useOrganization();
   
   useEffect(() => {
-    const currentRole = getActiveRole();
-    const defaultRoute = getDefaultRouteForRole(currentRole);
+    const defaultRoute = getDefaultRouteForRole(activeRole ?? 'employee');
     navigate(defaultRoute);
-  }, [navigate]);
+  }, [activeRole, navigate]);
   
   return <div>Redirecting...</div>;
 }
@@ -40,20 +39,13 @@ function RoleBasedRedirect() {
 function AppContent() {
   const { currentPath, navigate } = useRouter();
   const { user, signOut } = useAuth();
-  const { memberships, activeMembership, activeRole: membershipRole, switchOrganization } = useOrganization();
-  const [activeRole, setActiveRoleState] = useState<RoleKey>(getActiveRole());
+  const { memberships, activeMembership, activeRole, switchOrganization } = useOrganization();
 
   // Validate route registry in development
   useEffect(() => {
     if (import.meta.env.DEV) {
       validateRouteRegistry();
     }
-  }, []);
-
-  // Subscribe to role changes
-  useEffect(() => {
-    const unsubscribe = subscribeToRoleChanges(setActiveRoleState);
-    return unsubscribe;
   }, []);
 
   // Listen for navigation events from NotificationCenter and other components
@@ -66,14 +58,10 @@ function AppContent() {
     return () => window.removeEventListener('workos-navigate', handler);
   }, [navigate]);
 
-  useEffect(() => {
-    if (membershipRole) setActiveRole(membershipRole);
-  }, [membershipRole]);
-
   const currentUser = {
     name: user?.user_metadata?.full_name ?? user?.email ?? 'Signed-in user',
     email: user?.email ?? '',
-    role: activeRole === 'platform_admin' ? 'Platform Administrator' : activeRole === 'org_admin' ? 'Organization Admin' : 'Employee',
+    role: getUserRoleLabel(activeRole),
   };
 
   return (
@@ -83,7 +71,7 @@ function AppContent() {
       currentOrg={activeMembership ? { name: activeMembership.organizationName } : undefined}
       organizations={memberships.map((membership) => ({ id: membership.organizationId, name: membership.organizationName }))}
       notificationCount={5}
-      activeRole={activeRole}
+      activeRole={activeRole ?? 'employee'}
       onOrgSwitch={(organizationId) => void switchOrganization(organizationId)}
       onLogout={() => void signOut()}
     >
