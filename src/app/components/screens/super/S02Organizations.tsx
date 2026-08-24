@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Building, CheckCircle, Loader2, Pencil, Plus, Search, X } from 'lucide-react';
+import { AlertCircle, Building, CheckCircle, Loader2, Mail, Pencil, Plus, Search, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageLayout } from '../../shared/PageLayout';
 import { DataTable } from '../../shared/DataTable';
@@ -15,6 +15,7 @@ import {
   type PlatformTenant,
   type SaveOrganizationCommand,
 } from '../../../platform/organizationAdministration';
+import { invitePlatformOrgAdmin, resendPlatformOrgAdminInvitation } from '../../../security/identityAdministration';
 
 interface OrganizationListProps {
   organizations: PlatformOrganization[];
@@ -24,10 +25,11 @@ interface OrganizationListProps {
   onSearchChange: (value: string) => void;
   onEdit: (organization: PlatformOrganization) => void;
   onDeactivate: (organization: PlatformOrganization) => void;
+  onInviteOrgAdmin: (organization: PlatformOrganization) => void;
   onRetry: () => void;
 }
 
-export function OrganizationList({ organizations, loading, error, searchQuery, onSearchChange, onEdit, onDeactivate, onRetry }: OrganizationListProps) {
+export function OrganizationList({ organizations, loading, error, searchQuery, onSearchChange, onEdit, onDeactivate, onInviteOrgAdmin, onRetry }: OrganizationListProps) {
   const filtered = organizations.filter((organization) =>
     [organization.name, organization.slug, organization.status, organization.tenantName]
       .some((value) => value.toLowerCase().includes(searchQuery.toLowerCase())),
@@ -40,7 +42,7 @@ export function OrganizationList({ organizations, loading, error, searchQuery, o
     { key: 'actions', header: 'Actions', cell: (_: unknown, row: PlatformOrganization) => (
       <div className="flex gap-2">
         <Button size="sm" variant="outline" onClick={() => onEdit(row)}><Pencil className="mr-1 h-3 w-3" />Edit</Button>
-        {row.status === 'active' && <Button size="sm" variant="outline" onClick={() => onDeactivate(row)}>Deactivate</Button>}
+        {row.status === 'active' && <><Button size="sm" variant="outline" onClick={() => onInviteOrgAdmin(row)}><Mail className="mr-1 h-3 w-3" />Invite Org Admin</Button><Button size="sm" variant="outline" onClick={() => onDeactivate(row)}>Deactivate</Button></>}
       </div>
     ) },
   ];
@@ -73,6 +75,11 @@ export function S02Organizations() {
   const [showDialog, setShowDialog] = useState(false);
   const [form, setForm] = useState<SaveOrganizationCommand>(emptyForm);
   const [formError, setFormError] = useState<string | null>(null);
+  const [inviteOrganization, setInviteOrganization] = useState<PlatformOrganization | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [invitedEmail, setInvitedEmail] = useState<string | null>(null);
+  const [invitationResent, setInvitationResent] = useState(false);
+  const [inviteFeedback, setInviteFeedback] = useState<{ type: 'success' | 'error'; message: string; correlationId?: string } | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true); setError(null);
@@ -108,10 +115,32 @@ export function S02Organizations() {
     } catch { toast.error('Organization deactivation was denied or failed.'); }
     finally { setSaving(false); }
   };
+  const openInvitation = (organization: PlatformOrganization) => {
+    if (organization.status !== 'active') return;
+    setInviteOrganization(organization); setInviteEmail(''); setInvitedEmail(null); setInvitationResent(false); setInviteFeedback(null);
+  };
+  const closeInvitation = () => { if (!saving) setInviteOrganization(null); };
+  const sendInvitation = async (action: 'invite' | 'resend') => {
+    if (!inviteOrganization || inviteOrganization.status !== 'active') return;
+    const email = action === 'resend' ? invitedEmail : inviteEmail.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setInviteFeedback({ type: 'error', message: 'Enter a valid email address.' }); return;
+    }
+    setSaving(true); setInviteFeedback(null);
+    try {
+      const input = { email, tenantId: inviteOrganization.tenantId, organizationId: inviteOrganization.id };
+      const result = action === 'invite' ? await invitePlatformOrgAdmin(input) : await resendPlatformOrgAdminInvitation(input);
+      if (action === 'invite') setInvitedEmail(email);
+      else setInvitationResent(true);
+      setInviteFeedback({ type: 'success', message: action === 'invite' ? 'Invitation sent. You may resend it once before acceptance.' : 'Invitation resent successfully.', correlationId: result.correlationId });
+    } catch {
+      setInviteFeedback({ type: 'error', message: action === 'invite' ? 'The invitation could not be sent.' : 'The invitation could not be resent.' });
+    } finally { setSaving(false); }
+  };
 
   return <PageLayout title="Platform Organizations" description="Authoritative tenant organizations" actions={<Button onClick={openCreate} disabled={loading || saving || tenants.length === 0}><Plus className="mr-2 h-4 w-4" />Add Organization</Button>}
     kpis={[{ title: 'Total Organizations', value: organizations.length.toString(), change: 'Production records', changeType: 'neutral', icon: <Building className="h-5 w-5" /> }, { title: 'Active', value: activeCount.toString(), change: 'Production status', changeType: 'neutral', icon: <Building className="h-5 w-5" /> }]}>
-    <OrganizationList organizations={organizations} loading={loading} error={error} searchQuery={searchQuery} onSearchChange={setSearchQuery} onEdit={openEdit} onDeactivate={(organization) => void deactivate(organization)} onRetry={() => void refresh()} />
+    <OrganizationList organizations={organizations} loading={loading} error={error} searchQuery={searchQuery} onSearchChange={setSearchQuery} onEdit={openEdit} onDeactivate={(organization) => void deactivate(organization)} onInviteOrgAdmin={openInvitation} onRetry={() => void refresh()} />
     {showDialog && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={closeDialog}><div className="m-4 w-full max-w-md rounded-lg bg-card p-6 shadow-lg" onClick={(event) => event.stopPropagation()}>
       <div className="mb-6 flex items-center justify-between"><h2 className="text-2xl font-semibold">{form.organizationId ? 'Edit Organization' : 'Add Organization'}</h2><Button variant="ghost" size="sm" onClick={closeDialog}><X className="h-4 w-4" /></Button></div>
       <div className="space-y-4">
@@ -122,6 +151,16 @@ export function S02Organizations() {
         {formError && <p role="alert" className="flex gap-2 text-sm text-red-600"><AlertCircle className="h-4 w-4" />{formError}</p>}
       </div>
       <div className="mt-6 flex gap-2"><Button variant="outline" className="flex-1" onClick={closeDialog} disabled={saving}>Cancel</Button><Button className="flex-1" onClick={() => void submit()} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{form.organizationId ? 'Save changes' : 'Create Organization'}</Button></div>
+    </div></div>}
+    {inviteOrganization && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={closeInvitation}><div role="dialog" aria-modal="true" aria-labelledby="invite-org-admin-title" className="m-4 w-full max-w-md rounded-lg bg-card p-6 shadow-lg" onClick={(event) => event.stopPropagation()}>
+      <div className="mb-6 flex items-center justify-between"><h2 id="invite-org-admin-title" className="text-2xl font-semibold">Invite Org Admin</h2><Button variant="ghost" size="sm" onClick={closeInvitation} disabled={saving}><X className="h-4 w-4" /></Button></div>
+      <div className="space-y-4">
+        <div><Label htmlFor="inviteOrganization">Organization</Label><Input id="inviteOrganization" className="mt-2" value={inviteOrganization.name} readOnly /></div>
+        <div><Label htmlFor="inviteRole">Role</Label><Input id="inviteRole" className="mt-2" value="Organization Admin" readOnly /><p className="mt-1 text-xs text-muted-foreground">Fixed role: org_admin</p></div>
+        <div><Label htmlFor="inviteEmail">Email</Label><Input id="inviteEmail" className="mt-2" type="email" autoComplete="email" value={invitedEmail ?? inviteEmail} readOnly={Boolean(invitedEmail)} onChange={(event) => setInviteEmail(event.target.value)} /></div>
+        {inviteFeedback && <div role={inviteFeedback.type === 'error' ? 'alert' : 'status'} className={`rounded-md p-3 text-sm ${inviteFeedback.type === 'error' ? 'bg-destructive/10 text-destructive' : 'bg-green-50 text-green-800'}`}><p>{inviteFeedback.message}</p>{inviteFeedback.correlationId && <p className="mt-1 text-xs">Correlation ID: {inviteFeedback.correlationId}</p>}</div>}
+      </div>
+      <div className="mt-6 flex gap-2"><Button variant="outline" className="flex-1" onClick={closeInvitation} disabled={saving}>Close</Button>{invitedEmail ? <Button className="flex-1" onClick={() => void sendInvitation('resend')} disabled={saving || invitationResent}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{invitationResent ? 'Invitation resent' : 'Resend invitation'}</Button> : <Button className="flex-1" onClick={() => void sendInvitation('invite')} disabled={saving}>{saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Send invitation</Button>}</div>
     </div></div>}
   </PageLayout>;
 }
