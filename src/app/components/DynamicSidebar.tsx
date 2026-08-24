@@ -10,17 +10,18 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { useRouter } from './router';
-import { useCurrentRole } from './DevRoleSwitcher';
+import { useOrganization } from '../contexts/organizationContextValue';
 import { getNavForRole } from '../nav/getNavForRole';
 import type { NavItem } from '../nav/navManifest';
 
 export function DynamicSidebar() {
   const { currentPath, navigate } = useRouter();
-  const [activeRole] = useCurrentRole();
+  const { activeRole } = useOrganization();
   const [expandedDomains, setExpandedDomains] = useState<string[]>([]);
   
   // Get sidebar items for current role from navManifest
-  const sidebarItems = getNavForRole(activeRole);
+  // ProtectedShell guarantees this value comes from a validated active membership.
+  const sidebarItems = getNavForRole(activeRole ?? 'employee');
   
   // Auto-expand domain containing current path (only when path changes)
   useEffect(() => {
