@@ -1,9 +1,9 @@
 # Work OS Progress
 
-**Last updated:** 2026-08-19
-**Current checkpoint:** PHASE 5 — DEPLOYED, CONSOLIDATED MANUAL VERIFICATION PENDING. PR #17 is merged and its Work OS Vercel deployment succeeded. The Phase-5 database and trusted Edge boundaries are remotely deployed; the remaining closeout work is the four consolidated QA journeys below plus the leaked-password-protection project setting.
+**Last updated:** 2026-08-24
+**Current checkpoint:** PHASE 5 — QA-1 MANUALLY VERIFIED / COMPLETE; QA-2 INVITATION + ORG ADMIN UI PREPARED FOR DEPLOYMENT/RETEST. The Phase-5 database and trusted Edge boundaries are remotely deployed. QA-2 is not yet verified; QA-3 and Phase 6 have not begun.
 
-**Current remediation batch:** Batch 1 — Phase 5 closure only. QA-1 remains open. Production verified manually that logout clears the Supabase session and refresh does not restore protected access. The bounded follow-up replaces the obsolete signed-out role launcher with the single canonical Supabase credential login; no browser role or stored prototype role can select the signed-out destination. **QA-1 logout: session clearing VERIFIED manually; canonical signed-out destination awaiting deployment/retest.** Remote migration `20260819180940`, RLS, and both trusted administration functions remain unchanged; QA-2 and Phase 6 have not begun.
+**Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
 ## PHASE 5 CLOSEOUT SCOREBOARD
 
@@ -11,22 +11,22 @@
 
 | ID | Status | Code complete? | Remote deployed? | Automated proof? | Manual proof? | Blocker | Next action |
 |---|---|---:|---:|---|---|---|---|
-| GAP-001 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Repository auth/RLS tests | Partial positive login evidence | Controlled role fixtures | QA-1, QA-3, QA-4 |
+| GAP-001 | QA-1 MANUALLY VERIFIED (remaining role journeys continue in QA-2–4) | Yes | Yes | Repository auth/RLS tests | Platform Admin login/session/logout journey passed | Controlled Org Admin/Employee fixtures | QA-2, QA-3, QA-4 |
 | GAP-002 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | No real email acceptance | Email recipient journey | QA-2 |
 | GAP-003 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Focused build/unit proof | No invitation UI E2E | Email recipient journey | QA-2 |
-| GAP-007 | DEPLOYED — QA-1 FOCUS RE-TEST PENDING | Yes | Yes | Remote privilege and rollback/audit checks passed | Production create row and correlated `organization.created` audit event confirmed | Focus revalidation interrupts the journey | Deploy GAP-013 fix, then repeat bounded QA-1 lifecycle |
+| GAP-007 | VERIFIED — QA-1 COMPLETE | Yes | Yes | Remote privilege and rollback/audit checks passed | Create/edit/deactivate and persisted edit verified | None | Complete |
 | GAP-008 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Bounded mapping tests pass | No throttling proof | Supabase project configuration | QA-4 |
 | GAP-009 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Forgot-password tests pass | No delivery proof | SMTP/redirect environment | QA-4 |
 | GAP-010 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Invalid-session mapping test passes | No round-trip proof | Real recovery email | QA-4 |
 | GAP-011 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Acceptance policy/RPC tests pass | No first-login proof | Real invitation email | QA-2 |
-| GAP-013 | QA-1 FOCUS REVALIDATION FIX READY FOR DEPLOYMENT | Yes | Prior version | Initial/background, event coalescing, dialog preservation, and revocation tests pass | QA-1 exposed focus-driven dialog loss | Production focus/visibility cycle | Deploy and repeat QA-1 focus test; retain QA-3 revocation proof |
+| GAP-013 | QA-1 VERIFIED — QA-3 REVOCATION PROOF PENDING | Yes | Yes | Initial/background, event coalescing, dialog preservation, and revocation tests pass | QA-1 focus/session lifecycle passed | Controlled revoked-member fixture | QA-3 |
 | GAP-036 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Deactivation pgTAP and remote predicate checks passed | No revoked-session UI proof | Controlled membership fixture | QA-3 |
-| GAP-038 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Deactivated-org denial and remote predicate checks passed | No no-access UI proof | Controlled organization fixture | QA-1, QA-3 |
+| GAP-038 | QA-1 MANUALLY VERIFIED (revocation journey remains QA-3) | Yes | Yes | Deactivated-org denial and remote predicate checks passed | Deactivated organization rejected as active context | Controlled QA-3 fixture | QA-3 |
 | GAP-064 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Recovery outcome regressions pass | No deployed re-test | Real recovery email | QA-4 |
 
-**VERIFIED: 0 / 12**
+**VERIFIED: 1 / 12**
 
-**DEPLOYED — AWAITING MANUAL: 12 / 12**
+**DEPLOYED — AWAITING REMAINING MANUAL PROOF: 11 / 12**
 
 **OPEN: 0 / 12**
 
@@ -37,6 +37,8 @@
 Run these four journeys once, in order, with dedicated QA email addresses. Record timestamp, actor email, organization, expected/actual result, screenshot, and request/correlation ID where available. Do not retest individual gap numbers separately.
 
 ### QA-1 PLATFORM ADMIN
+
+**Status (2026-08-24): MANUALLY VERIFIED / COMPLETE.** Production evidence: backend-derived Platform Admin role loaded; trusted organization create, edit, and deactivate succeeded; the edit persisted; the deactivated organization could not become active context; logout cleared the session and showed the canonical login; refresh remained signed out; and browser Back did not restore protected content.
 
 **Exact steps**
 1. Sign in through the canonical Work OS credential screen with the controlled Platform Admin account; refresh once and confirm MARQ Networks and the Platform Administrator surface are restored.
@@ -51,6 +53,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 **Reviewer remote evidence:** inspect the Auth user ID and active Platform Admin membership; the created organization and its inactive state; correlated `organization.created`, `organization.updated`, and `organization.deactivated` audit rows; `organization-administration` invocation logs; and absence of a direct browser RPC call to the trusted database function.
 
 ### QA-2 INVITATION + ORG ADMIN
+
+**Status (2026-08-24): Platform Admin invitation UI prepared for deployment/retest — NOT YET VERIFIED.** The canonical Platform Organizations screen now offers `Invite Org Admin` only for active organizations, fixes the submitted role to `org_admin`, binds the target tenant/organization, and retains the successful email/organization target for one pre-acceptance resend through the existing trusted `identity-administration` Edge Function. No new scored gap was created.
 
 **Exact steps**
 1. As Platform Admin, invite a new controlled email as Org Admin for an active QA organization. Before accepting, use resend once for the same invitation.

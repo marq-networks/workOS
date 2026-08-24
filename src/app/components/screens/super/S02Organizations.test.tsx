@@ -7,7 +7,7 @@ vi.mock('../../../platform/organizationAdministration', () => ({
   listPlatformOrganizations: vi.fn(), listPlatformTenants: vi.fn(), savePlatformOrganization: vi.fn(),
 }));
 
-const props = { organizations: [], searchQuery: '', onSearchChange: vi.fn(), onEdit: vi.fn(), onDeactivate: vi.fn(), onRetry: vi.fn() };
+const props = { organizations: [], searchQuery: '', onSearchChange: vi.fn(), onEdit: vi.fn(), onDeactivate: vi.fn(), onInviteOrgAdmin: vi.fn(), onRetry: vi.fn() };
 
 describe('canonical Platform Organizations screen', () => {
   it('renders loading, empty, and error states', () => {
@@ -23,12 +23,29 @@ describe('canonical Platform Organizations screen', () => {
     expect(markup).toContain('MARQ Networks');
     expect(markup).toContain('marq-networks');
     expect(markup).toContain('Deactivate');
+    expect(markup).toContain('Invite Org Admin');
     expect(markup).not.toMatch(/MRR|Billing|Plan|Users|Trial/);
+  });
+
+  it('does not offer invitations or deactivation for a deactivated organization', () => {
+    const markup = renderToStaticMarkup(<OrganizationList {...props} loading={false} error={null} organizations={[{ id: 'org-2', tenantId: 'tenant-1', tenantName: 'MARQ', name: 'Closed Org', slug: 'closed-org', status: 'deactivated' }]} />);
+    expect(markup).not.toContain('Invite Org Admin');
+    expect(markup).not.toContain('Deactivate</button>');
+    expect(markup).toContain('Edit');
   });
 
   it('contains no fake fixtures, local persistence, or Finance fields', () => {
     const source = readFileSync(new URL('./S02Organizations.tsx', import.meta.url), 'utf8');
     expect(source).not.toMatch(/Acme Corp|TechStart|Global Enterprises|StartupHub|MegaCorp/);
     expect(source).not.toMatch(/localStorage|saved locally|MRR|billing|plan|user count/i);
+  });
+
+  it('binds the invitation dialog to a fixed organization and Org Admin role', () => {
+    const source = readFileSync(new URL('./S02Organizations.tsx', import.meta.url), 'utf8');
+    expect(source).toContain('value={inviteOrganization.name} readOnly');
+    expect(source).toContain('value="Organization Admin" readOnly');
+    expect(source).toContain('Fixed role: org_admin');
+    expect(source).not.toMatch(/inviteRole[\s\S]{0,200}onChange/);
+    expect(source).not.toMatch(/Employee role|Platform Admin role/);
   });
 });
