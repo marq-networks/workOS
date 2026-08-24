@@ -1,5 +1,14 @@
 import type { ValidatedMembership } from '../security/types';
 
+/**
+ * The authorization lifecycle is keyed to the authenticated identity, not to a
+ * Supabase User object. Supabase may replace that object during a token refresh
+ * even though the security principal has not changed.
+ */
+export function getAuthorizationSubjectId(user: { id: string } | null): string | null {
+  return user?.id ?? null;
+}
+
 export function selectValidatedMembership(
   memberships: ValidatedMembership[],
   preferredOrganizationId: string | null,

@@ -11,6 +11,11 @@ import { useEffect } from 'react';
 import { useRouter } from './router';
 import { useCurrentRole } from './DevRoleSwitcher';
 import { canAccessPath, getDefaultRouteForRole } from '../nav/canAccessPath';
+import type { Role } from '../nav/navManifest';
+
+export function getRouteGuardRedirect(role: Role, path: string): string | null {
+  return canAccessPath(role, path) ? null : getDefaultRouteForRole(role);
+}
 
 /**
  * Route guard that checks access on every navigation
@@ -26,15 +31,14 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     }
     
     // Check if current role can access current path via navigation manifest
-    const hasAccess = canAccessPath(currentRole, currentPath);
+    const redirect = getRouteGuardRedirect(currentRole, currentPath);
     
-    if (!hasAccess) {
+    if (redirect) {
       console.warn(`[RouteGuard] Access denied: ${currentRole} cannot access ${currentPath}`);
       
       // Redirect to safe default route for this role
-      const defaultRoute = getDefaultRouteForRole(currentRole);
-      console.log(`[RouteGuard] Redirecting to: ${defaultRoute}`);
-      navigate(defaultRoute);
+      console.log(`[RouteGuard] Redirecting to: ${redirect}`);
+      navigate(redirect);
     }
   }, [currentPath, currentRole, navigate]);
   

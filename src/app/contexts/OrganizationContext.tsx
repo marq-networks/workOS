@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext';
 import { listCurrentMemberships } from '../security/membershipRepository';
 import type { ValidatedMembership } from '../security/types';
 import { OrganizationContext } from './organizationContextValue';
-import { createRevalidationCoordinator, createVisibleRevalidationHandler, selectOrganizationForSwitch, selectValidatedMembership } from './organizationAuthorization';
+import { createRevalidationCoordinator, createVisibleRevalidationHandler, getAuthorizationSubjectId, selectOrganizationForSwitch, selectValidatedMembership } from './organizationAuthorization';
 
 export { useOrganization } from './organizationContextValue';
 
@@ -12,6 +12,7 @@ const PREFERENCE_KEY = 'workos_active_organization_preference';
 
 export function OrganizationProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const userId = getAuthorizationSubjectId(user);
   const [loading, setLoading] = useState(false);
   const [revalidating, setRevalidating] = useState(false);
   const [switching, setSwitching] = useState(false);
@@ -21,7 +22,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const validate = useCallback(async (initial: boolean) => {
-    if (!user) {
+    if (!userId) {
       setMemberships([]);
       setActiveMembership(null);
       setValidatedUserId(null);
@@ -31,14 +32,14 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     if (initial) setLoading(true);
     else setRevalidating(true);
     try {
-      const valid = await listCurrentMemberships(user.id);
+      const valid = await listCurrentMemberships(userId);
       const preference = localStorage.getItem(PREFERENCE_KEY);
       const selected = selectValidatedMembership(valid, preference);
       // Commit the newly validated authorization atomically. Until this point a previously
       // validated membership keeps the shell mounted; an empty result clears access immediately.
       setMemberships(valid);
       setActiveMembership(selected);
-      setValidatedUserId(user.id);
+      setValidatedUserId(userId);
       if (selected) localStorage.setItem(PREFERENCE_KEY, selected.organizationId);
       else localStorage.removeItem(PREFERENCE_KEY);
       setError(null);
@@ -46,14 +47,14 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
       if (initial) {
         setMemberships([]);
         setActiveMembership(null);
-        setValidatedUserId(user.id);
+        setValidatedUserId(userId);
       }
       setError('Organization access could not be loaded.');
     } finally {
       if (initial) setLoading(false);
       else setRevalidating(false);
     }
-  }, [user]);
+  }, [userId]);
 
   const backgroundCoordinator = useRef<ReturnType<typeof createRevalidationCoordinator> | null>(null);
   const coordinatorValidationRef = useRef(validate);
@@ -69,7 +70,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
   // returns and on a bounded cadence so revocation/deactivation clears the protected shell
   // without relying on a browser-held role or requiring a new login.
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
     // Windows tab switches commonly emit visibilitychange and focus together. The coordinator
     // makes those signals share one request instead of starting a revalidation storm.
     const revalidate = createVisibleRevalidationHandler(refresh, () => document.visibilityState);
@@ -81,14 +82,14 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
       document.removeEventListener('visibilitychange', revalidate);
       window.clearInterval(interval);
     };
-  }, [refresh, user]);
+  }, [refresh, userId]);
 
   const switchOrganization = useCallback(async (organizationId: string) => {
-    if (!user) throw new Error('Organization access requires an authenticated user.');
+    if (!userId) throw new Error('Organization access requires an authenticated user.');
     setSwitching(true);
     setActiveMembership(null);
     try {
-      const valid = await listCurrentMemberships(user.id);
+      const valid = await listCurrentMemberships(userId);
       const selected = selectOrganizationForSwitch(valid, organizationId);
       if (!selected) throw new Error('Organization is not available to this account.');
       setMemberships(valid);
@@ -98,9 +99,9 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     } finally {
       setSwitching(false);
     }
-  }, [user]);
+  }, [userId]);
 
-  const initialAuthorizationLoading = Boolean(user) && (loading || validatedUserId !== user.id);
+  const initialAuthorizationLoading = Boolean(userId) && (loading || validatedUserId !== userId);
   const value = useMemo(() => ({ loading: initialAuthorizationLoading, revalidating, switching, memberships, activeMembership,
     activeRole: activeMembership?.role ?? null, error, switchOrganization, refresh }),
     [initialAuthorizationLoading, revalidating, switching, memberships, activeMembership, error, switchOrganization, refresh]);

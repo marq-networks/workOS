@@ -1,5 +1,5 @@
 // Simple client-side router
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from 'react';
 
 interface RouterContextType {
   currentPath: string;
@@ -11,12 +11,13 @@ const RouterContext = createContext<RouterContextType | undefined>(undefined);
 export function Router({ children, initialPath = '/employee/dashboard' }: { children: ReactNode; initialPath?: string }) {
   const [currentPath, setCurrentPath] = useState(initialPath);
 
-  const navigate = (path: string) => {
+  const navigate = useCallback((path: string) => {
     setCurrentPath(path);
-  };
+  }, []);
+  const value = useMemo(() => ({ currentPath, navigate }), [currentPath, navigate]);
 
   return (
-    <RouterContext.Provider value={{ currentPath, navigate }}>
+    <RouterContext.Provider value={value}>
       {children}
     </RouterContext.Provider>
   );

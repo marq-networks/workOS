@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { ValidatedMembership } from '../security/types';
-import { createRevalidationCoordinator, createVisibleRevalidationHandler, selectOrganizationForSwitch, selectValidatedMembership } from './organizationAuthorization';
+import { createRevalidationCoordinator, createVisibleRevalidationHandler, getAuthorizationSubjectId, selectOrganizationForSwitch, selectValidatedMembership } from './organizationAuthorization';
 
 const active: ValidatedMembership = {
   id: 'membership-1', tenantId: 'tenant-1', organizationId: 'organization-1',
@@ -8,6 +8,14 @@ const active: ValidatedMembership = {
 };
 
 describe('organization authorization revalidation', () => {
+  it('keeps the authorization subject stable when Supabase refreshes the same user object', () => {
+    const beforeRefresh = { id: 'platform-admin', email: 'before@example.com' };
+    const afterRefresh = { id: 'platform-admin', email: 'after@example.com' };
+
+    expect(afterRefresh).not.toBe(beforeRefresh);
+    expect(getAuthorizationSubjectId(afterRefresh)).toBe(getAuthorizationSubjectId(beforeRefresh));
+    expect(getAuthorizationSubjectId(null)).toBeNull();
+  });
   it('selects an active membership on initial load and honors a safe organization switch', () => {
     const second = { ...active, id: 'membership-2', organizationId: 'organization-2' };
     expect(selectValidatedMembership([active, second], null)).toEqual(active);
