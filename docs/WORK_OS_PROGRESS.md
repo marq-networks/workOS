@@ -1,9 +1,9 @@
 # Work OS Progress
 
-**Last updated:** 2026-08-19
+**Last updated:** 2026-08-24
 **Current checkpoint:** PHASE 5 — DEPLOYED, CONSOLIDATED MANUAL VERIFICATION PENDING. PR #17 is merged and its Work OS Vercel deployment succeeded. The Phase-5 database and trusted Edge boundaries are remotely deployed; the remaining closeout work is the four consolidated QA journeys below plus the leaked-password-protection project setting.
 
-**Current remediation batch:** Batch 1 — Phase 5 closure only. QA-1 remains open. Production proved that `/super/organizations` redirected an authenticated Platform Administrator to `/work/my-work` because `RouteGuard` still authorized from the prototype browser `roleStore` (which held `employee`) instead of `OrganizationContext.activeRole` from the validated backend membership. The bounded correction makes the active membership role authoritative for the route guard, sidebar, root redirects, and user role label; revoked membership still removes the protected application fail-closed. Production must confirm Support Console → Organizations → stays Organizations. Remote migration `20260819180940`, RLS, and both trusted administration functions remain unchanged; QA-2 and Phase 6 have not begun.
+**Current remediation batch:** Batch 1 — Phase 5 closure only. QA-1 remains open. Session clearing on logout is **VERIFIED manually**, but the signed-out destination was incorrect: `LoginScreen` still opened with its prototype browser role-selection launcher. The bounded fix makes the same Supabase-backed `LoginScreen` a single credential entry, with password recovery preserved and application role resolved only after authentication from validated backend membership. The fix is awaiting deployment/retest. Remote migration `20260819180940`, RLS, and both trusted administration functions remain unchanged; QA-2 and Phase 6 have not begun.
 
 ## PHASE 5 CLOSEOUT SCOREBOARD
 
@@ -39,10 +39,11 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 ### QA-1 PLATFORM ADMIN
 
 **Exact steps**
-1. Sign in through the Platform Admin portal with the controlled Platform Admin account; refresh once and confirm MARQ Networks and the Platform Administrator surface are restored.
+1. Sign in through the canonical Work OS login with the controlled Platform Admin account; refresh once and confirm MARQ Networks and the Platform Administrator surface are restored from validated membership.
 2. Inspect the authenticated browser request/session and record the Supabase user ID and JWT role (`authenticated`); confirm the application role and organization come from the backend membership, not a browser-selected role.
 3. Open `/super/organizations`, create a uniquely named QA organization, rename it, then deactivate it. Attempt to select or reopen the deactivated organization and confirm it grants no active application context.
 4. Sign out, use browser Back, and confirm protected content is not available.
+5. Confirm logout and refresh both show the single canonical Work OS sign-in form, with no Employee, Org Admin, or Platform Admin role selection.
 
 **Expected result:** the backend membership admits the Platform Admin; organization create/update/deactivate succeeds through the trusted boundary; the deactivated organization cannot authorize access; logout clears protected access. No raw provider error or secret is exposed.
 

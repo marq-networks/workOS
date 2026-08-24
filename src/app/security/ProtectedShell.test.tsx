@@ -10,8 +10,13 @@ const organizationState = vi.hoisted(() => ({
   error: null as string | null,
 }));
 
+const authState = vi.hoisted(() => ({
+  initializing: false,
+  user: { id: 'signed-in-user' } as { id: string } | null,
+}));
+
 vi.mock('../contexts/AuthContext', () => ({
-  useAuth: () => ({ initializing: false, user: { id: 'signed-in-user' } }),
+  useAuth: () => authState,
 }));
 
 vi.mock('../contexts/OrganizationContext', () => ({
@@ -21,7 +26,30 @@ vi.mock('../contexts/OrganizationContext', () => ({
 import { ProtectedShell } from './ProtectedShell';
 
 describe('ProtectedShell', () => {
+  it('renders only the canonical login destination after logout or a signed-out refresh', () => {
+    authState.user = null;
+    organizationState.activeMembership = { id: 'stale-membership' };
+    const markup = renderToStaticMarkup(
+      <ProtectedShell login={<p>Canonical LoginScreen</p>}><p>Protected application</p></ProtectedShell>,
+    );
+    expect(markup).toContain('Canonical LoginScreen');
+    expect(markup).not.toContain('Protected application');
+    authState.user = { id: 'signed-in-user' };
+  });
+
+  it('ignores stale browser authorization state while signed out', () => {
+    authState.user = null;
+    const staleRoleStoreValue = 'platform_admin';
+    const markup = renderToStaticMarkup(
+      <ProtectedShell login={<p>Canonical LoginScreen</p>}><p>{staleRoleStoreValue} application</p></ProtectedShell>,
+    );
+    expect(markup).toContain('Canonical LoginScreen');
+    expect(markup).not.toContain('platform_admin application');
+    authState.user = { id: 'signed-in-user' };
+  });
+
   it('does not render application content without a validated active membership', () => {
+    authState.user = { id: 'signed-in-user' };
     organizationState.activeMembership = null;
     const markup = renderToStaticMarkup(
       <ProtectedShell login={<p>Login</p>}><p>Protected application</p></ProtectedShell>,
@@ -32,6 +60,7 @@ describe('ProtectedShell', () => {
   });
 
   it('keeps canonical dialog and unsaved state mounted during background revalidation', () => {
+    authState.user = { id: 'signed-in-user' };
     organizationState.activeMembership = { id: 'membership-present' };
     organizationState.revalidating = true;
     const markup = renderToStaticMarkup(
@@ -43,6 +72,7 @@ describe('ProtectedShell', () => {
   });
 
   it('removes protected content as soon as revalidation proves revocation', () => {
+    authState.user = { id: 'signed-in-user' };
     organizationState.revalidating = false;
     organizationState.memberships = [];
     organizationState.activeMembership = null;
