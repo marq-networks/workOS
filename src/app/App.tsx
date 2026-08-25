@@ -15,6 +15,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { OrganizationProvider, useOrganization } from './contexts/OrganizationContext';
 import { ProtectedShell } from './security/ProtectedShell';
 import { PasswordRecoveryGate } from './security/PasswordRecoveryGate';
+import { InvitationAcceptanceGate } from './security/InvitationAcceptanceGate';
+import { InvitationAcceptanceScreen } from './components/screens/auth/InvitationAcceptanceScreen';
 import { AppShell } from './components/shared/AppShell';
 
 // Navigation System
@@ -123,6 +125,6 @@ export default function App() {
 }
 
 export function AuthEntry() {
-  const { authMode, updatePassword } = useAuth();
-  return <PasswordRecoveryGate authMode={authMode} recovery={<ResetPasswordScreen onUpdatePassword={updatePassword} />}><OrganizationProvider><SecuredApplication /></OrganizationProvider></PasswordRecoveryGate>;
+  const { authMode, updatePassword, user, invitationCallback, acceptInvitation } = useAuth();
+  return <PasswordRecoveryGate authMode={authMode} recovery={<ResetPasswordScreen onUpdatePassword={updatePassword} />}><InvitationAcceptanceGate authMode={authMode} invitation={<InvitationAcceptanceScreen user={user} callback={invitationCallback} onAccept={acceptInvitation} />}><OrganizationProvider><SecuredApplication /></OrganizationProvider></InvitationAcceptanceGate></PasswordRecoveryGate>;
 }

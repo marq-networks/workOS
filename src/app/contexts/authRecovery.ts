@@ -1,7 +1,7 @@
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
 
-export type AuthMode = 'normal' | 'password_recovery';
+export type AuthMode = 'normal' | 'password_recovery' | 'invitation_acceptance';
 
 export function authModeForEvent(currentMode: AuthMode, event: AuthChangeEvent): AuthMode {
   if (event === 'PASSWORD_RECOVERY') return 'password_recovery';

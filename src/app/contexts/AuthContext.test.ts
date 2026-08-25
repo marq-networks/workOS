@@ -14,6 +14,11 @@ describe('password recovery auth flow', () => {
     expect(authModeForEvent(recovering, 'SIGNED_IN')).toBe('password_recovery');
   });
 
+  it('keeps password recovery independent from invitation acceptance', () => {
+    expect(authModeForEvent('invitation_acceptance', 'PASSWORD_RECOVERY')).toBe('password_recovery');
+    expect(authModeForEvent('password_recovery', 'SIGNED_IN')).toBe('password_recovery');
+  });
+
   it('updates the password and signs out the recovery session', async () => {
     const updateUser = vi.fn().mockResolvedValue({ error: null });
     const signOut = vi.fn().mockResolvedValue({ error: null });
