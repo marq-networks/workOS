@@ -54,7 +54,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-2 INVITATION + ORG ADMIN
 
-**Status (2026-08-24): Platform Admin invitation UI prepared for deployment/retest — NOT YET VERIFIED.** The canonical Platform Organizations screen now offers `Invite Org Admin` only for active organizations, fixes the submitted role to `org_admin`, binds the target tenant/organization, and retains the successful email/organization target for one pre-acceptance resend through the existing trusted `identity-administration` Edge Function. No new scored gap was created.
+**Status (2026-08-24): invitation creation VERIFIED; invitation delivery VERIFIED; resend VERIFIED; acceptance BLOCKED because the callback currently lands on canonical login. Acceptance remediation is prepared for deployment/retest — QA-2 is NOT COMPLETE.** The bounded remediation explicitly redirects new and resent invitations to `/accept-invitation`, recognizes only an invite callback/session, sets the password through Supabase Auth, and delegates activation to the existing trusted `identity-administration` acceptance action before normal organization authorization mounts.
 
 **Exact steps**
 1. As Platform Admin, invite a new controlled email as Org Admin for an active QA organization. Before accepting, use resend once for the same invitation.

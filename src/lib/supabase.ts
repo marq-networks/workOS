@@ -14,4 +14,12 @@ if (!supabaseUrl || !supabasePublishableKey) {
  *
  * Product queries and authentication are intentionally outside this foundation module.
  */
-export const supabase = createClient(supabaseUrl, supabasePublishableKey);
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+  auth: {
+    // Supabase invitations use an implicit-flow hash (inviteUserByEmail does not
+    // support PKCE). Keep callback detection explicit rather than relying on a
+    // library default that could change during a client upgrade.
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+  },
+});

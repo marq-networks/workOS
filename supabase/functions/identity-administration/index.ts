@@ -55,6 +55,17 @@ Deno.serve(async (request) => {
     return response(200, 'INVITATION_ACCEPTED', 'Invitation accepted.', { membershipIds: data });
   }
 
+  const appUrl = Deno.env.get('APP_URL');
+  let invitationRedirectTo: string;
+  try {
+    if (!appUrl) throw new Error('missing app URL');
+    const configuredUrl = new URL(appUrl);
+    if (configuredUrl.protocol !== 'https:' && configuredUrl.hostname !== 'localhost') throw new Error('invalid protocol');
+    invitationRedirectTo = new URL('/accept-invitation', configuredUrl).toString();
+  } catch {
+    return response(503, 'SERVICE_UNAVAILABLE', 'Identity administration is unavailable.');
+  }
+
   const command = toInvitationCommand(input);
   const { data: organization } = await admin
     .from('organizations')
@@ -77,13 +88,14 @@ Deno.serve(async (request) => {
   }
 
   if (input.action === 'resend') {
-    const { error } = await admin.auth.resend({ type: 'signup', email: command.email });
+    const { error } = await admin.auth.resend({ type: 'signup', email: command.email, options: { emailRedirectTo: invitationRedirectTo } });
     if (error) return response(409, 'INVITATION_NOT_SENT', 'The invitation could not be sent.');
     return response(200, 'INVITATION_SENT', 'Invitation sent.');
   }
 
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(command.email, {
     data: { invitation_organization_id: command.organizationId },
+    redirectTo: invitationRedirectTo,
   });
   if (inviteError || !invited.user) {
     return response(409, 'INVITATION_NOT_CREATED', 'The invitation could not be created.');

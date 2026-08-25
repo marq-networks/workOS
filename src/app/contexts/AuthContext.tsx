@@ -4,6 +4,7 @@ import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
 import { authModeForEvent, replaceRecoveryPassword, type AuthMode, type PasswordRecoveryResult } from './authRecovery';
 import { requestPasswordRecovery, safeSignInError } from './authOperations';
+import { acceptAuthenticatedInvitation, inspectInvitationCallback, type InvitationAcceptanceResult, type InvitationCallback } from './authInvitation';
 
 export type { AuthMode } from './authRecovery';
 
@@ -16,15 +17,19 @@ interface AuthContextValue {
   requestPasswordReset: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   updatePassword: (newPassword: string) => Promise<PasswordRecoveryResult>;
+  invitationCallback: InvitationCallback;
+  acceptInvitation: (newPassword: string | null) => Promise<InvitationAcceptanceResult>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const invitationCallback = useMemo(() => inspectInvitationCallback(window.location), []);
   const [initializing, setInitializing] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
-  const [authMode, setAuthMode] = useState<AuthMode>('normal');
-  const authModeRef = useRef<AuthMode>('normal');
+  const initialMode: AuthMode = invitationCallback.requested ? 'invitation_acceptance' : 'normal';
+  const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
+  const authModeRef = useRef<AuthMode>(initialMode);
 
   useEffect(() => {
     let mounted = true;
@@ -76,7 +81,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(null);
       return result;
     },
-  }), [authMode, initializing, session]);
+    invitationCallback,
+    acceptInvitation: async (newPassword) => {
+      const result = await acceptAuthenticatedInvitation(supabase.auth, supabase.functions, session, newPassword);
+      authModeRef.current = 'normal';
+      setAuthMode('normal');
+      window.history.replaceState({}, '', '/');
+      return result;
+    },
+  }), [authMode, initializing, invitationCallback, session]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
