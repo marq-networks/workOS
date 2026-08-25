@@ -4,6 +4,11 @@ import {
   RequestValidationError,
   toInvitationCommand,
 } from '../_shared/invitationPolicy.ts';
+import {
+  authorizeMembershipList,
+  MembershipListValidationError,
+  parseMembershipListRequest,
+} from '../_shared/membershipListPolicy.ts';
 
 const jsonHeaders = {
   'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
@@ -36,9 +41,76 @@ Deno.serve(async (request) => {
   const { data: { user: actor }, error: authError } = await admin.auth.getUser(token);
   if (authError || !actor) return response(401, 'AUTH_REQUIRED', 'A valid authenticated session is required.');
 
+  let requestBody: unknown;
+  try {
+    requestBody = await request.json();
+  } catch {
+    return response(400, 'INVALID_REQUEST', 'The request is invalid.');
+  }
+
+  if ((requestBody as { action?: unknown } | null)?.action === 'list') {
+    let target;
+    try {
+      target = parseMembershipListRequest(requestBody);
+    } catch (error) {
+      if (error instanceof MembershipListValidationError) return response(400, 'INVALID_REQUEST', 'The list request is invalid.');
+      return response(500, 'REQUEST_FAILED', 'The request could not be completed.');
+    }
+
+    const { data: organization } = await admin.from('organizations').select('id')
+      .eq('id', target.organizationId).eq('tenant_id', target.tenantId).eq('status', 'active').is('deleted_at', null).maybeSingle();
+    const { data: actorMemberships } = await admin.from('memberships')
+      .select('tenant_id, organization_id, role, status, deleted_at').eq('user_id', actor.id);
+    const viewerRole = authorizeMembershipList(actorMemberships ?? [], target);
+    if (!organization || !viewerRole) return response(403, 'MEMBERSHIP_LIST_DENIED', 'Memberships are not available for this organization.');
+
+    const { data: memberships, error: membershipError } = await admin.from('memberships')
+      .select('id, user_id, tenant_id, organization_id, role, status, created_at, updated_at')
+      .eq('tenant_id', target.tenantId).eq('organization_id', target.organizationId).is('deleted_at', null)
+      .order('created_at', { ascending: false });
+    if (membershipError) return response(500, 'MEMBERSHIP_LIST_FAILED', 'Memberships could not be loaded.');
+
+    const visibleMemberships = viewerRole === 'platform_admin'
+      ? memberships ?? []
+      : (memberships ?? []).filter((membership) => membership.role !== 'platform_admin');
+    const userIds = visibleMemberships.map((membership) => membership.user_id);
+    const { data: profiles } = userIds.length === 0 ? { data: [] } : await admin.from('worker_profiles')
+      .select('user_id, departments(name)').eq('tenant_id', target.tenantId)
+      .eq('organization_id', target.organizationId).in('user_id', userIds);
+    const profilesByUser = new Map((profiles ?? []).map((profile) => [profile.user_id, profile]));
+
+    let rows;
+    try {
+      rows = await Promise.all(visibleMemberships.map(async (membership) => {
+        const { data: authUser, error: authUserError } = await admin.auth.admin.getUserById(membership.user_id);
+        if (authUserError || !authUser.user?.email) throw new Error('scoped Auth identity unavailable');
+        const metadata = authUser.user.user_metadata ?? {};
+        const displayName = typeof metadata.display_name === 'string' ? metadata.display_name
+          : typeof metadata.full_name === 'string' ? metadata.full_name : null;
+        const profile = profilesByUser.get(membership.user_id) as { departments?: { name?: string } | null } | undefined;
+        return {
+          id: membership.id,
+          userId: membership.user_id,
+          email: authUser.user.email,
+          displayName,
+          role: membership.role,
+          status: membership.status,
+          organizationId: membership.organization_id,
+          tenantId: membership.tenant_id,
+          createdAt: membership.created_at,
+          updatedAt: membership.updated_at,
+          department: profile?.departments?.name ?? null,
+        };
+      }));
+    } catch {
+      return response(500, 'MEMBERSHIP_LIST_FAILED', 'Memberships could not be loaded.');
+    }
+    return response(200, 'MEMBERSHIP_LISTED', 'Memberships loaded.', { memberships: rows });
+  }
+
   let input;
   try {
-    input = parseInvitationRequest(await request.json());
+    input = parseInvitationRequest(requestBody);
   } catch (error) {
     if (error instanceof RequestValidationError || error instanceof SyntaxError) {
       return response(400, 'INVALID_REQUEST', 'The invitation request is invalid.');

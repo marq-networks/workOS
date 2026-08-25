@@ -1,7 +1,7 @@
 # Work OS Progress
 
-**Last updated:** 2026-08-24
-**Current checkpoint:** PHASE 5 — QA-1 MANUALLY VERIFIED / COMPLETE; QA-2 INVITATION + ORG ADMIN UI PREPARED FOR DEPLOYMENT/RETEST. The Phase-5 database and trusted Edge boundaries are remotely deployed. QA-2 is not yet verified; QA-3 and Phase 6 have not begun.
+**Last updated:** 2026-08-25
+**Current checkpoint:** PHASE 5 — QA-1 MANUALLY VERIFIED / COMPLETE; QA-2 INVITATION + ORG ADMIN MEMBERSHIP-LIST REMEDIATION PREPARED FOR DEPLOYMENT/RETEST. The Phase-5 database and trusted Edge boundaries are remotely deployed. QA-2 is not complete; QA-3 and Phase 6 have not begun.
 
 **Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -54,7 +54,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-2 INVITATION + ORG ADMIN
 
-**Status (2026-08-24): invitation creation VERIFIED; invitation delivery VERIFIED; resend VERIFIED; acceptance BLOCKED because the callback currently lands on canonical login. Acceptance remediation is prepared for deployment/retest — QA-2 is NOT COMPLETE.** The bounded remediation explicitly redirects new and resent invitations to `/accept-invitation`, recognizes only an invite callback/session, sets the password through Supabase Auth, and delegates activation to the existing trusted `identity-administration` acceptance action before normal organization authorization mounts.
+**Status (2026-08-25): Platform Admin → Org Admin invitation VERIFIED; resend VERIFIED; acceptance VERIFIED; backend active Org Admin membership VERIFIED; Org Admin canonical membership page reached VERIFIED; Org Admin role options correctly exclude Platform Admin VERIFIED; Org Admin → Employee invitation backend path VERIFIED. QA-2 is NOT COMPLETE.** Production testing discovered a split-brain membership UI: the trusted real invitation write succeeded while the membership table still read mock People employees. A bounded real membership-list remediation is implemented and pending production retest. The remediation extends the existing trusted `identity-administration` boundary with an authorized organization-scoped list action, returns invited and active memberships without requiring worker profiles, and refreshes that list immediately after invitation.
 
 **Exact steps**
 1. As Platform Admin, invite a new controlled email as Org Admin for an active QA organization. Before accepting, use resend once for the same invitation.
