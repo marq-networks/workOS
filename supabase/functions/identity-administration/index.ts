@@ -57,8 +57,13 @@ Deno.serve(async (request) => {
       return response(500, 'REQUEST_FAILED', 'The request could not be completed.');
     }
 
-    const { data: organization } = await admin.from('organizations').select('id')
-      .eq('id', target.organizationId).eq('tenant_id', target.tenantId).eq('status', 'active').is('deleted_at', null).maybeSingle();
+    const { data: organization } = await admin
+      .from('organizations')
+      .select('id')
+      .eq('id', target.organizationId)
+      .eq('tenant_id', target.tenantId)
+      .eq('status', 'active')
+      .maybeSingle();
     const { data: actorMemberships } = await admin.from('memberships')
       .select('tenant_id, organization_id, role, status, deleted_at').eq('user_id', actor.id);
     const viewerRole = authorizeMembershipList(actorMemberships ?? [], target);
