@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-27
-**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 EMPLOYEE ACCESS VERIFIED / TRUSTED REVOCATION RETEST PENDING. The bounded trusted Employee membership-deactivation path is implemented; QA-3 is not complete and QA-4/Phase 6 have not begun.
+**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 BACKEND REVOCATION VERIFIED; QA-4 CANONICAL URL REMEDIATION IMPLEMENTED / PRODUCTION RETEST PENDING. Phase 6 has not begun.
 
 **Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -70,7 +70,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-3 EMPLOYEE + REVOCATION
 
-**Status (2026-08-27):** Employee login **VERIFIED**; Employee canonical navigation **VERIFIED**; direct `/people/members` route denial **VERIFIED**; trusted Employee membership deactivation **IMPLEMENTED**; production revocation retest **PENDING**. QA-3 remains open.
+**Status (2026-08-27):** Employee login, backend-derived authority/navigation scope, trusted Employee membership deactivation, inactive-membership enforcement, Auth-user preservation, and automatic "No organization access" session revocation are **VERIFIED**. The earlier direct browser `/people/members` observation is not route-authorization proof because the then-current Router ignored `window.location.pathname`; repeat only that browser deep-link proof after the canonical Router deployment. This does not reopen or invalidate the verified backend revocation evidence.
 
 **Exact steps**
 1. Accept the Employee invitation from QA-2 in a clean/private browser and sign in; confirm the Employee surface and assigned organization only.
@@ -85,6 +85,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 **Reviewer remote evidence:** inspect the inactive membership and unchanged Auth user identity; the correlated membership-deactivation audit event; browser/Edge request denials for privileged operations; and timestamps showing the application revalidated after revocation.
 
 ### QA-4 AUTH / RECOVERY / SESSION
+
+**Status (2026-08-27):** Invalid-credential safe error, recovery-request privacy, recovery email delivery, recovery callback, password update, new-password login, and session restoration on refresh are **VERIFIED**. Production QA discovered that authenticated dashboard content could render behind the stale `/reset-password#` browser URL because Router state did not synchronize with browser history. The bounded canonical browser URL/history synchronization and auth callback cleanup remediation is **IMPLEMENTED; PRODUCTION RETEST PENDING**. QA-4 is not complete.
 
 **Exact steps**
 1. From a signed-out browser, submit one invalid-password sign-in and confirm the message is generic. Inspect the Supabase Auth rate-limit configuration/status; do not deliberately lock a shared production account.

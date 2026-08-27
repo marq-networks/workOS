@@ -20,7 +20,9 @@ import { InvitationAcceptanceScreen } from './components/screens/auth/Invitation
 import { AppShell } from './components/shared/AppShell';
 
 // Navigation System
-import { generateRoutes, validateRouteRegistry } from './navigation';
+import { generateRoutes, getRouteByPath, validateRouteRegistry } from './navigation';
+
+const isValidApplicationPath = (path: string) => path === '/' || Boolean(getRouteByPath(path));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ROLE-BASED REDIRECT HELPER
@@ -102,7 +104,7 @@ function SecuredApplication() {
     <ErrorBoundary>
       <ToastProvider>
         <ProtectedShell login={<LoginScreen onLogin={signIn} onRequestPasswordReset={requestPasswordReset} />}>
-          <Router initialPath={initialPath}>
+          <Router initialPath={initialPath} isValidPath={isValidApplicationPath}>
           <ServiceProvider>
             <ExecutionOSProvider>
               <ChatDockProvider>
@@ -124,7 +126,25 @@ export default function App() {
   return <AuthProvider><AuthEntry /></AuthProvider>;
 }
 
+function SignedOutUrlGuard() {
+  const { authMode, initializing, user } = useAuth();
+
+  useEffect(() => {
+    if (initializing || user || authMode !== 'normal') return;
+    const canonicalize = () => {
+      if (window.location.pathname !== '/login' || window.location.hash) {
+        window.history.replaceState({}, '', '/login');
+      }
+    };
+    canonicalize();
+    window.addEventListener('popstate', canonicalize);
+    return () => window.removeEventListener('popstate', canonicalize);
+  }, [authMode, initializing, user]);
+
+  return null;
+}
+
 export function AuthEntry() {
   const { authMode, updatePassword, user, invitationCallback, acceptInvitation } = useAuth();
-  return <PasswordRecoveryGate authMode={authMode} recovery={<ResetPasswordScreen onUpdatePassword={updatePassword} />}><InvitationAcceptanceGate authMode={authMode} invitation={<InvitationAcceptanceScreen user={user} callback={invitationCallback} onAccept={acceptInvitation} />}><OrganizationProvider><SecuredApplication /></OrganizationProvider></InvitationAcceptanceGate></PasswordRecoveryGate>;
+  return <><SignedOutUrlGuard /><PasswordRecoveryGate authMode={authMode} recovery={<ResetPasswordScreen onUpdatePassword={updatePassword} />}><InvitationAcceptanceGate authMode={authMode} invitation={<InvitationAcceptanceScreen user={user} callback={invitationCallback} onAccept={acceptInvitation} />}><OrganizationProvider><SecuredApplication /></OrganizationProvider></InvitationAcceptanceGate></PasswordRecoveryGate></>;
 }

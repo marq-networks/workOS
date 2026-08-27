@@ -73,12 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw new Error('Unable to sign out. Please try again.');
+      window.history.replaceState({}, '', '/login');
     },
     updatePassword: async (newPassword) => {
       const result = await replaceRecoveryPassword(supabase.auth, authModeRef.current, session, newPassword);
       authModeRef.current = 'normal';
       setAuthMode('normal');
       setSession(null);
+      window.history.replaceState({}, '', '/login');
       return result;
     },
     invitationCallback,
