@@ -9,6 +9,11 @@ import {
   MembershipListValidationError,
   parseMembershipListRequest,
 } from '../_shared/membershipListPolicy.ts';
+import {
+  authorizeMembershipDeactivation,
+  MembershipDeactivationValidationError,
+  parseMembershipDeactivationRequest,
+} from '../_shared/membershipDeactivationPolicy.ts';
 
 const jsonHeaders = {
   'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
@@ -46,6 +51,32 @@ Deno.serve(async (request) => {
     requestBody = await request.json();
   } catch {
     return response(400, 'INVALID_REQUEST', 'The request is invalid.');
+  }
+
+  if ((requestBody as { action?: unknown } | null)?.action === 'deactivate') {
+    let targetRequest;
+    try {
+      targetRequest = parseMembershipDeactivationRequest(requestBody);
+    } catch (error) {
+      if (error instanceof MembershipDeactivationValidationError) return response(400, 'INVALID_REQUEST', 'The deactivation request is invalid.');
+      return response(500, 'REQUEST_FAILED', 'The request could not be completed.');
+    }
+    const { data: targetMembership } = await admin.from('memberships')
+      .select('id, tenant_id, organization_id, role, status, deleted_at').eq('id', targetRequest.membershipId).maybeSingle();
+    const { data: actorMemberships } = await admin.from('memberships')
+      .select('tenant_id, organization_id, role, status, deleted_at').eq('user_id', actor.id);
+    if (!targetMembership || !authorizeMembershipDeactivation(actorMemberships ?? [], targetMembership, targetRequest)) {
+      return response(403, 'MEMBERSHIP_DEACTIVATION_DENIED', 'The membership cannot be deactivated.');
+    }
+    const { data: membershipId, error } = await admin.rpc('trusted_deactivate_membership', {
+      p_actor_user_id: actor.id,
+      p_tenant_id: targetRequest.tenantId,
+      p_organization_id: targetRequest.organizationId,
+      p_membership_id: targetRequest.membershipId,
+      p_correlation_id: correlationId,
+    });
+    if (error) return response(403, 'MEMBERSHIP_DEACTIVATION_DENIED', 'The membership cannot be deactivated.');
+    return response(200, 'MEMBERSHIP_DEACTIVATED', 'Membership deactivated.', { membershipId, correlationId });
   }
 
   if ((requestBody as { action?: unknown } | null)?.action === 'list') {

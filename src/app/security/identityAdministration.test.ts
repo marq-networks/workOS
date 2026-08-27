@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const invoke = vi.hoisted(() => vi.fn());
 vi.mock('../../lib/supabase', () => ({ supabase: { functions: { invoke } } }));
 
-import { inviteMember, invitePlatformOrgAdmin, resendPlatformOrgAdminInvitation } from './identityAdministration';
+import { deactivateOrganizationMembership, inviteMember, invitePlatformOrgAdmin, resendPlatformOrgAdminInvitation } from './identityAdministration';
 
 const target = { email: 'qa-admin@example.com', tenantId: 'tenant-1', organizationId: 'org-1' };
 
@@ -29,5 +29,11 @@ describe('trusted identity administration client', () => {
   it('maps provider failures to a bounded client error', async () => {
     invoke.mockResolvedValue({ data: { service_role: 'must not leak' }, error: { message: 'provider detail' } });
     await expect(invitePlatformOrgAdmin(target)).rejects.toThrow('The invitation could not be created.');
+  });
+
+  it('deactivates through the trusted Edge action without a browser table mutation', async () => {
+    const membership = { tenantId: 'tenant-1', organizationId: 'org-1', membershipId: 'membership-1' };
+    await deactivateOrganizationMembership(membership);
+    expect(invoke).toHaveBeenCalledWith('identity-administration', { body: { action: 'deactivate', ...membership } });
   });
 });

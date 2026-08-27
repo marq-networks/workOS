@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { completeSuccessfulInvite, toMembershipRow } from './A04Members';
+import { completeSuccessfulDeactivation, completeSuccessfulInvite, toMembershipRow } from './A04Members';
 
 const source = readFileSync(new URL('./A04Members.tsx', import.meta.url), 'utf8');
 
@@ -43,5 +43,17 @@ describe('A04 membership screen', () => {
   it('keeps Platform Admin absent from the Org Admin invite role selector', () => {
     const drawer = source.slice(source.indexOf('<FormDrawer'));
     expect(drawer).not.toContain('<option value="platform_admin">');
+  });
+
+  it('uses the trusted Employee-only deactivation action and keeps inactive rows visible', async () => {
+    const events: string[] = [];
+    await completeSuccessfulDeactivation({ showSuccess: (message) => events.push(`toast:${message}`),
+      refreshMemberships: async () => { events.push('refresh'); } });
+    expect(events).toEqual(['toast:Member deactivated', 'refresh']);
+    expect(source).toContain("row.role === 'employee' && row.status === 'active'");
+    expect(source).toContain('deactivateOrganizationMembership');
+    expect(source).toContain('Deactivate member?');
+    expect(source).toContain('This member will lose access to this organization.');
+    expect(source).toContain("inactive: 'Inactive'");
   });
 });
