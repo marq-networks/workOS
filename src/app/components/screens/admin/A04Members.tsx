@@ -28,6 +28,20 @@ interface MemberRow extends OrganizationMembership {
   departmentLabel: string;
 }
 
+interface SuccessfulInviteActions {
+  showSuccess: (message: string) => void;
+  closeDrawer: () => void;
+  resetForm: () => void;
+  refreshMemberships: () => Promise<void>;
+}
+
+export async function completeSuccessfulInvite(email: string, actions: SuccessfulInviteActions) {
+  actions.showSuccess(`Invitation sent to ${email}`);
+  actions.closeDrawer();
+  actions.resetForm();
+  await actions.refreshMemberships();
+}
+
 export function toMembershipRow(member: OrganizationMembership): MemberRow {
   return {
     ...member,
@@ -81,10 +95,12 @@ export function A04Members() {
         tenantId: activeMembership.tenantId,
         organizationId: activeMembership.organizationId,
       });
-      await refresh();
-      setIsInviteOpen(false);
-      resetForm();
-      showToast('success', `Invitation sent to ${email}`);
+      await completeSuccessfulInvite(email, {
+        showSuccess: (message) => showToast('success', message),
+        closeDrawer: () => setIsInviteOpen(false),
+        resetForm,
+        refreshMemberships: refresh,
+      });
     } catch {
       showToast('error', 'Invitation could not be sent. Please try again.');
     } finally {
