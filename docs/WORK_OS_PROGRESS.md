@@ -1,7 +1,7 @@
 # Work OS Progress
 
-**Last updated:** 2026-08-25
-**Current checkpoint:** PHASE 5 — QA-1 MANUALLY VERIFIED / COMPLETE; QA-2 INVITATION + ORG ADMIN MEMBERSHIP-LIST REMEDIATION PREPARED FOR DEPLOYMENT/RETEST. The Phase-5 database and trusted Edge boundaries are remotely deployed. QA-2 is not complete; QA-3 and Phase 6 have not begun.
+**Last updated:** 2026-08-27
+**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 EMPLOYEE ACCESS VERIFIED / TRUSTED REVOCATION RETEST PENDING. The bounded trusted Employee membership-deactivation path is implemented; QA-3 is not complete and QA-4/Phase 6 have not begun.
 
 **Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -69,6 +69,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 **Reviewer remote evidence:** inspect the two Auth identities, organization-scoped membership rows and activation timestamps/statuses; correlated invitation/acceptance audit events; `identity-administration` version-2 invocation logs including resend; and verify there is no duplicate membership or unintended Platform Admin role.
 
 ### QA-3 EMPLOYEE + REVOCATION
+
+**Status (2026-08-27):** Employee login **VERIFIED**; Employee canonical navigation **VERIFIED**; direct `/people/members` route denial **VERIFIED**; trusted Employee membership deactivation **IMPLEMENTED**; production revocation retest **PENDING**. QA-3 remains open.
 
 **Exact steps**
 1. Accept the Employee invitation from QA-2 in a clean/private browser and sign in; confirm the Employee surface and assigned organization only.

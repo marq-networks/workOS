@@ -11,6 +11,21 @@ export interface InvitationResult {
   correlationId?: string;
 }
 
+export interface DeactivateOrganizationMembershipInput {
+  tenantId: string;
+  organizationId: string;
+  membershipId: string;
+}
+
+/** Privileged membership writes are performed only by the authenticated Edge boundary. */
+export async function deactivateOrganizationMembership(input: DeactivateOrganizationMembershipInput): Promise<void> {
+  const { supabase } = await import('../../lib/supabase');
+  const { error } = await supabase.functions.invoke('identity-administration', {
+    body: { action: 'deactivate', ...input },
+  });
+  if (error) throw new Error('The membership could not be deactivated.');
+}
+
 async function administerInvitation(action: 'invite' | 'resend', input: InviteMemberInput): Promise<InvitationResult> {
   const { supabase } = await import('../../lib/supabase');
   const { data, error } = await supabase.functions.invoke('identity-administration', {

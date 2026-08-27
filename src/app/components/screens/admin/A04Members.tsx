@@ -8,7 +8,11 @@ import { FormDrawer } from '../../shared/FormDrawer';
 import { FormField, Input } from '../../ui/form';
 import { useToast } from '../../ui/toast';
 import { useOrganization } from '../../../contexts/organizationContextValue';
-import { inviteMember } from '../../../security/identityAdministration';
+import { deactivateOrganizationMembership, inviteMember } from '../../../security/identityAdministration';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '../../ui/alert-dialog';
 import {
   useOrganizationMemberships,
   type OrganizationMembership,
@@ -42,6 +46,11 @@ export async function completeSuccessfulInvite(email: string, actions: Successfu
   await actions.refreshMemberships();
 }
 
+export async function completeSuccessfulDeactivation(actions: Pick<SuccessfulInviteActions, 'showSuccess' | 'refreshMemberships'>) {
+  actions.showSuccess('Member deactivated');
+  await actions.refreshMemberships();
+}
+
 export function toMembershipRow(member: OrganizationMembership): MemberRow {
   return {
     ...member,
@@ -64,6 +73,8 @@ export function A04Members() {
 
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deactivatingMember, setDeactivatingMember] = useState<MemberRow | null>(null);
+  const [isDeactivating, setIsDeactivating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterDepartment, setFilterDepartment] = useState('all');
@@ -129,6 +140,23 @@ export function A04Members() {
     return <StatusBadge type={config.type}><config.icon className="mr-1 h-3 w-3" />{member.statusLabel}</StatusBadge>;
   };
 
+  const handleDeactivate = async () => {
+    if (!deactivatingMember || !activeMembership) return;
+    setIsDeactivating(true);
+    try {
+      await deactivateOrganizationMembership({ tenantId: activeMembership.tenantId,
+        organizationId: activeMembership.organizationId, membershipId: deactivatingMember.id });
+      setDeactivatingMember(null);
+      await completeSuccessfulDeactivation({
+        showSuccess: (message) => showToast('success', message), refreshMemberships: refresh,
+      });
+    } catch {
+      showToast('error', 'Member could not be deactivated. Please try again.');
+    } finally {
+      setIsDeactivating(false);
+    }
+  };
+
   const columns = [
     {
       key: 'name', header: 'Member', width: '35%', cell: (value: string, row: MemberRow) => (
@@ -142,7 +170,9 @@ export function A04Members() {
     },
     { key: 'roleLabel', header: 'Membership Role', width: '25%' },
     { key: 'departmentLabel', header: 'Department', width: '20%' },
-    { key: 'statusLabel', header: 'Status', width: '20%', cell: (_: string, row: MemberRow) => statusBadge(row) },
+    { key: 'statusLabel', header: 'Status', width: '15%', cell: (_: string, row: MemberRow) => statusBadge(row) },
+    { key: 'actions', header: 'Actions', width: '10%', cell: (_: unknown, row: MemberRow) => row.role === 'employee' && row.status === 'active'
+      ? <Button variant="outline" size="sm" onClick={() => setDeactivatingMember(row)}>Deactivate</Button> : null },
   ];
 
   const handleExportToCSV = () => {
@@ -208,6 +238,16 @@ export function A04Members() {
           <option value="">Select role</option><option value="employee">Employee</option><option value="org_admin">Organization Admin</option>
         </select></FormField>
       </FormDrawer>
+      <AlertDialog open={Boolean(deactivatingMember)} onOpenChange={(open) => { if (!open && !isDeactivating) setDeactivatingMember(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>Deactivate member?</AlertDialogTitle>
+            <AlertDialogDescription>This member will lose access to this organization.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel disabled={isDeactivating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={isDeactivating} onClick={(event) => { event.preventDefault(); void handleDeactivate(); }}>
+              {isDeactivating ? 'Deactivating…' : 'Deactivate'}
+            </AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageLayout>
   );
 }
