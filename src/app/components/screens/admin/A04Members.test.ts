@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { toMembershipRow } from './A04Members';
+import { completeSuccessfulInvite, toMembershipRow } from './A04Members';
 
 const source = readFileSync(new URL('./A04Members.tsx', import.meta.url), 'utf8');
 
@@ -19,9 +19,23 @@ describe('A04 membership screen', () => {
     expect(source).not.toMatch(/last.?seen|online now|individual contributors|managers/i);
   });
 
-  it('refreshes after invite and uses the mounted ToastProvider API with bounded feedback', () => {
-    expect(source).toContain('await refresh()');
-    expect(source).toContain("showToast('success', `Invitation sent to ${email}`)");
+  it('shows success, closes and resets the drawer, then refreshes memberships', async () => {
+    const events: string[] = [];
+
+    await completeSuccessfulInvite('person@example.com', {
+      showSuccess: (message) => events.push(`toast:${message}`),
+      closeDrawer: () => events.push('close'),
+      resetForm: () => events.push('reset'),
+      refreshMemberships: async () => { events.push('refresh'); },
+    });
+
+    expect(events).toEqual([
+      'toast:Invitation sent to person@example.com',
+      'close',
+      'reset',
+      'refresh',
+    ]);
+    expect(source).toContain("showSuccess: (message) => showToast('success', message)");
     expect(source).toContain("showToast('error', 'Invitation could not be sent. Please try again.')");
     expect(source).not.toContain("from 'sonner'");
   });
