@@ -26,26 +26,24 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
   // backend-validated active membership. Browser role state is never consulted here.
   const { activeRole: currentRole } = useOrganization();
   
-  useEffect(() => {
-    // Allow diagnostic and analysis routes for all roles (dev tools)
-    if (currentPath.startsWith('/diagnostics/') || currentPath.startsWith('/analysis/')) {
-      return;
-    }
-    
-    // Check if current role can access current path via navigation manifest
-    const redirect = currentRole
+  // Allow diagnostic and analysis routes for all roles (dev tools).
+  const isDiagnostic = currentPath.startsWith('/diagnostics/') || currentPath.startsWith('/analysis/');
+  const redirect = isDiagnostic
+    ? null
+    : currentRole
       ? getRouteGuardRedirect(currentRole, currentPath)
       : getDefaultRouteForRole('employee');
-    
+
+  useEffect(() => {
     if (redirect) {
       console.warn(`[RouteGuard] Access denied: ${currentRole} cannot access ${currentPath}`);
       
       // Redirect to safe default route for this role
       console.log(`[RouteGuard] Redirecting to: ${redirect}`);
-      navigate(redirect);
+      navigate(redirect, { replace: true });
     }
-  }, [currentPath, currentRole, navigate]);
+  }, [currentPath, currentRole, navigate, redirect]);
   
-  // Always render children - the useEffect will handle redirection
-  return <>{children}</>;
+  // Never paint a forbidden route while its canonical replacement is applied.
+  return redirect ? null : <>{children}</>;
 }
