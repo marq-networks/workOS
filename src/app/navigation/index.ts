@@ -22,6 +22,7 @@ export type { RouteDefinition } from './navRegistry';
 
 // Route generation
 export { generateRoutes, validateRouteRegistry } from './RouteGenerator';
+export { getApplicationRoutes, isApplicationPath, isProductionApplicationPath } from './routeContainment';
 
 // Role filtering
 export { getNavForRole, getDefaultRouteForRole, isPathAllowedForRole } from '../nav/getNavForRole';

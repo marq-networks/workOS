@@ -21,9 +21,9 @@ import { AppShell } from './components/shared/AppShell';
 import { canonicalizeSignedOutUrl } from './contexts/authOperations';
 
 // Navigation System
-import { generateRoutes, getRouteByPath, validateRouteRegistry } from './navigation';
+import { generateRoutes, isApplicationPath, validateRouteRegistry } from './navigation';
 
-const isValidApplicationPath = (path: string) => path === '/' || Boolean(getRouteByPath(path));
+const isValidApplicationPath = (path: string) => isApplicationPath(path);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ROLE-BASED REDIRECT HELPER

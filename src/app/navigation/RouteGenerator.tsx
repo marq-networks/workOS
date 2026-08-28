@@ -14,6 +14,7 @@
 import { Route } from '../components/router';
 import { ComingSoon } from '../components/shared/ComingSoon';
 import { ROUTE_REGISTRY } from './navRegistry';
+import { getApplicationRoutes } from './routeContainment';
 
 /**
  * Generate all routes from the registry
@@ -22,8 +23,8 @@ import { ROUTE_REGISTRY } from './navRegistry';
  * 1. Renders its component (if implemented)
  * 2. Shows ComingSoon placeholder (if not implemented)
  */
-export function generateRoutes() {
-  return ROUTE_REGISTRY.map((routeDef) => {
+export function generateRoutes(isDevelopment = import.meta.env.DEV) {
+  return getApplicationRoutes(isDevelopment).map((routeDef) => {
     const { path, component: Component, placeholder, placeholderTitle, placeholderDescription, placeholderRelatedPath, placeholderRelatedLabel } = routeDef;
     
     // If route has a real component, render it

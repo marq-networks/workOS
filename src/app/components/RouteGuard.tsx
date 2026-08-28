@@ -13,7 +13,12 @@ import { useOrganization } from '../contexts/organizationContextValue';
 import { canAccessPath, getDefaultRouteForRole } from '../nav/canAccessPath';
 import type { Role } from '../nav/navManifest';
 
-export function getRouteGuardRedirect(role: Role, path: string): string | null {
+import { isProductionApplicationPath } from '../navigation/routeContainment';
+
+export function getRouteGuardRedirect(role: Role, path: string, isDevelopment = import.meta.env.DEV): string | null {
+  const isDevelopmentTool = path.startsWith('/diagnostics/') || path.startsWith('/analysis/');
+  if (isDevelopment && isDevelopmentTool) return null;
+  if (!isDevelopment && !isProductionApplicationPath(path)) return getDefaultRouteForRole(role);
   return canAccessPath(role, path) ? null : getDefaultRouteForRole(role);
 }
 
@@ -26,11 +31,7 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
   // backend-validated active membership. Browser role state is never consulted here.
   const { activeRole: currentRole } = useOrganization();
   
-  // Allow diagnostic and analysis routes for all roles (dev tools).
-  const isDiagnostic = currentPath.startsWith('/diagnostics/') || currentPath.startsWith('/analysis/');
-  const redirect = isDiagnostic
-    ? null
-    : currentRole
+  const redirect = currentRole
       ? getRouteGuardRedirect(currentRole, currentPath)
       : getDefaultRouteForRole('employee');
 

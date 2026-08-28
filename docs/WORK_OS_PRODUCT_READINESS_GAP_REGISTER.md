@@ -299,7 +299,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-021 | P1 | Correction/review workflow is simulated and unaudited | 8 | Time | No | GAP-020 | atomic transition/concurrency/audit |
 | GAP-022 | P1 | Essential Reports is static/mock simulated generation | 8 | Reporting | No | production domain sources | accuracy/download/error E2E |
 | GAP-023 | P1 | Deferred payroll/fines/productivity templates leak into canonical reports | 6/8 | Reporting | Yes | none | launch catalog test |
-| GAP-024 | P1 | Direct deferred/diagnostic routes remain production reachable | 6 | Navigation | Yes bounded | allowlist/feature flag design | production route test |
+| GAP-024 | P1 | Direct deferred/diagnostic routes remain production reachable | 6 | Navigation | CLOSED BY P6-1 | `NAV_MANIFEST`-derived production allowlist; registry retained for development | production route containment regression |
 | GAP-025 | P1 | Deferred modules are eagerly bundled | 6/10 | Platform | No | route splitting | bundle allowlist/budget |
 | GAP-026 | P1 | Main JS bundle is 2.90 MB (671.67 kB gzip) | 6/10 | Platform | No | lazy route/domain imports | agreed performance budget |
 | GAP-027 | P1 | Typecheck fails with 323 errors/111 files | 6 | Shared | No broad fix | error ownership/boundaries | `npm run typecheck` green |
@@ -319,7 +319,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
 | GAP-042 | P2 | Search/filter/pagination usually client-only | 7/8 | Domains | No | repositories/query contracts | large dataset tests |
 | GAP-043 | P2 | CSV exports lack robust escaping/scale/security review | 8/10 | Reporting/Audit | Yes bounded | production data contract | formula/quote/large export tests |
-| GAP-044 | P2 | 404 and explicit forbidden surfaces missing | 6 | Navigation/Security | Yes | router semantics | unknown/denied route E2E |
+| GAP-044 | P2 | 404 and explicit forbidden surfaces missing | 6 | Navigation/Security | ADVANCED BY P6-1 | bounded role-default canonicalization now contains unknown/deferred routes; explicit surfaces remain deferred | unknown/denied route E2E |
 | GAP-045 | P2 | Offline/network retry UX missing | 6/10 | Shared | No | error taxonomy | disconnect/reconnect test |
 | GAP-046 | P2 | Destructive confirmation/unsaved-change protection inconsistent | 6–8 | UX | Yes per form | canonical form inventory | cancel/navigation tests |
 | GAP-047 | P2 | Security headers/CSP policy absent | 10 | Security/Deploy | No | asset/connect inventory | deployed header scan |
@@ -332,7 +332,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-054 | P2 | Work/Time lack FK, uniqueness, timestamp/concurrency semantics | 7/8 | Work/Time | No | approved schemas | DB constraint/transaction tests |
 | GAP-055 | P3 | Login portal advertises deferred Finance/leave/analytics features | 6 | UX | Yes | approved launch copy | content review |
 | GAP-056 | P3 | Mock notification count and chat dock appear in launch shell | 6/9 | UX/Communication | Yes | containment choice | launch composition test |
-| GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | Only after reachability proof | import graph | zero production imports |
+| GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | INSPECTED — OPEN; source retained and P6-1 introduces no legacy imports | import graph | zero production imports |
 | GAP-058 | P3 | Legacy aliases need redirect/parity plan execution | 7/8 | Navigation | No | canonical parity tests | deep-link/role redirect tests |
 | GAP-059 | P3 | Merge-required People enhanced screens not reconciled | 8 | People | No | production canonical CRUD | parity checklist |
 | GAP-060 | P3 | Console logging remains in prototype paths | 6/9 | Shared | Yes after containment | logging policy | production bundle/search |
