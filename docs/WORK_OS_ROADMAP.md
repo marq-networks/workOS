@@ -11,9 +11,9 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 2. Domain / Product Architecture | COMPLETE | Founder approved the core domain map, ownership boundaries, dependency order, and first-release entity model on 2026-08-18. |
 | 3. Canonical UX & Screen Consolidation | COMPLETE | Founder approved `WORK_OS_PHASE_3_CANONICAL_UX.md` on 2026-08-19; canonical role navigation, route matrix, merge safeguards, and redirect/retirement plan are locked. |
 | 4. Technical Architecture | COMPLETE | Founder approved `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md` on 2026-08-19; layer boundaries, Auth/organization contexts, data/state rules, browser/server split, validation/error model, trusted audit, and mock-migration strategy are locked. |
-| 5. Database / Security / RBAC | IMPLEMENTATION READY FOR REMOTE VERIFICATION | Implement the approved Auth/tenancy/membership foundation, production schema base, deny-by-default RLS, launch-role enforcement, policy tests, and trusted audit foundations without expanding product scope. |
-| 6. Production Foundation | PARTIAL — EARLY WORK DONE | Quality harness and one bounded shared-contract slice exist; remaining acceptance work includes a green/managed quality baseline plus env validation, accessibility/security baselines, and operational error reporting. |
-| 7. Core Work Engine | BLOCKED | Phases 5–6 gates cleared; one project/task workflow persists securely end-to-end. |
+| 5. Database / Security / RBAC | COMPLETE | Production QA verified the approved Auth, tenancy, membership, RLS, launch-role, and trusted audit foundation. |
+| 6. Production Foundation | IN PROGRESS — P6-1 | Current gate: P6-1 Production Route Containment. Do not mark the phase complete until all Phase 6 gates pass. |
+| 7. Core Work Engine | BLOCKED | Phase 6 acceptance gates must pass before Phase 7 begins. |
 | 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
 | 9. Advanced Modules | BLOCKED | OQ-004/OQ-005 and other advanced-module policy decisions are approved after core dependencies. |
 | 10. Hardening & Launch | BLOCKED | Threat/performance/accessibility/recovery testing and launch runbooks pass. |
@@ -121,7 +121,7 @@ Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advance
 
 ## Phases 5–10 — execution slices
 1. **Phase 5 — COMPLETE:** Auth/tenancy/RBAC foundation, Supabase session, protected shell, organization selection, memberships, deny-by-default RLS, policy tests, and production QA-1 through QA-4.
-2. **Phase 6 — NEXT (not started):** Production Foundation; begin only under separately approved Phase 6 scope without reopening unrelated prototype cleanup.
+2. **Phase 6 — IN PROGRESS:** Production Foundation; current gate is P6-1 Production Route Containment.
 3. Phase 7: Work vertical slice — project/task lifecycle with audit events.
 4. Phase 8: People + Time + reporting production slices.
 5. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
@@ -129,4 +129,15 @@ Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advance
 
 ### Phase 5 verification gate (2026-08-18)
 
-The repository artifacts, remotely applied migration `20260819180940`, RLS/private predicates, and trusted administration boundaries passed review and production QA. QA-1 verified Platform Admin and organization administration; QA-2 verified invitation acceptance and Org Admin scope; QA-3 verified Employee denial and live revocation; QA-4 verified bounded authentication, recovery, session restoration, canonical routing, and logout. PR #33 resolved browser URL/Router history synchronization, and PR #34 resolved sign-out from the no-organization-access state; both remediations passed production re-test. **Phase 5 is COMPLETE; Phase 6 is NEXT and has not started.** See [`WORK_OS_PHASE_5_SECURITY_DATABASE.md`](WORK_OS_PHASE_5_SECURITY_DATABASE.md).
+The repository artifacts, remotely applied migration `20260819180940`, RLS/private predicates, and trusted administration boundaries passed review and production QA. QA-1 verified Platform Admin and organization administration; QA-2 verified invitation acceptance and Org Admin scope; QA-3 verified Employee denial and live revocation; QA-4 verified bounded authentication, recovery, session restoration, canonical routing, and logout. PR #33 resolved browser URL/Router history synchronization, and PR #34 resolved sign-out from the no-organization-access state; both remediations passed production re-test. **Phase 5 is COMPLETE; Phase 6 is IN PROGRESS at P6-1.** See [`WORK_OS_PHASE_5_SECURITY_DATABASE.md`](WORK_OS_PHASE_5_SECURITY_DATABASE.md).
+
+## Phase 6 — Production Foundation — IN PROGRESS
+
+Phase 6 executes through these bounded acceptance gates; Phase 7 remains blocked until all gates pass:
+
+1. **P6-1 Production Route Containment — current gate:** constrain production application routes to the `NAV_MANIFEST` launch surface while retaining deferred registry inventory for development and later parity work.
+2. **P6-2 Quality Baseline:** establish the managed typecheck, lint, build, and test baseline.
+3. **P6-3 Environment + Preview/Staging Safety:** validate environment contracts and deployment-stage safety.
+4. **P6-4 Error + Monitoring Foundation:** establish bounded operational error handling and monitoring.
+5. **P6-5 Browser E2E / Auth Smoke:** automate critical browser, authentication, and session smoke journeys.
+6. **P6-6 Initial Bundle + Accessibility Baseline / closeout:** record initial bundle and accessibility baselines and complete Phase 6 acceptance.
