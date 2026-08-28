@@ -1,9 +1,9 @@
 # Work OS Progress
 
-**Last updated:** 2026-08-27
-**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 BACKEND REVOCATION VERIFIED; QA-4 NO-ORGANIZATION-ACCESS SIGN-OUT REMEDIATION IMPLEMENTED / PRODUCTION RETEST PENDING. Phase 6 has not begun.
+**Last updated:** 2026-08-28
+**Current checkpoint:** **PHASE 5 — COMPLETE.** QA-1, QA-2, QA-3, and QA-4 are manually verified in production. **Phase 6 — Production Foundation is NEXT and has not begun.**
 
-**Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
+**Final closeout:** Production QA verified backend-derived authority for all three launch roles; trusted organization, invitation, membership, and audit behavior; revocation revalidation; bounded authentication and recovery behavior; canonical routing/history; and durable logout protection. PR #33, “Fix canonical browser URL / router history synchronization,” resolved Router/browser URL divergence and was re-tested with the Employee forbidden deep link. PR #34, “Fix sign out from no-organization access state,” restored the existing AuthContext sign-out path and passed production logout, refresh, and history checks. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
 ## PHASE 5 CLOSEOUT SCOREBOARD
 
@@ -11,26 +11,26 @@
 
 | ID | Status | Code complete? | Remote deployed? | Automated proof? | Manual proof? | Blocker | Next action |
 |---|---|---:|---:|---|---|---|---|
-| GAP-001 | QA-1 MANUALLY VERIFIED (remaining role journeys continue in QA-2–4) | Yes | Yes | Repository auth/RLS tests | Platform Admin login/session/logout journey passed | Controlled Org Admin/Employee fixtures | QA-2, QA-3, QA-4 |
-| GAP-002 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | No real email acceptance | Email recipient journey | QA-2 |
-| GAP-003 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Focused build/unit proof | No invitation UI E2E | Email recipient journey | QA-2 |
-| GAP-007 | VERIFIED — QA-1 COMPLETE | Yes | Yes | Remote privilege and rollback/audit checks passed | Create/edit/deactivate and persisted edit verified | None | Complete |
-| GAP-008 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Bounded mapping tests pass | No throttling proof | Supabase project configuration | QA-4 |
-| GAP-009 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Forgot-password tests pass | No delivery proof | SMTP/redirect environment | QA-4 |
-| GAP-010 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Invalid-session mapping test passes | No round-trip proof | Real recovery email | QA-4 |
-| GAP-011 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Acceptance policy/RPC tests pass | No first-login proof | Real invitation email | QA-2 |
-| GAP-013 | QA-1 VERIFIED — QA-3 REVOCATION PROOF PENDING | Yes | Yes | Initial/background, event coalescing, dialog preservation, and revocation tests pass | QA-1 focus/session lifecycle passed | Controlled revoked-member fixture | QA-3 |
-| GAP-036 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Deactivation pgTAP and remote predicate checks passed | No revoked-session UI proof | Controlled membership fixture | QA-3 |
-| GAP-038 | QA-1 MANUALLY VERIFIED (revocation journey remains QA-3) | Yes | Yes | Deactivated-org denial and remote predicate checks passed | Deactivated organization rejected as active context | Controlled QA-3 fixture | QA-3 |
-| GAP-064 | DEPLOYED — AWAITING MANUAL VERIFICATION | Yes | Yes | Recovery outcome regressions pass | No deployed re-test | Real recovery email | QA-4 |
+| GAP-001 | VERIFIED — QA-1–4 COMPLETE | Yes | Yes | Repository auth/RLS tests | All-role authority, session, logout, denial, and revocation journeys passed | None | Complete |
+| GAP-002 | VERIFIED — QA-2 COMPLETE | Yes | Yes | Remote RPC denial/service-role/rollback audit passed | Real invitation delivery and acceptance passed | None | Complete |
+| GAP-003 | VERIFIED — QA-2 COMPLETE | Yes | Yes | Focused build/unit proof | Real Members invitation and membership table passed | Later People Directory mock-data replacement remains Phase 8 | Complete for Phase 5 |
+| GAP-007 | VERIFIED — QA-1 COMPLETE | Yes | Yes | Remote privilege and rollback/audit checks passed | Create/edit/deactivate, persistence, and audit passed | Broader organization settings remain Phase 6 | Complete for Phase 5 |
+| GAP-008 | VERIFIED — QA-4 COMPLETE | Yes | Yes | Bounded mapping tests pass | Incorrect-password response is bounded and generic | Broader abuse/rate-limit hardening remains Phase 10 | Complete for Phase 5 |
+| GAP-009 | VERIFIED — QA-4 COMPLETE | Yes | Yes | Forgot-password tests pass | Enumeration-safe request and controlled delivery passed | Broader SMTP operations remain Phase 6/10 | Complete for Phase 5 |
+| GAP-010 | VERIFIED — QA-4 COMPLETE | Yes | Yes | Invalid-session mapping test passes | Recovery callback, password persistence, login, and used-link safety passed | None | Complete |
+| GAP-011 | VERIFIED — QA-2 COMPLETE | Yes | Yes | Acceptance policy/RPC tests pass | Invitation acceptance, password setup, first login, and scoped authority passed | None | Complete |
+| GAP-013 | VERIFIED — QA-1, QA-3, QA-4 COMPLETE | Yes | Yes | Revalidation and revocation tests pass | Focus/cadence revocation, refresh restoration, and logout passed | Domain-cache invalidation remains GAP-014 in later phases | Complete for Phase 5 |
+| GAP-036 | VERIFIED — QA-3 COMPLETE | Yes | Yes | Deactivation pgTAP and remote predicate checks passed | Inactive membership, preserved identity, audit, and live-session revocation passed | Worker lifecycle/People persistence remains Phase 8 | Complete for Phase 5 |
+| GAP-038 | VERIFIED — QA-1 AND QA-3 COMPLETE | Yes | Yes | Deactivated-org denial and remote predicate checks passed | Organization exclusion and safe no-access state passed | None | Complete |
+| GAP-064 | VERIFIED — QA-4 COMPLETE | Yes | Yes | Recovery outcome regressions pass | Successful reset truthfully reported and persisted | None | Complete |
 
-**VERIFIED: 1 / 12**
+**VERIFIED: 12 / 12**
 
-**DEPLOYED — AWAITING REMAINING MANUAL PROOF: 11 / 12**
+**DEPLOYED — AWAITING REMAINING MANUAL PROOF: 0 / 12**
 
 **OPEN: 0 / 12**
 
-**EXTERNAL SETTING BLOCKERS: 1.** Security Advisor was rerun after migration `20260819180940`: the prior warnings for `is_active_member`, `is_org_admin`, and `is_platform_admin` are cleared. Remote inspection reports zero public RLS predicate helpers and three helpers in the `private` schema. The only current advisor warning is **Leaked Password Protection Disabled**; it remains an unresolved Phase-5 Supabase Auth project-setting blocker.
+**EXTERNAL PRODUCTION-LAUNCH DEPENDENCY:** Enable Supabase Leaked Password Protection after upgrading the Supabase project to a plan that supports the feature and before production launch. Supabase rejected “Prevent use of leaked passwords” because HaveIBeenPwned.org protection is available only on Pro plans and above. This is not a Work OS code defect, not a failed Phase 5 implementation, and does not block Phase 5 closeout. No billing-plan or Auth-configuration change was made.
 
 ## CONSOLIDATED PHASE-5 QA PACKET
 
@@ -54,7 +54,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-2 INVITATION + ORG ADMIN
 
-**Status (2026-08-25): Platform Admin → Org Admin invitation VERIFIED; resend VERIFIED; acceptance VERIFIED; backend active Org Admin membership VERIFIED; Org Admin canonical membership page reached VERIFIED; Org Admin role options correctly exclude Platform Admin VERIFIED; Org Admin → Employee invitation backend path VERIFIED. QA-2 is NOT COMPLETE.** Production testing discovered a split-brain membership UI: the trusted real invitation write succeeded while the membership table still read mock People employees. A bounded real membership-list remediation is implemented and pending production retest. The remediation extends the existing trusted `identity-administration` boundary with an authorized organization-scoped list action, returns invited and active memberships without requiring worker profiles, and refreshes that list immediately after invitation.
+**Status (2026-08-28): MANUALLY VERIFIED / COMPLETE.** Production evidence: Platform Admin created and resent an Org Admin invitation; email delivery, acceptance, and password setup succeeded; the invitee received only the assigned organization and backend-derived Org Admin authority; the real membership page listed backend data; Org Admin could invite an Employee but could not assign Platform Admin; and acceptance created the active membership.
 
 **Exact steps**
 1. As Platform Admin, invite a new controlled email as Org Admin for an active QA organization. Before accepting, use resend once for the same invitation.
@@ -70,7 +70,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-3 EMPLOYEE + REVOCATION
 
-**Status (2026-08-27):** Employee login, backend-derived authority/navigation scope, trusted Employee membership deactivation, inactive-membership enforcement, Auth-user preservation, and automatic "No organization access" session revocation are **VERIFIED**. The earlier direct browser `/people/members` observation is not route-authorization proof because the then-current Router ignored `window.location.pathname`; repeat only that browser deep-link proof after the canonical Router deployment. This does not reopen or invalidate the verified backend revocation evidence.
+**Status (2026-08-28): MANUALLY VERIFIED / COMPLETE.** Production evidence: the Employee received backend-derived authority and allowed navigation only; direct `/people/members` navigation was evaluated after PR #33 and replaced with canonical `/work/my-work`; Back did not restore the forbidden route; trusted deactivation made the membership inactive while preserving the Auth identity and created `membership.deactivated` audit evidence; the open session revalidated automatically into the no-organization-access state and could not access protected organization content.
 
 **Exact steps**
 1. Accept the Employee invitation from QA-2 in a clean/private browser and sign in; confirm the Employee surface and assigned organization only.
@@ -86,16 +86,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-4 AUTH / RECOVERY / SESSION
 
-**Status (2026-08-27):** Invalid-credential safe error, recovery-request privacy, recovery email delivery, recovery callback, password update, new-password login, and session restoration on refresh are **VERIFIED**. Production QA discovered that authenticated dashboard content could render behind the stale `/reset-password#` browser URL because Router state did not synchronize with browser history. The bounded canonical browser URL/history synchronization and auth callback cleanup remediation is **IMPLEMENTED**. The follow-up production run verified the unregistered recovery request remained enumeration-safe; a used recovery link opened in a clean signed-out browser safely returned to `/login`; logout, refresh, and browser Back protection; an Employee forbidden deep link to `/people/members` redirected to `/work/my-work`; and browser Back did not restore the forbidden route. That run also discovered that the authenticated no-organization-access state had no sign-out action. The bounded remediation now exposes the canonical AuthContext sign-out flow from that state; **PRODUCTION RETEST PENDING**. QA-4 is not complete.
-
-**Latest production evidence / remediation record:**
-- QA-4 unregistered recovery request enumeration-safe behavior — **VERIFIED**.
-- Used recovery link in a clean signed-out browser safely returned to `/login` — **VERIFIED**.
-- Logout / refresh / Back protection — **VERIFIED**.
-- Employee forbidden deep link `/people/members` redirects to `/work/my-work` — **VERIFIED**.
-- Browser Back does not restore the forbidden route — **VERIFIED**.
-- No-organization-access sign-out defect — **DISCOVERED**.
-- No-organization-access sign-out remediation — **IMPLEMENTED; PRODUCTION RETEST PENDING**.
+**Status (2026-08-28): MANUALLY VERIFIED / COMPLETE.** Production evidence: incorrect-password handling was bounded and generic; registered and unregistered recovery requests were enumeration-safe; the controlled email/callback/reset flow persisted the new password and returned to canonical login; new-password login and refresh restoration passed; a previously used link could not reopen recovery; logout, signed-out refresh, and Back protection passed. PR #33 canonicalized navigation, deep links, `popstate`, guard redirects, callback cleanup, and replacement authorization redirects. PR #34 added the existing AuthContext sign-out action to the no-organization-access state; its production re-test reached `/login`, stayed signed out after refresh, and did not restore prior protected/no-access history.
 
 **Exact steps**
 1. From a signed-out browser, submit one invalid-password sign-in and confirm the message is generic. Inspect the Supabase Auth rate-limit configuration/status; do not deliberately lock a shared production account.
@@ -108,7 +99,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 **Verifies:** GAP-001, GAP-008, GAP-009, GAP-010, GAP-013, GAP-064.
 
-**Reviewer remote evidence:** inspect Auth delivery/audit logs for recovery requests without exposing tokens; redirect URL and provider/rate-limit settings; the password-update/user security event; session refresh/sign-out events; and absence of sensitive provider details in Vercel/browser logs. Separately enable and rerun Security Advisor for the unresolved leaked-password-protection setting.
+**Reviewer remote evidence:** inspect Auth delivery/audit logs for recovery requests without exposing tokens; redirect URL and provider/rate-limit settings; the password-update/user security event; session refresh/sign-out events; and absence of sensitive provider details in Vercel/browser logs. The leaked-password advisor warning is tracked separately as a plan-gated external production-launch dependency, not Phase 5 engineering work.
 
 ## Phase 1 + 2 final verification — 2026-08-18
 - **Verdict:** VERIFIED / COMPLETE; no product blocker found.
@@ -153,7 +144,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
   - validation and structured `AppError` boundaries are required for production I/O;
   - security-relevant audit generation must use trusted context and be atomic with protected mutations;
   - mock-to-production migration occurs incrementally behind stable contracts;
-  - People Directory proof remains design-only until Phase 5 provides identity/membership scope and schema/RLS foundations.
+  - People Directory remains prototype/mock beyond the Phase 5 identity/membership foundations and is deferred to Phase 8.
 - Early Phase 6 work already completed out of sequence: strict TypeScript/ESLint/Vitest/CI harness plus one bounded shared UI-contract remediation slice.
 
 ## Known technical state
@@ -161,7 +152,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 - Latest recorded strict typecheck after the bounded Phase 6 remediation: 334 errors across 119 prototype files; generic cleanup remains intentionally paused.
 - Latest recorded lint baseline: 31 errors and 51 warnings in existing prototype files.
 - Navigation suite passes all eight Phase 3 tests.
-- Current auth/session/role selection remains prototype-only and client-controlled until Phase 5 replaces it with authenticated membership context.
+- Canonical auth/session/role authority now uses Supabase sessions and backend memberships; legacy prototype auth/role modules remain source inventory for Phase 6 reachability/containment proof.
 - Current service provider remains mock/in-memory with scattered local/session storage and embedded data.
 - `navRegistry.ts` contains 178 unique registered paths with repeated prototype generations retained as migration inventory.
 
@@ -170,8 +161,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 - Founder accepted the recommended architecture and requested progression to the next roadmap phase.
 - **Status:** PHASE 4 — VERIFIED / COMPLETE.
 
-## Current phase — Phase 5 Database / Security / RBAC
-Goal: implement the approved production security/data foundation without expanding product scope.
+## Completed phase — Phase 5 Database / Security / RBAC
+**Status: COMPLETE (2026-08-28).** The approved production security/data foundation and QA-1 through QA-4 acceptance gates are verified without expanding product scope.
 
 ### Phase 5 allowed scope
 - Supabase Auth session integration and protected shell.
@@ -191,15 +182,14 @@ Goal: implement the approved production security/data foundation without expandi
 - Do not treat route visibility or browser-selected role/org IDs as authorization.
 
 ## Next execution order
-1. Phase 5: production Auth/Tenancy/RBAC schema, Supabase session foundation, deny-by-default RLS and policy tests.
-2. Finish remaining Phase 6 acceptance work.
-3. Phase 7 Core Work Engine.
-4. Phase 8 People + Time + Reporting.
-5. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
-6. Phase 10 hardening and launch.
+1. **NEXT — Phase 6: Production Foundation.** Begin only under a separately approved Phase 6 task.
+2. Phase 7 Core Work Engine.
+3. Phase 8 People + Time + Reporting.
+4. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
+5. Phase 10 hardening and launch.
 
 ## Stop rule
-Remain inside Phase 5 until its schema/security acceptance gates are proven. Do not skip to Phase 7 feature implementation or reopen generic TypeScript cleanup.
+Phase 5 gates are proven. Stop after documentation closeout; do not start Phase 6 in this task or skip to Phase 7.
 
 ## Phase 5 repository implementation — 2026-08-18
 - Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.
@@ -210,8 +200,8 @@ Remain inside Phase 5 until its schema/security acceptance gates are proven. Do 
 - Corrected reviewer-found Phase 5 issues before remote verification: current-user membership loading now selects by authenticated user even for globally-readable Platform Admin sessions, Protected Shell requires a validated active membership, and browser employees cannot mutate authoritative worker job-title or department assignments. Regression coverage includes the selection boundary and corrected pgTAP privilege/worker-field cases.
 - **Remote database status: APPLIED AND HARDENED.** The initial Tenant, Organization, and Platform Admin membership bootstrap and a real Supabase Auth user exist.
 - Real-session testing found that Supabase password recovery established an authenticated session but the application had no recovery-specific gate or new-password UI. The Phase 5 correction adds explicit `PASSWORD_RECOVERY` state, a gated password update through `supabase.auth.updateUser`, post-update sign-out, focused regression tests, and removal of production-facing prototype credentials.
-- The Batch 1 auth remediation now maps sign-in failures to bounded credential/throttling messages and adds an enumeration-safe forgot-password request mode using Supabase Auth with an explicit same-origin reset redirect. Eight focused auth/UI tests and the full 21-test repository suite pass; remote delivery, configured redirects, provider throttling, and real-session behavior remain external verification rather than claimed green.
-- Founder manual evidence confirms the real authentication happy path: the new password authenticated `team@marqnetworks.com` and loaded the Platform Administrator membership, MARQ Networks organization, and protected Platform Admin console. This is positive but partial GAP-001 evidence; JWT inspection, logout, remaining roles, and negative cases are not inferred.
+- The Batch 1 auth remediation now maps sign-in failures to bounded credential/throttling messages and adds an enumeration-safe forgot-password request mode using Supabase Auth with an explicit same-origin reset redirect. Eight focused auth/UI tests and the full 21-test repository suite passed; final production QA subsequently verified controlled delivery, redirects, and real-session behavior, while broader provider abuse/rate-limit hardening remains Phase 10.
+- The initial founder run confirmed the Platform Admin happy path; the final production QA packet subsequently verified all launch roles, negative route authorization, revocation, refresh, and logout/history protection.
 - The same manual run exposed GAP-064: password persistence succeeded but recovery displayed a false failure. Tracing confirmed password update and subsequent sign-out were sequential within one throwing operation. They are now distinct outcomes: only `updateUser` failure rejects, sign-out failure returns a bounded cleanup result, and the screen always acknowledges an accepted update truthfully. Safe mappings distinguish same-password, weak-password, invalid recovery session, and unknown provider failure without exposing raw details.
-- GAP-002 repository remediation implements the `identity-administration` Edge Function. A verified bearer identity is re-authorized from active backend memberships before Auth invitation, the database remains the final authorization boundary, failed membership creation compensates the new Auth identity, and invited users can activate only their own JWT-derived memberships through a service-role-only function that writes correlated audit evidence in the same transaction. Payload policy regressions pass; Edge deployment, email delivery/link behavior, and real positive/negative journeys remain remote verification.
-- **Phase status: REMOTE VERIFICATION IN PROGRESS.** Phase 5 is not COMPLETE until the founder/reviewer completes a fresh real login and verifies the authenticated JWT plus backend Platform Admin membership.
+- GAP-002 repository remediation implements the `identity-administration` Edge Function. A verified bearer identity is re-authorized from active backend memberships before Auth invitation, the database remains the final authorization boundary, failed membership creation compensates the new Auth identity, and invited users can activate only their own JWT-derived memberships through a service-role-only function that writes correlated audit evidence in the same transaction. Payload regressions and the deployed real invitation/acceptance journeys passed QA-2.
+- **Phase status: COMPLETE (2026-08-28).** Production QA-1 through QA-4 verified the real login, backend-derived roles/memberships, trusted administration, revocation, recovery, session, routing, and logout acceptance criteria.

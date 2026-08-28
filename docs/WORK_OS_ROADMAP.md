@@ -105,9 +105,9 @@ Locked rules include:
 
 The People Directory architecture proof remains intentionally design-only until Phase 5 establishes identity/membership scope and schema/RLS foundations.
 
-## Phase 5 — Database / Security / RBAC — IMPLEMENTATION READY FOR REMOTE VERIFICATION
+## Phase 5 — Database / Security / RBAC — COMPLETE
 
-Phase 5 repository implementation now provides the approved first-release security/data foundation:
+Phase 5 implementation and production QA now provide the approved first-release security/data foundation:
 - Supabase Auth session integration and protected shell;
 - Tenant and Organization/Workspace production model;
 - explicit memberships for Employee, Org Admin and Platform Admin;
@@ -120,8 +120,8 @@ Phase 5 repository implementation now provides the approved first-release securi
 Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advanced Communication, advanced Analytics or other deferred modules. Migrations must be forward-only, reviewed, and paired with access-policy tests. The browser must never be the final authorization boundary.
 
 ## Phases 5–10 — execution slices
-1. Phase 5: implement Auth/tenancy/RBAC foundation: Supabase session, protected shell, organization selection, memberships, deny-by-default RLS and policy tests.
-2. Complete remaining Phase 6 production-foundation acceptance work without reopening unrelated prototype cleanup.
+1. **Phase 5 — COMPLETE:** Auth/tenancy/RBAC foundation, Supabase session, protected shell, organization selection, memberships, deny-by-default RLS, policy tests, and production QA-1 through QA-4.
+2. **Phase 6 — NEXT (not started):** Production Foundation; begin only under separately approved Phase 6 scope without reopening unrelated prototype cleanup.
 3. Phase 7: Work vertical slice — project/task lifecycle with audit events.
 4. Phase 8: People + Time + reporting production slices.
 5. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
@@ -129,4 +129,4 @@ Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advance
 
 ### Phase 5 verification gate (2026-08-18)
 
-The reviewed repository artifacts include Supabase Auth/session and protected-shell composition, validated membership-derived organization context, the forward-only production foundation migration, forced deny-by-default RLS, trusted atomic membership audit mutation, and a ten-case pgTAP policy suite. **Remote Supabase application is NOT APPLIED.** Phase 5 remains pending founder review, remote migration, and real-session security verification; Phase 6 has not begun. See [`WORK_OS_PHASE_5_SECURITY_DATABASE.md`](WORK_OS_PHASE_5_SECURITY_DATABASE.md).
+The repository artifacts, remotely applied migration `20260819180940`, RLS/private predicates, and trusted administration boundaries passed review and production QA. QA-1 verified Platform Admin and organization administration; QA-2 verified invitation acceptance and Org Admin scope; QA-3 verified Employee denial and live revocation; QA-4 verified bounded authentication, recovery, session restoration, canonical routing, and logout. PR #33 resolved browser URL/Router history synchronization, and PR #34 resolved sign-out from the no-organization-access state; both remediations passed production re-test. **Phase 5 is COMPLETE; Phase 6 is NEXT and has not started.** See [`WORK_OS_PHASE_5_SECURITY_DATABASE.md`](WORK_OS_PHASE_5_SECURITY_DATABASE.md).
