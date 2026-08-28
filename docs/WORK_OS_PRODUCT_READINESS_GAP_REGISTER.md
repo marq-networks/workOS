@@ -4,17 +4,17 @@
 
 **Scope:** whole-repository static production-readiness audit; registered routes, launch navigation, runtime state/data seams, Supabase migrations/policies, auth, operations, and build-quality baseline
 
-**Roadmap control:** **PHASE 5 — DEPLOYED, CONSOLIDATED MANUAL VERIFICATION PENDING. Phase 5 is not complete.** PR #17, migration `20260819180940`, and both Phase-5 administration Edge Functions are remotely deployed. No Phase 7/8 schema or broad remediation was performed.
+**Roadmap control:** **PHASE 5 — COMPLETE. QA-1, QA-2, QA-3, and QA-4 passed production verification. PHASE 6 — NEXT, NOT STARTED.** PR #17, migration `20260819180940`, both Phase-5 administration Edge Functions, and the PR #33/#34 remediations are remotely deployed and verified. No Phase 6 feature work, Phase 7/8 schema, or broad remediation was performed in closeout.
 
 **Authority:** This register is the central production-readiness backlog. Approved product policy remains in `WORK_OS_DECISIONS.md`; this register does not supersede it.
 
-**Phase-5 security-advisor state:** the post-deployment rerun cleared the former public `SECURITY DEFINER` warnings for `is_active_member`, `is_org_admin`, and `is_platform_admin`. Remote inspection found zero public predicate helpers and three private-schema helpers. **Leaked Password Protection Disabled** is the sole remaining advisor warning and remains an external Phase-5 project-setting blocker.
+**Phase-5 security-advisor state:** the post-deployment rerun cleared the former public `SECURITY DEFINER` warnings for `is_active_member`, `is_org_admin`, and `is_platform_admin`. Remote inspection found zero public predicate helpers and three private-schema helpers. **EXTERNAL PRODUCTION-LAUNCH DEPENDENCY:** Enable Supabase Leaked Password Protection after upgrading the Supabase project to a plan that supports the feature and before production launch. Supabase rejected the setting because HaveIBeenPwned.org protection requires Pro or above. This is not a Work OS code defect or failed Phase 5 implementation, and no billing/Auth configuration change belongs in this closeout.
 
 ## 1. Executive verdict
 
 **NOT PRODUCTION READY.** The protected shell, Supabase session integration, validated organization membership selection, deny-by-default Phase 5 schema/RLS, trusted membership mutation, password-recovery gate, test harness, and production build are credible foundations. They do not make the rendered product production-capable: after authentication, almost every launch domain screen still reads embedded fixtures, React in-memory services, local storage, or independent mock contexts. Several visible actions simulate success, and both canonical audit views are untrusted mock/activity projections.
 
-The audit now tracks **64 material findings: 8 P0, 26 P1, 21 P2, and 9 P3**. No destructive mock removal is safe yet. Manual evidence confirms the real password-login happy path reaches the correct Platform Admin organization and protected console; JWT inspection, logout, other roles, and negative authorization cases remain open.
+The audit now tracks **64 material findings: 8 P0, 26 P1, 21 P2, and 9 P3**. No destructive mock removal is safe yet. Production QA confirms backend-derived Platform Admin, Org Admin, and Employee authority; trusted invitation and organization administration; negative route authorization; live revocation; recovery; session restoration; and durable logout. Later-phase domain mocks and production-foundation work remain open without reopening Phase 5.
 
 ### What is real today
 
@@ -25,7 +25,7 @@ The audit now tracks **64 material findings: 8 P0, 26 P1, 21 P2, and 9 P3**. No 
 
 ### What is not real today
 
-- Invitations/identity administration, most People mutation workflows, all Work and Time persistence, essential reporting queries, both audit UIs, platform organization CRUD, settings, notifications/chat, and nearly every deferred module.
+- Most People mutation workflows beyond the verified membership/invitation slice, all Work and Time persistence, essential reporting queries, both audit UIs, broader organization settings, notifications/chat, and nearly every deferred module.
 - A complete SaaS auth/account lifecycle, operational monitoring, backup/restore evidence, staging/release discipline, accessibility proof, or green typecheck/lint baseline.
 
 ## 2. Counts and audit method
@@ -211,7 +211,7 @@ Static accessibility risks: visual `<label>` elements are not consistently assoc
 
 Positive evidence: one browser Supabase client uses only URL/publishable key; no service-role `VITE_*`; Phase 5 tables force RLS; memberships require active/non-deleted state; composite tenant/org constraints prevent mismatched pairs; clients cannot mutate audit; trusted membership SQL derives actor context.
 
-Remaining blockers: real JWT/remote negative proof is open; invitation/identity boundaries are not deployed; direct legacy screens can present browser-local roles/org/security controls as real; domain mocks are not tenant scoped; raw auth errors are exposed; rate limits and abuse controls are unverified; new Work/Time tables cannot ship without deny-by-default RLS/policy tests; audit UIs are untrusted; legacy token code remains in source. Classifications: Phase 5 real-session, privileged operations, and audit integrity are **MVP blockers**; bounded errors, CSP/security headers, dependency scanning, session-response playbook are **launch hardening**; SSO/SCIM and advanced policy automation are **later enterprise**.
+Phase 5 real-session, invitation/identity, organization-administration, bounded-auth-error, and negative authorization proof is complete. Remaining later-phase blockers include direct legacy screens that can present browser-local controls as real, unscoped domain mocks, unverified abuse/rate-limit hardening, Work/Time schemas that still require deny-by-default RLS/policy tests, untrusted audit UIs, and legacy token source inventory. Classifications: production domain repositories and audit integrity are **MVP blockers**; abuse controls, CSP/security headers, dependency scanning, and the session-response playbook are **launch hardening**; SSO/SCIM and advanced policy automation are **later enterprise**.
 
 ## 16. Email and SMTP
 
@@ -276,21 +276,21 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 
 | ID | Sev | Category / finding | Phase | Owner | Safe now? | Dependency | Proof required |
 |---|---|---|---|---|---|---|---|
-| GAP-001 | P0 | **PARTIAL POSITIVE MANUAL EVIDENCE:** real password login loaded `team@marqnetworks.com`, Platform Administrator, MARQ Networks, and the protected Platform Admin console; JWT inspection, logout, cross-role, and negative access remain unverified | 5 | Security | Partially verified 2026-08-19 | reviewer environment/role fixtures | JWT, logout, all-role, cross-org and forbidden-operation evidence |
-| GAP-002 | P0 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** trusted migration and active Edge endpoint passed rollback-only RPC/audit proof; real email/acceptance E2E remains | 5 | Security/People | Deployed | Auth email delivery | invite/accept negative/positive E2E |
-| GAP-003 | P0 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** canonical Members calls the trusted invitation boundary and no longer creates a prototype Employee while claiming an invitation | 5/6 | People | Deployed in PR #17 | email recipient journey | QA-2 identity+membership+email+audit proof |
+| GAP-001 | P0 | **PHASE 5 CLOSED — PRODUCTION VERIFIED:** canonical login, backend-derived authority for all launch roles, organization scope, protected-route denial, session refresh, revocation, and logout/history protection passed QA-1–4 | 5 | Security | Verified 2026-08-28 | None for Phase 5 | QA-1–4 production evidence |
+| GAP-002 | P0 | **PHASE 5 CLOSED — QA-2 VERIFIED:** trusted Org Admin invitation, resend, real email delivery, acceptance, and active membership passed | 5 | Security/People | Verified 2026-08-28 | None | QA-2 production evidence |
+| GAP-003 | P0 | **PHASE 5 INVITATION SLICE CLOSED — QA-2 VERIFIED:** canonical Members performs trusted invitation and reads the real membership table; broader People Directory prototype-data replacement remains Phase 8 | 5/8 | People | Phase 5 criterion verified 2026-08-28 | Phase 8 People repositories | QA-2 evidence retained; later People parity/RLS proof |
 | GAP-004 | P0 | People Directory localStorage is authoritative and conflates security identity | 8 | People | No | lifecycle contract/repository | RLS CRUD and migration parity |
 | GAP-005 | P0 | Org Audit displays mock analytics activity, not trusted audit | 8 | Audit | No | audit read repository | cross-org denial and provenance test |
 | GAP-006 | P0 | Global Audit displays static fabricated records | 8 | Audit | No | platform audit repository | global/platform policy E2E |
-| GAP-007 | P0 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** minimum trusted organization create/update/deactivate boundary is live; remote checks prove direct anon/authenticated denial, service-role execution, and rollback-only correlated audit | 5/6 | Platform | Migration `20260819180940`; Edge ACTIVE/JWT verified | controlled organization journey | QA-1 lifecycle UI plus correlated audit proof |
-| GAP-008 | P0 | **FIXED — AWAITING REMOTE VERIFICATION:** raw sign-in errors are now bounded; remote abuse/rate-limit configuration remains unverified | 5/10 | Security | Bounded UX fixed in `332dde9` | project config | focused mapping tests pass; remote enumeration/rate-limit test required |
-| GAP-009 | P1 | **FIXED — AWAITING REMOTE VERIFICATION:** forgot-password request flow is implemented with enumeration-safe UX and bounded errors | 5/6 | Auth | Fixed in `332dde9` | SMTP/redirect config | focused request/error tests pass; delivery E2E required |
-| GAP-010 | P1 | Recovery email/expired-link/redirect round trip unverified | 5 | Auth | No | production Auth config | real link E2E |
-| GAP-011 | P1 | **CODE COMPLETE — AWAITING MANUAL VERIFICATION:** JWT-derived acceptance and authorized resend are implemented; first-login and real email behavior remain unverified | 5/6 | Auth | Phase-5 behavior fixed | GAP-002/SMTP | lifecycle E2E |
+| GAP-007 | P0 | **PHASE 5 ORGANIZATION CRUD CLOSED — QA-1 VERIFIED:** trusted create/edit/deactivate, persisted state, audit behavior, focus/revalidation, and exclusion from switching passed; broader organization settings remain Phase 6 | 5/6 | Platform | Phase 5 criterion verified 2026-08-28 | GAP-016 for broader settings | QA-1 production evidence |
+| GAP-008 | P0 | **PHASE 5 AUTH-ERROR CRITERION CLOSED — QA-4 VERIFIED:** incorrect-password response is bounded and generic; broader abuse/rate-limit hardening remains Phase 10 | 5/10 | Security | Phase 5 criterion verified 2026-08-28 | Phase 10 hardening | QA-4 bounded-error evidence |
+| GAP-009 | P1 | **PHASE 5 RECOVERY-REQUEST CRITERION CLOSED — QA-4 VERIFIED:** registered/unregistered requests are enumeration-safe and controlled delivery passed; broader SMTP operations remain Phase 6/10 | 5/6/10 | Auth | Phase 5 criterion verified 2026-08-28 | GAP-030 operational hardening | QA-4 production evidence |
+| GAP-010 | P1 | **PHASE 5 CLOSED — QA-4 VERIFIED:** recovery email, callback, password persistence, canonical-login return, new-password login, and used-link safety passed | 5 | Auth | Verified 2026-08-28 | None | QA-4 production evidence |
+| GAP-011 | P1 | **PHASE 5 CLOSED — QA-2 VERIFIED:** JWT-derived acceptance, password setup/first login, active scoped membership, and bounded role assignment passed | 5 | Auth | Verified 2026-08-28 | None | QA-2 production evidence |
 | GAP-012 | P1 | Change password/email/security settings missing | 6 | Account | No | account policy | authenticated account E2E |
-| GAP-013 | P1 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** Supabase owns refresh/restoration and organization authorization revalidates on focus, visibility return, and bounded cadence | 5/10 | Auth | Deployed in PR #17 | real-session timing | QA-3 revocation and QA-4 restore/logout proof |
+| GAP-013 | P1 | **PHASE 5 SESSION/REVALIDATION CRITERION CLOSED — QA-1/3/4 VERIFIED:** focus/cadence revocation, refresh restoration, and logout passed; downstream domain-store invalidation remains GAP-014 for later phases | 5/10 | Auth | Phase 5 criterion verified 2026-08-28 | GAP-014 and Phase 10 hardening | QA-1/3/4 evidence |
 | GAP-014 | P1 | Downstream domain stores do not invalidate/scope on organization switch | 6–8 | Shared | No | production query boundary | no stale/cross-org data test |
-| GAP-015 | P1 | **QA-1 BLOCKER DISCOVERED — REMEDIATION READY FOR DEPLOYMENT:** canonical Organizations was hard-coded/local; its Phase-5 list/create/update/deactivate slice now uses production RLS reads and the trusted Edge Function, but remains a QA-1 dependency of GAP-007 until deployed and re-tested | 5/6 | Platform | Repository tests passed; production re-test pending | GAP-007 (not a duplicate score item) | loading/empty/error plus QA-1 create/edit/deactivate/context proof |
+| GAP-015 | P1 | **PHASE 5 CLOSED — QA-1 VERIFIED:** canonical Organizations uses authoritative reads and trusted create/update/deactivate; fake platform organization data no longer governs this slice | 5/6 | Platform | Verified 2026-08-28 | Broader settings remain GAP-016 | QA-1 persistence/audit/context evidence |
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
 | GAP-017 | P1 | Work has no production repository/schema/persistence | 7 | Work | No | Phases 5–6 gates | secure project/task vertical slice |
 | GAP-018 | P1 | Three Work state owners diverge | 7 | Work | No | GAP-017/contract choice | parity and single-authority proof |
@@ -311,9 +311,9 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-033 | P1 | Canonical forms/dialogs/tables/mobile/accessibility unverified | 6/10 | UX | No | QA tooling | keyboard/screen reader/320px audit |
 | GAP-034 | P2 | Department UI bypasses existing production table | 8 | People | No | repository/mutation semantics | CRUD/RLS/empty/error tests |
 | GAP-035 | P2 | My Profile is mock; avatar/preferences persistence undefined | 8 | People | No | profile/storage policy | self-update/privacy tests |
-| GAP-036 | P2 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** membership and organization revocation is periodically/focus-revalidated and remotely deployed private predicates reject deactivated organizations | 5/8 | People/Security | PR #17 and migration `20260819180940` deployed | controlled membership fixture | QA-3 revoked-session/access proof |
+| GAP-036 | P2 | **PHASE 5 REVOCATION CRITERION CLOSED — QA-3 VERIFIED:** trusted deactivation, inactive membership, preserved Auth identity, atomic audit, automatic session revalidation, and protected-content denial passed; worker lifecycle remains Phase 8 | 5/8 | People/Security | Phase 5 criterion verified 2026-08-28 | Phase 8 People lifecycle | QA-3 production evidence |
 | GAP-037 | P2 | Account deletion/worker retention policy unresolved | 8/10 | Product | No | founder decision | recorded policy + tests |
-| GAP-038 | P2 | **DEPLOYED — AWAITING MANUAL VERIFICATION:** remotely deployed private predicates deny deactivated organizations and the protected shell renders no-access when no active membership remains | 5/6 | Platform | PR #17 and migration `20260819180940` deployed | controlled organization fixture | QA-1/QA-3 safe no-access proof |
+| GAP-038 | P2 | **PHASE 5 CLOSED — QA-1/3/4 VERIFIED:** deactivated organizations are excluded from switching/authorization; no-access state and its sign-out/logout/history behavior passed | 5/6 | Platform | Verified 2026-08-28 | None for Phase 5 | QA-1/3 plus PR #34 re-test |
 | GAP-039 | P2 | Loading/error/empty/retry states inconsistent | 6–8 | Shared | Yes per slice | error contract adoption | forced failure/empty tests |
 | GAP-040 | P2 | Service errors swallowed or generic | 6 | Shared | Yes per slice | structured errors/monitoring | surfaced bounded error + telemetry |
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
@@ -339,13 +339,13 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-061 | P3 | Focus/labels/status/table semantics require polish after blocker pass | 10 | UX | Yes per slice | accessibility baseline | automated + manual audit |
 | GAP-062 | P3 | Source-map policy and bundle analysis absent | 6/10 | Deploy | Yes | monitoring choice | artifact inspection |
 | GAP-063 | P3 | Advanced enterprise capabilities remain intentionally absent | 9 | Product | No | explicit approval | roadmap decision, not launch blocker |
-| GAP-064 | P1 | **FIXED IN REPOSITORY — AWAITING DEPLOYED RE-TEST:** recovery could report password-update failure after Supabase accepted the password | 5 | Auth | Fixed: update and cleanup outcomes separated; safe provider mapping and success state tested | deployment/real recovery link | successful reset truthfully reports success; cleanup failure is bounded; same-password and expired-session cases verified |
+| GAP-064 | P1 | **PHASE 5 CLOSED — QA-4 VERIFIED:** accepted password reset truthfully reported success, persisted the new password, returned to canonical login, and allowed new-password authentication | 5 | Auth | Verified 2026-08-28 | None | QA-4 production evidence |
 
 ## 25. Phase mapping
 
 | Phase | Findings / required outcome |
 |---|---|
-| **5** | GAP-001, 002, 003, 007, 008, 009, 010, 011, 013, 036, 038, 064: complete real auth/JWT/RBAC verification, trusted identity/membership/org operations, bounded auth behavior. **GAP-012 remains Phase 6. Do not close until proof passes.** |
+| **5 — COMPLETE** | GAP-001, 002, 003 invitation slice, 007 organization CRUD slice, 008 bounded-error slice, 009 recovery-request slice, 010, 011, 013 session/revalidation slice, 015 platform fake-organization slice, 036 revocation slice, 038, and 064 passed production QA. Later-phase concerns named in individual rows remain later-phase work and do not reopen Phase 5. |
 | **6** | production route containment, error/env/query foundations, quality baseline, E2E scaffolding, SMTP/deployment/observability, initial performance and accessibility baselines |
 | **7** | GAP-017–019, 054: one secure production Work vertical slice, then canonical Work replacement and legacy parity |
 | **8** | production People/Time/Reporting/Audit repositories and workflows; retire corresponding mock authority only after parity |
@@ -354,8 +354,8 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 
 ## 26. Recommended remediation order
 
-### Batch 1 — Phase 5 closure blockers
-- **Goal:** prove real auth/JWT/membership and finish trusted invitation/membership/org boundary.
+### Batch 1 — Phase 5 closure — COMPLETE
+- **Outcome:** real auth/JWT/membership and the trusted invitation/membership/organization boundary passed production QA-1 through QA-4.
 - **Files/domains:** Auth/Organization contexts, security repositories/types, shared trusted operations, migration tests, Supabase/Vercel Auth config.
 - **Dependencies:** reviewer environment, SMTP/redirect plan, permission matrix already approved.
 - **Acceptance:** real Employee/Org Admin/Platform Admin positive and cross-tenant/inactive/deleted negative tests; invite/accept/deactivate audited atomically.
@@ -460,4 +460,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** run the single consolidated Phase-5 QA-1 through QA-4 packet in `WORK_OS_PROGRESS.md`, retain every Phase-5 gap as deployed awaiting manual verification until its listed evidence exists, and enable leaked-password protection. Stop after Phase-5 closeout evidence; do not begin Phase 6 or another remediation gap.
+**Next action:** **Phase 6 — Production Foundation is NEXT but not started.** Begin it only through a separately approved Phase 6 task. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. Stop this closeout without implementing Phase 6.
