@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { requestPasswordRecovery, safeSignInError } from './authOperations';
+import { canonicalizeSignedOutUrl, requestPasswordRecovery, safeSignInError, signOutAndReturnToLogin } from './authOperations';
 
 describe('bounded authentication errors', () => {
   it('does not expose provider details for invalid credentials', () => {
@@ -22,5 +22,30 @@ describe('bounded authentication errors', () => {
     const resetPasswordForEmail = vi.fn().mockResolvedValue({ error: { status: 500, code: 'unexpected', message: 'private provider detail' } });
     await expect(requestPasswordRecovery({ resetPasswordForEmail } as never, 'user@example.com', 'https://work.example/reset-password'))
       .rejects.toThrow('Unable to request a recovery link right now. Please try again.');
+  });
+});
+
+describe('canonical sign-out flow', () => {
+  it('clears the Supabase session and replaces the current history entry with login', async () => {
+    const signOut = vi.fn().mockResolvedValue({ error: null });
+    const replaceState = vi.fn();
+
+    await signOutAndReturnToLogin(
+      { signOut } as never,
+      { pathname: '/work/my-work', hash: '' },
+      { replaceState } as never,
+    );
+
+    expect(signOut).toHaveBeenCalledOnce();
+    expect(replaceState).toHaveBeenCalledWith({}, '', '/login');
+  });
+
+  it('keeps refresh signed out and replaces a protected URL restored by Back', () => {
+    const replaceState = vi.fn();
+    canonicalizeSignedOutUrl({ pathname: '/login', hash: '' }, { replaceState } as never);
+    expect(replaceState).not.toHaveBeenCalled();
+
+    canonicalizeSignedOutUrl({ pathname: '/work/my-work', hash: '' }, { replaceState } as never);
+    expect(replaceState).toHaveBeenCalledWith({}, '', '/login');
   });
 });

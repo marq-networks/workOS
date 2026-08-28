@@ -12,6 +12,7 @@ const organizationState = vi.hoisted(() => ({
 const authState = vi.hoisted(() => ({
   initializing: false,
   user: { id: 'signed-in-user' } as { id: string } | null,
+  signOut: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../contexts/AuthContext', () => ({
@@ -22,7 +23,7 @@ vi.mock('../contexts/OrganizationContext', () => ({
   useOrganization: () => organizationState,
 }));
 
-import { ProtectedShell } from './ProtectedShell';
+import { NoOrganizationAccess, ProtectedShell } from './ProtectedShell';
 import { LoginScreen } from '../components/screens/auth/LoginScreen';
 
 const canonicalLogin = <LoginScreen onLogin={vi.fn()} onRequestPasswordReset={vi.fn()} />;
@@ -94,6 +95,16 @@ describe('ProtectedShell', () => {
     organizationState.activeMembership = null;
     const markup = renderToStaticMarkup(<ProtectedShell login={<p>Login</p>}><p>Protected application</p></ProtectedShell>);
     expect(markup).toContain('No organization access');
+    expect(markup).toContain('Sign out');
     expect(markup).not.toContain('Protected application');
+  });
+
+  it('offers sign out through the canonical AuthContext action', () => {
+    const state = NoOrganizationAccess({ onSignOut: authState.signOut });
+    const button = state.props.action;
+
+    button.props.onClick();
+
+    expect(authState.signOut).toHaveBeenCalledOnce();
   });
 });
