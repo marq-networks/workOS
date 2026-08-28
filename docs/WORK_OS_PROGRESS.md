@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-27
-**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 BACKEND REVOCATION VERIFIED; QA-4 CANONICAL URL REMEDIATION IMPLEMENTED / PRODUCTION RETEST PENDING. Phase 6 has not begun.
+**Current checkpoint:** PHASE 5 — QA-1 AND QA-2 COMPLETE; QA-3 BACKEND REVOCATION VERIFIED; QA-4 NO-ORGANIZATION-ACCESS SIGN-OUT REMEDIATION IMPLEMENTED / PRODUCTION RETEST PENDING. Phase 6 has not begun.
 
 **Current remediation batch:** Batch 1 — Phase 5 closure only. **QA-1 is MANUALLY VERIFIED / COMPLETE.** Production verification confirmed the backend-derived Platform Admin role, trusted organization create/edit/deactivate flow (including persisted edit), rejection of a deactivated organization as active context, session-clearing logout, canonical login after logout, signed-out refresh, and browser Back protection. The bounded QA-2 follow-up adds the missing Platform Organizations action for a fixed-role Org Admin invitation and same-target resend. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -86,7 +86,16 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ### QA-4 AUTH / RECOVERY / SESSION
 
-**Status (2026-08-27):** Invalid-credential safe error, recovery-request privacy, recovery email delivery, recovery callback, password update, new-password login, and session restoration on refresh are **VERIFIED**. Production QA discovered that authenticated dashboard content could render behind the stale `/reset-password#` browser URL because Router state did not synchronize with browser history. The bounded canonical browser URL/history synchronization and auth callback cleanup remediation is **IMPLEMENTED; PRODUCTION RETEST PENDING**. QA-4 is not complete.
+**Status (2026-08-27):** Invalid-credential safe error, recovery-request privacy, recovery email delivery, recovery callback, password update, new-password login, and session restoration on refresh are **VERIFIED**. Production QA discovered that authenticated dashboard content could render behind the stale `/reset-password#` browser URL because Router state did not synchronize with browser history. The bounded canonical browser URL/history synchronization and auth callback cleanup remediation is **IMPLEMENTED**. The follow-up production run verified the unregistered recovery request remained enumeration-safe; a used recovery link opened in a clean signed-out browser safely returned to `/login`; logout, refresh, and browser Back protection; an Employee forbidden deep link to `/people/members` redirected to `/work/my-work`; and browser Back did not restore the forbidden route. That run also discovered that the authenticated no-organization-access state had no sign-out action. The bounded remediation now exposes the canonical AuthContext sign-out flow from that state; **PRODUCTION RETEST PENDING**. QA-4 is not complete.
+
+**Latest production evidence / remediation record:**
+- QA-4 unregistered recovery request enumeration-safe behavior — **VERIFIED**.
+- Used recovery link in a clean signed-out browser safely returned to `/login` — **VERIFIED**.
+- Logout / refresh / Back protection — **VERIFIED**.
+- Employee forbidden deep link `/people/members` redirects to `/work/my-work` — **VERIFIED**.
+- Browser Back does not restore the forbidden route — **VERIFIED**.
+- No-organization-access sign-out defect — **DISCOVERED**.
+- No-organization-access sign-out remediation — **IMPLEMENTED; PRODUCTION RETEST PENDING**.
 
 **Exact steps**
 1. From a signed-out browser, submit one invalid-password sign-in and confirm the message is generic. Inspect the Supabase Auth rate-limit configuration/status; do not deliberately lock a shared production account.

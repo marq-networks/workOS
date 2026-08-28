@@ -18,6 +18,7 @@ import { PasswordRecoveryGate } from './security/PasswordRecoveryGate';
 import { InvitationAcceptanceGate } from './security/InvitationAcceptanceGate';
 import { InvitationAcceptanceScreen } from './components/screens/auth/InvitationAcceptanceScreen';
 import { AppShell } from './components/shared/AppShell';
+import { canonicalizeSignedOutUrl } from './contexts/authOperations';
 
 // Navigation System
 import { generateRoutes, getRouteByPath, validateRouteRegistry } from './navigation';
@@ -131,11 +132,7 @@ function SignedOutUrlGuard() {
 
   useEffect(() => {
     if (initializing || user || authMode !== 'normal') return;
-    const canonicalize = () => {
-      if (window.location.pathname !== '/login' || window.location.hash) {
-        window.history.replaceState({}, '', '/login');
-      }
-    };
+    const canonicalize = () => canonicalizeSignedOutUrl(window.location, window.history);
     canonicalize();
     window.addEventListener('popstate', canonicalize);
     return () => window.removeEventListener('popstate', canonicalize);

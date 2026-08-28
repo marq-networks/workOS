@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
 import { authModeForEvent, replaceRecoveryPassword, type AuthMode, type PasswordRecoveryResult } from './authRecovery';
-import { requestPasswordRecovery, safeSignInError } from './authOperations';
+import { requestPasswordRecovery, safeSignInError, signOutAndReturnToLogin } from './authOperations';
 import { acceptAuthenticatedInvitation, inspectInvitationCallback, type InvitationAcceptanceResult, type InvitationCallback } from './authInvitation';
 
 export type { AuthMode } from './authRecovery';
@@ -70,11 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       `${window.location.origin}/reset-password`,
     ),
-    signOut: async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw new Error('Unable to sign out. Please try again.');
-      window.history.replaceState({}, '', '/login');
-    },
+    signOut: async () => signOutAndReturnToLogin(supabase.auth, window.location, window.history),
     updatePassword: async (newPassword) => {
       const result = await replaceRecoveryPassword(supabase.auth, authModeRef.current, session, newPassword);
       authModeRef.current = 'normal';
