@@ -323,8 +323,8 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-045 | P2 | Offline/network retry UX missing | 6/10 | Shared | No | error taxonomy | disconnect/reconnect test |
 | GAP-046 | P2 | Destructive confirmation/unsaved-change protection inconsistent | 6–8 | UX | Yes per form | canonical form inventory | cancel/navigation tests |
 | GAP-047 | P2 | Security headers/CSP policy absent | 10 | Security/Deploy | No | asset/connect inventory | deployed header scan |
-| GAP-048 | P2 | Environment validation checks presence, not format/project identity | 6 | Deploy | Yes | staging/prod IDs | bad env build/start tests |
-| GAP-049 | P2 | No staging/preview data-isolation strategy | 6 | Deploy | No | environment plan | preview cannot bind prod proof |
+| GAP-048 | P2 | Environment validation checks presence, not format/project identity | 6 | Deploy | CLOSED IN REPOSITORY — P6-3 (2026-08-28) | Vercel dashboard environment values still require manual verification | deterministic policy tests and controlled bad-env build proof pass |
+| GAP-049 | P2 | No staging/preview data-isolation strategy | 6 | Deploy | MINIMUM ISOLATION IMPLEMENTED — P6-3; manual deployment verification pending | future isolated Preview project approval/configuration; no project currently claimed | Preview rejects production and missing backend configuration; dashboard scope check remains |
 | GAP-050 | P2 | No migration drift/deploy ordering automation | 6/10 | Database | No | CI/CD design | clean staging promotion |
 | GAP-051 | P2 | No structured logs/correlation IDs/health checks | 6/10 | Operations | No | observability contract | trace synthetic failure end-to-end |
 | GAP-052 | P2 | Client-generated audit-like events confuse trusted audit | 8 | Audit | No | audit/activity separation | provenance contract/test |
