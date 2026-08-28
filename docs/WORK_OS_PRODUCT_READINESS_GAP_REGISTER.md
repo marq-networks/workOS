@@ -4,7 +4,7 @@
 
 **Scope:** whole-repository static production-readiness audit; registered routes, launch navigation, runtime state/data seams, Supabase migrations/policies, auth, operations, and build-quality baseline
 
-**Roadmap control:** **PHASE 5 — COMPLETE. QA-1, QA-2, QA-3, and QA-4 passed production verification. PHASE 6 — NEXT, NOT STARTED.** PR #17, migration `20260819180940`, both Phase-5 administration Edge Functions, and the PR #33/#34 remediations are remotely deployed and verified. No Phase 6 feature work, Phase 7/8 schema, or broad remediation was performed in closeout.
+**Roadmap control:** **PHASE 5 — COMPLETE. PHASE 6 — IN PROGRESS. P6-1 — COMPLETE / production verified. P6-2 — NEXT. PHASE 7 — BLOCKED.** QA-1 through QA-4 passed Phase 5 production verification, and P6-1 production QA passed for Employee, Org Admin, and Platform Admin route containment. No P6-2 work, Phase 7/8 schema, or broad remediation was performed in this closeout.
 
 **Authority:** This register is the central production-readiness backlog. Approved product policy remains in `WORK_OS_DECISIONS.md`; this register does not supersede it.
 
@@ -299,7 +299,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-021 | P1 | Correction/review workflow is simulated and unaudited | 8 | Time | No | GAP-020 | atomic transition/concurrency/audit |
 | GAP-022 | P1 | Essential Reports is static/mock simulated generation | 8 | Reporting | No | production domain sources | accuracy/download/error E2E |
 | GAP-023 | P1 | Deferred payroll/fines/productivity templates leak into canonical reports | 6/8 | Reporting | Yes | none | launch catalog test |
-| GAP-024 | P1 | Direct deferred/diagnostic routes remain production reachable | 6 | Navigation | CLOSED BY P6-1 | `NAV_MANIFEST`-derived production allowlist; registry retained for development | production route containment regression |
+| GAP-024 | P1 | **P6-1 CLOSED — PRODUCTION VERIFIED:** deferred, diagnostic, analysis, and role-forbidden deep links canonicalize to an authorized role default without rendering blocked content; blocked Employee history entries do not restore | 6 | Navigation | Verified 2026-08-28 | Registry/source retained for development and later parity | Employee, Org Admin, and Platform Admin production route QA |
 | GAP-025 | P1 | Deferred modules are eagerly bundled | 6/10 | Platform | No | route splitting | bundle allowlist/budget |
 | GAP-026 | P1 | Main JS bundle is 2.90 MB (671.67 kB gzip) | 6/10 | Platform | No | lazy route/domain imports | agreed performance budget |
 | GAP-027 | P1 | Typecheck fails with 323 errors/111 files | 6 | Shared | No broad fix | error ownership/boundaries | `npm run typecheck` green |
@@ -319,7 +319,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
 | GAP-042 | P2 | Search/filter/pagination usually client-only | 7/8 | Domains | No | repositories/query contracts | large dataset tests |
 | GAP-043 | P2 | CSV exports lack robust escaping/scale/security review | 8/10 | Reporting/Audit | Yes bounded | production data contract | formula/quote/large export tests |
-| GAP-044 | P2 | 404 and explicit forbidden surfaces missing | 6 | Navigation/Security | ADVANCED BY P6-1 | bounded role-default canonicalization now contains unknown/deferred routes; explicit surfaces remain deferred | unknown/denied route E2E |
+| GAP-044 | P2 | 404 and explicit forbidden surfaces remain missing; **bounded canonical role-default handling is production verified** for the P6-1 deferred, diagnostic, analysis, and role-forbidden cases | 6 | Navigation/Security | ADVANCED / production verified where evidenced 2026-08-28 | Explicit surfaces and broader unknown-route E2E remain deferred | unknown/denied route E2E |
 | GAP-045 | P2 | Offline/network retry UX missing | 6/10 | Shared | No | error taxonomy | disconnect/reconnect test |
 | GAP-046 | P2 | Destructive confirmation/unsaved-change protection inconsistent | 6–8 | UX | Yes per form | canonical form inventory | cancel/navigation tests |
 | GAP-047 | P2 | Security headers/CSP policy absent | 10 | Security/Deploy | No | asset/connect inventory | deployed header scan |
@@ -332,7 +332,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-054 | P2 | Work/Time lack FK, uniqueness, timestamp/concurrency semantics | 7/8 | Work/Time | No | approved schemas | DB constraint/transaction tests |
 | GAP-055 | P3 | Login portal advertises deferred Finance/leave/analytics features | 6 | UX | Yes | approved launch copy | content review |
 | GAP-056 | P3 | Mock notification count and chat dock appear in launch shell | 6/9 | UX/Communication | Yes | containment choice | launch composition test |
-| GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | INSPECTED — OPEN; source retained and P6-1 introduces no legacy imports | import graph | zero production imports |
+| GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | OPEN — intentionally retained; production reachability containment does not justify deletion | import graph | zero production imports |
 | GAP-058 | P3 | Legacy aliases need redirect/parity plan execution | 7/8 | Navigation | No | canonical parity tests | deep-link/role redirect tests |
 | GAP-059 | P3 | Merge-required People enhanced screens not reconciled | 8 | People | No | production canonical CRUD | parity checklist |
 | GAP-060 | P3 | Console logging remains in prototype paths | 6/9 | Shared | Yes after containment | logging policy | production bundle/search |
@@ -346,7 +346,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | Phase | Findings / required outcome |
 |---|---|
 | **5 — COMPLETE** | GAP-001, 002, 003 invitation slice, 007 organization CRUD slice, 008 bounded-error slice, 009 recovery-request slice, 010, 011, 013 session/revalidation slice, 015 platform fake-organization slice, 036 revocation slice, 038, and 064 passed production QA. Later-phase concerns named in individual rows remain later-phase work and do not reopen Phase 5. |
-| **6** | production route containment, error/env/query foundations, quality baseline, E2E scaffolding, SMTP/deployment/observability, initial performance and accessibility baselines |
+| **6 — IN PROGRESS** | P6-1 production route containment is complete and production verified; P6-2 Quality Baseline is next, followed by the remaining error/env/query, E2E, SMTP/deployment/observability, performance, and accessibility foundations |
 | **7** | GAP-017–019, 054: one secure production Work vertical slice, then canonical Work replacement and legacy parity |
 | **8** | production People/Time/Reporting/Audit repositories and workflows; retire corresponding mock authority only after parity |
 | **9** | only explicitly approved advanced modules; otherwise keep Finance/payroll/fines/surveillance/advanced Communication/Analytics/Integrations hidden |
@@ -460,4 +460,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** **Phase 6 — Production Foundation is NEXT but not started.** Begin it only through a separately approved Phase 6 task. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. Stop this closeout without implementing Phase 6.
+**Next action:** **Phase 6 — Production Foundation is IN PROGRESS; P6-1 is COMPLETE / production verified and P6-2 Quality Baseline is NEXT.** Phase 7 remains blocked until all Phase 6 gates pass. Begin P6-2 only through a separately approved task. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. Stop this closeout without implementing P6-2 or Phase 7.

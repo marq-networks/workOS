@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-28
-**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** Current acceptance gate: **P6-1 Production Route Containment**. Phase 7 remains blocked until every Phase 6 gate passes.
+**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** **P6-1 Production Route Containment — COMPLETE / production verified.** Current next gate: **P6-2 Quality Baseline**. Phase 7 remains blocked until every Phase 6 gate passes.
 
 **Final closeout:** Production QA verified backend-derived authority for all three launch roles; trusted organization, invitation, membership, and audit behavior; revocation revalidation; bounded authentication and recovery behavior; canonical routing/history; and durable logout protection. PR #33, “Fix canonical browser URL / router history synchronization,” resolved Router/browser URL divergence and was re-tested with the Employee forbidden deep link. PR #34, “Fix sign out from no-organization access state,” restored the existing AuthContext sign-out path and passed production logout, refresh, and history checks. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -149,8 +149,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ## Phase 6 execution — IN PROGRESS
 
-- **P6-1 Production Route Containment — current:** production path validation and generated routes derive from the launch `NAV_MANIFEST`; the full registry remains available as development/source inventory. Diagnostic and analysis universal access is development-only, and production-invalid deep links canonicalize to the active role default without painting deferred content.
-- **P6-2 Quality Baseline — next.**
+- **P6-1 Production Route Containment — COMPLETE / production verified (2026-08-28):** production path validation and generated routes derive from the launch `NAV_MANIFEST`; the full registry remains available as development/source inventory. Production QA verified that `/employee/dashboard`, `/diagnostics/ui-binding`, and `/analysis/module-progress` canonicalized without rendering deferred content: Employee landed on `/work/my-work`, Org Admin landed on `/org/admin/dashboard`, and tested diagnostic/analysis links sent Platform Admin to `/super/console`. Employee denial of `/people/members` also landed on `/work/my-work`, while Org Admin access rendered the allowed Memberships screen. Browser Back after Employee forbidden/deferred navigation remained on the authorized Work surface and did not restore a blocked history entry.
+- **P6-2 Quality Baseline — NEXT.** No P6-2 implementation is included in the P6-1 closeout.
 - **P6-3 Environment + Preview/Staging Safety — pending.**
 - **P6-4 Error + Monitoring Foundation — pending.**
 - **P6-5 Browser E2E / Auth Smoke — pending.**
@@ -191,7 +191,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 - Do not treat route visibility or browser-selected role/org IDs as authorization.
 
 ## Next execution order
-1. **CURRENT — Phase 6 / P6-1: Production Route Containment.** Next gate after acceptance is P6-2 Quality Baseline.
+1. **CURRENT NEXT GATE — Phase 6 / P6-2: Quality Baseline.** P6-1 Production Route Containment is complete and production verified.
 2. Phase 7 Core Work Engine.
 3. Phase 8 People + Time + Reporting.
 4. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
