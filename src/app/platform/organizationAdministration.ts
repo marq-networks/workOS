@@ -1,4 +1,5 @@
 export type OrganizationStatus = 'active' | 'deactivated';
+import { throwReportedServiceFailure } from '../../operations/serviceFailure';
 
 export interface PlatformTenant {
   id: string;
@@ -35,7 +36,7 @@ export interface SaveOrganizationCommand {
 export async function listPlatformTenants(): Promise<PlatformTenant[]> {
   const { supabase } = await import('../../lib/supabase');
   const { data, error } = await supabase.from('tenants').select('id, name, slug').order('name');
-  if (error) throw new Error('Organizations could not be loaded.');
+  if (error) throwReportedServiceFailure(error, 'tenant_list_failed', 'Organizations could not be loaded.');
   return (data ?? []) as PlatformTenant[];
 }
 
@@ -45,7 +46,7 @@ export async function listPlatformOrganizations(): Promise<PlatformOrganization[
     .from('organizations')
     .select('id, tenant_id, name, slug, status, tenants!inner(name)')
     .order('name');
-  if (error) throw new Error('Organizations could not be loaded.');
+  if (error) throwReportedServiceFailure(error, 'organization_list_failed', 'Organizations could not be loaded.');
 
   return ((data ?? []) as OrganizationRow[]).map((row) => ({
     id: row.id,
@@ -63,7 +64,7 @@ export async function savePlatformOrganization(command: SaveOrganizationCommand)
   const { supabase } = await import('../../lib/supabase');
   const { data, error } = await supabase.functions.invoke('organization-administration', { body: command });
   if (error || !data?.organizationId || !data?.correlationId) {
-    throw new Error('The trusted organization operation was not completed.');
+    throwReportedServiceFailure(error ?? new Error('Invalid trusted response'), 'organization_save_failed', 'The trusted organization operation was not completed.');
   }
   return { organizationId: data.organizationId, correlationId: data.correlationId };
 }

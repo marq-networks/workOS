@@ -1,8 +1,20 @@
 import { PageLayout } from '../../shared/PageLayout';
 import { LineChartComponent, BarChartComponent, DonutChartComponent } from '../../shared/Charts';
 import { Layers, Building, TrendingUp, DollarSign } from 'lucide-react';
+import { useState } from 'react';
+import { createOperationalError } from '../../../../operations/operationalError';
+import { reportOperationalError } from '../../../../operations/telemetry';
 
 export function S01Console() {
+  const [monitoringStatus, setMonitoringStatus] = useState<string | null>(null);
+  const sendMonitoringSelfTest = async () => {
+    setMonitoringStatus('Sending test event…');
+    const result = await reportOperationalError(createOperationalError({
+      code: 'monitoring_self_test', category: 'server', severity: 'warning', retryable: false,
+      userMessage: 'Operational monitoring self-test.', causeName: 'ControlledSelfTest',
+    }));
+    setMonitoringStatus(result.accepted ? `Test event accepted. Reference: ${result.eventId}` : `Test event was not accepted. Reference: ${result.eventId}`);
+  };
   const revenueData = [
     { month: 'Jul', revenue: 125000 },
     { month: 'Aug', revenue: 142000 },
@@ -63,6 +75,12 @@ export function S01Console() {
       ]}
     >
       <div className="space-y-6">
+        <section className="rounded-lg border border-border bg-card p-6" aria-labelledby="operational-monitoring-title">
+          <h3 id="operational-monitoring-title">Operational Monitoring</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Send a safe synthetic event through the authenticated production telemetry pipeline.</p>
+          <button type="button" onClick={() => void sendMonitoringSelfTest()} className="mt-4 rounded-md bg-primary px-4 py-2 text-primary-foreground">Send test event</button>
+          {monitoringStatus && <p className="mt-3 text-sm" role="status">{monitoringStatus}</p>}
+        </section>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="mb-4">Monthly Revenue</h3>

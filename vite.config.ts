@@ -30,6 +30,9 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    define: {
+      'import.meta.env.VITE_RELEASE_ID': JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA ?? environment.VITE_RELEASE_ID ?? ''),
+    },
     plugins: [
       figmaAssetResolver(),
       // The React and Tailwind plugins are both required for Make, even if

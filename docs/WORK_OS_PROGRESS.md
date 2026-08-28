@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-28
-**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** **P6-1 Production Route Containment — COMPLETE / production verified. P6-2 Quality Baseline — COMPLETE. P6-3 Environment + Preview/Staging Safety — COMPLETE / production and Preview manually verified. P6-4 Error + Monitoring Foundation — NEXT.** Phase 7 remains blocked until every Phase 6 gate passes.
+**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** **P6-1 Production Route Containment — COMPLETE / production verified. P6-2 Quality Baseline — COMPLETE. P6-3 Environment + Preview/Staging Safety — COMPLETE / production and Preview manually verified. P6-4 Error + Monitoring Foundation — IMPLEMENTED / manual Production telemetry verification required. P6-5 remains BLOCKED until P6-4 verification.** Phase 7 remains blocked until every Phase 6 gate passes.
 
 **Final closeout:** Production QA verified backend-derived authority for all three launch roles; trusted organization, invitation, membership, and audit behavior; revocation revalidation; bounded authentication and recovery behavior; canonical routing/history; and durable logout protection. PR #33, “Fix canonical browser URL / router history synchronization,” resolved Router/browser URL divergence and was re-tested with the Employee forbidden deep link. PR #34, “Fix sign out from no-organization access state,” restored the existing AuthContext sign-out path and passed production logout, refresh, and history checks. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -156,8 +156,9 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
   - **Production manual QA:** the Vercel `work-os` Production environment has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` scoped to Production only. The URL identifies project `zabpmtkzqetroiwbbofh`; the key is browser-safe, and no service-role key, `sb_secret_*` credential, database password, or management token is exposed through `VITE_*`. A fresh Production redeployment after correcting the variable scopes reached READY / SUCCESS.
   - **Preview manual QA:** Vercel Preview has neither Supabase variable and therefore does not inherit the Production backend. A real P6-3 Preview deployment reached ERROR / FAIL CLOSED: the build emitted the expected `DeploymentEnvironmentError` requiring an isolated non-production Supabase project and exited with code 1. This confirms policy rejection rather than an unrelated build failure. The controlled fixtures already prove an isolated fake non-production Preview configuration passes and a production-bound Preview fails; no risky live assignment of Production to Preview is required.
   - **Approved environment strategy:** Production uses the production Supabase project; Preview has no backend today and intentionally fails closed; a future Preview may use an explicitly approved isolated non-production project; local development uses developer-selected browser-safe configuration. No dedicated staging Supabase project was purchased or created. If an isolated Preview project is later approved, it will also need its own Edge Function secrets and `APP_URL`; no production Edge Function secret or deployment was changed in P6-3.
-- **P6-4 Error + Monitoring Foundation — NEXT.**
-- **P6-5 Browser E2E / Auth Smoke — pending.**
+- **P6-4 Error + Monitoring Foundation — IMPLEMENTED / MANUAL PRODUCTION TELEMETRY VERIFICATION REQUIRED.** The application now has a safe root React fallback, global `error` and `unhandledrejection` capture with duplicate/recursion protection, a bounded operational-error contract, authenticated same-origin ingestion, validated Supabase user identity, and one structured Vercel Runtime Log record with authoritative release/deployment metadata. `/super/console` sends `monitoring_self_test` through that same pipeline without crashing the page. Identity administration, organization administration, and current-membership repository failures now adopt the safe contract; per-domain adoption remains Phase 7/8 work. Production verification must match the returned event ID to the Runtime Log and confirm release/user identity and absence of secrets.
+- **P6-5 Browser E2E / Auth Smoke — BLOCKED until P6-4 Production telemetry verification.**
+
 - **P6-6 Initial Bundle + Accessibility Baseline / closeout — pending.**
 
 ## Known technical state
@@ -195,14 +196,14 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 - Do not treat route visibility or browser-selected role/org IDs as authorization.
 
 ## Next execution order
-1. **NEXT GATE — Phase 6 / P6-4: Error + Monitoring Foundation.** P6-1, P6-2, and P6-3 are complete; Phase 6 remains in progress and Phase 7 remains blocked.
+1. **CURRENT GATE — Phase 6 / P6-4: IMPLEMENTED / manual Production telemetry verification required.** P6-5 is blocked until the Production self-test is confirmed in Vercel Runtime Logs; Phase 7 remains blocked.
 2. Phase 7 Core Work Engine.
 3. Phase 8 People + Time + Reporting.
 4. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
 5. Phase 10 hardening and launch.
 
 ## Stop rule
-P6-3 is complete. P6-4 is the next bounded Phase 6 gate; Phase 7 remains blocked until every Phase 6 gate passes.
+P6-4 implementation is complete but manual Production telemetry verification remains required. Do not begin P6-5 until that verification; Phase 7 remains blocked until every Phase 6 gate passes.
 
 ## Phase 5 repository implementation — 2026-08-18
 - Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.

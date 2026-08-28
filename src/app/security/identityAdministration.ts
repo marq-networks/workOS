@@ -1,4 +1,5 @@
 import type { LaunchRole } from './types';
+import { throwReportedServiceFailure } from '../../operations/serviceFailure';
 
 export interface InviteMemberInput {
   email: string;
@@ -23,7 +24,7 @@ export async function deactivateOrganizationMembership(input: DeactivateOrganiza
   const { error } = await supabase.functions.invoke('identity-administration', {
     body: { action: 'deactivate', ...input },
   });
-  if (error) throw new Error('The membership could not be deactivated.');
+  if (error) throwReportedServiceFailure(error, 'membership_deactivation_failed', 'The membership could not be deactivated.');
 }
 
 async function administerInvitation(action: 'invite' | 'resend', input: InviteMemberInput): Promise<InvitationResult> {
@@ -31,7 +32,7 @@ async function administerInvitation(action: 'invite' | 'resend', input: InviteMe
   const { data, error } = await supabase.functions.invoke('identity-administration', {
     body: { action, ...input },
   });
-  if (error) throw new Error('The invitation could not be created.');
+  if (error) throwReportedServiceFailure(error, 'invitation_administration_failed', 'The invitation could not be created.');
   return typeof data?.correlationId === 'string' ? { correlationId: data.correlationId } : {};
 }
 
