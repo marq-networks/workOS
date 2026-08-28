@@ -294,7 +294,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
 | GAP-017 | P1 | Work has no production repository/schema/persistence | 7 | Work | No | Phases 5–6 gates | secure project/task vertical slice |
 | GAP-018 | P1 | Three Work state owners diverge | 7 | Work | No | GAP-017/contract choice | parity and single-authority proof |
-| GAP-019 | P1 | Canonical Work compile/lint/runtime defects | 6/7 | Work | Yes bounded after contract | contract stabilization | typecheck/lint + browser flows |
+| GAP-019 | P1 | Canonical Work compile/lint debt is contained by the P6-2 ratchet; runtime/contract stabilization remains deferred | 7 | Work | No Phase 7 work started | Phase 6 gates and contract stabilization | focused browser flows during Work implementation |
 | GAP-020 | P1 | Time has no production model/repository/RLS | 8 | Time | No | Phase 7 gate/policy | scoped session/entry vertical slice |
 | GAP-021 | P1 | Correction/review workflow is simulated and unaudited | 8 | Time | No | GAP-020 | atomic transition/concurrency/audit |
 | GAP-022 | P1 | Essential Reports is static/mock simulated generation | 8 | Reporting | No | production domain sources | accuracy/download/error E2E |
@@ -302,8 +302,8 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-024 | P1 | **P6-1 CLOSED — PRODUCTION VERIFIED:** deferred, diagnostic, analysis, and role-forbidden deep links canonicalize to an authorized role default without rendering blocked content; blocked Employee history entries do not restore | 6 | Navigation | Verified 2026-08-28 | Registry/source retained for development and later parity | Employee, Org Admin, and Platform Admin production route QA |
 | GAP-025 | P1 | Deferred modules are eagerly bundled | 6/10 | Platform | No | route splitting | bundle allowlist/budget |
 | GAP-026 | P1 | Main JS bundle is 2.90 MB (671.67 kB gzip) | 6/10 | Platform | No | lazy route/domain imports | agreed performance budget |
-| GAP-027 | P1 | Typecheck fails with 323 errors/111 files | 6 | Shared | No broad fix | error ownership/boundaries | `npm run typecheck` green |
-| GAP-028 | P1 | Lint fails: 31 errors including hook-rule violations | 6 | Shared | Yes bounded | prioritization | `npm run lint` green |
+| GAP-027 | P1 | **P6-2 CLOSED:** current-main measured 322 TypeScript diagnostics in 110 files; one tooling defect was fixed and 321 retained prototype diagnostics in 109 files are protected by an exact-identity ratchet | 6 | Shared | Verified 2026-08-28 | Prototype remediation stays with owning phases | `npm run quality` reports zero new/changed baseline identities |
+| GAP-028 | P1 | **P6-2 CLOSED:** current-main measured 31 ESLint errors and 60 warnings in 36 retained prototype files; exact diagnostic identities are protected by the canonical local/CI ratchet | 6 | Shared | Verified 2026-08-28 | Prototype remediation stays with owning phases | `npm run quality` reports zero new/changed baseline identities |
 | GAP-029 | P1 | No browser E2E or real Supabase integration suite | 6/10 | Quality | No | staging/fixtures | critical role journeys automated |
 | GAP-030 | P1 | Custom SMTP/Auth templates/redirect configuration absent | 6/10 | Operations | No | provider/domain access | deliverability lifecycle tests |
 | GAP-031 | P1 | No production error monitoring/release visibility | 6 | Operations | No | vendor/config decision | captured safe test exception |
