@@ -306,7 +306,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-028 | P1 | **P6-2 CLOSED:** current-main measured 31 ESLint errors and 60 warnings in 36 retained prototype files; exact diagnostic identities are protected by the canonical local/CI ratchet | 6 | Shared | Verified 2026-08-28 | Prototype remediation stays with owning phases | `npm run quality` reports zero new/changed baseline identities |
 | GAP-029 | P1 | No browser E2E or real Supabase integration suite | 6/10 | Quality | No | staging/fixtures | critical role journeys automated |
 | GAP-030 | P1 | Custom SMTP/Auth templates/redirect configuration absent | 6/10 | Operations | No | provider/domain access | deliverability lifecycle tests |
-| GAP-031 | P1 | No production error monitoring/release visibility | 6 | Operations | No | vendor/config decision | captured safe test exception |
+| GAP-031 | P1 | Production error monitoring/release visibility | 6 | Operations | IMPLEMENTED / production verification pending | Authenticated bounded telemetry collector and canonical self-test | captured safe test exception |
 | GAP-032 | P1 | No backup/restore/migration recovery rehearsal evidence | 10 | Operations | No | Supabase plan/runbook | timed restore and integrity proof |
 | GAP-033 | P1 | Canonical forms/dialogs/tables/mobile/accessibility unverified | 6/10 | UX | No | QA tooling | keyboard/screen reader/320px audit |
 | GAP-034 | P2 | Department UI bypasses existing production table | 8 | People | No | repository/mutation semantics | CRUD/RLS/empty/error tests |
@@ -315,7 +315,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-037 | P2 | Account deletion/worker retention policy unresolved | 8/10 | Product | No | founder decision | recorded policy + tests |
 | GAP-038 | P2 | **PHASE 5 CLOSED — QA-1/3/4 VERIFIED:** deactivated organizations are excluded from switching/authorization; no-access state and its sign-out/logout/history behavior passed | 5/6 | Platform | Verified 2026-08-28 | None for Phase 5 | QA-1/3 plus PR #34 re-test |
 | GAP-039 | P2 | Loading/error/empty/retry states inconsistent | 6–8 | Shared | Yes per slice | error contract adoption | forced failure/empty tests |
-| GAP-040 | P2 | Service errors swallowed or generic | 6 | Shared | Yes per slice | structured errors/monitoring | surfaced bounded error + telemetry |
+| GAP-040 | P2 | Structured-error foundation established; remaining domain adoption stays open for Phase 7/8 | 6 | Shared | Yes for production-foundation paths | structured errors/monitoring | surfaced bounded error + telemetry |
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
 | GAP-042 | P2 | Search/filter/pagination usually client-only | 7/8 | Domains | No | repositories/query contracts | large dataset tests |
 | GAP-043 | P2 | CSV exports lack robust escaping/scale/security review | 8/10 | Reporting/Audit | Yes bounded | production data contract | formula/quote/large export tests |

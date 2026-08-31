@@ -1,4 +1,11 @@
+import { captureOperationalError } from '../../observability/telemetry';
+
 export type OrganizationStatus = 'active' | 'deactivated';
+
+function serviceFailure(operation: string, message: string): Error {
+  captureOperationalError(operation, 'service', new Error('trusted service failure'));
+  return new Error(message);
+}
 
 export interface PlatformTenant {
   id: string;
@@ -35,7 +42,7 @@ export interface SaveOrganizationCommand {
 export async function listPlatformTenants(): Promise<PlatformTenant[]> {
   const { supabase } = await import('../../lib/supabase');
   const { data, error } = await supabase.from('tenants').select('id, name, slug').order('name');
-  if (error) throw new Error('Organizations could not be loaded.');
+  if (error) throw serviceFailure('platform.tenants.list', 'Organizations could not be loaded.');
   return (data ?? []) as PlatformTenant[];
 }
 
@@ -45,7 +52,7 @@ export async function listPlatformOrganizations(): Promise<PlatformOrganization[
     .from('organizations')
     .select('id, tenant_id, name, slug, status, tenants!inner(name)')
     .order('name');
-  if (error) throw new Error('Organizations could not be loaded.');
+  if (error) throw serviceFailure('platform.organizations.list', 'Organizations could not be loaded.');
 
   return ((data ?? []) as OrganizationRow[]).map((row) => ({
     id: row.id,
@@ -63,7 +70,7 @@ export async function savePlatformOrganization(command: SaveOrganizationCommand)
   const { supabase } = await import('../../lib/supabase');
   const { data, error } = await supabase.functions.invoke('organization-administration', { body: command });
   if (error || !data?.organizationId || !data?.correlationId) {
-    throw new Error('The trusted organization operation was not completed.');
+    throw serviceFailure('platform.organization.save', 'The trusted organization operation was not completed.');
   }
   return { organizationId: data.organizationId, correlationId: data.correlationId };
 }

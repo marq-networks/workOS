@@ -1,8 +1,17 @@
 import { PageLayout } from '../../shared/PageLayout';
 import { LineChartComponent, BarChartComponent, DonutChartComponent } from '../../shared/Charts';
 import { Layers, Building, TrendingUp, DollarSign } from 'lucide-react';
+import { useState } from 'react';
+import { createOperationalError } from '../../../../observability/operationalError';
+import { reportOperationalError } from '../../../../observability/telemetry';
 
 export function S01Console() {
+  const [monitoringResult, setMonitoringResult] = useState<string>();
+  const runMonitoringSelfTest = async () => {
+    const event = createOperationalError('monitoring_self_test', 'self_test', new Error('synthetic'));
+    const result = await reportOperationalError(event);
+    setMonitoringResult(`${result.accepted ? 'Accepted' : 'Failed'}. Event ID: ${result.correlationId}`);
+  };
   const revenueData = [
     { month: 'Jul', revenue: 125000 },
     { month: 'Aug', revenue: 142000 },
@@ -63,6 +72,13 @@ export function S01Console() {
       ]}
     >
       <div className="space-y-6">
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h3 className="mb-2">Operational Monitoring</h3>
+          <button className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground" onClick={() => void runMonitoringSelfTest()}>
+            Send test event
+          </button>
+          {monitoringResult && <p className="mt-3 text-sm" role="status">{monitoringResult}</p>}
+        </div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-lg border border-border bg-card p-6">
             <h3 className="mb-4">Monthly Revenue</h3>
