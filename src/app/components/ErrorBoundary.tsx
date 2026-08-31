@@ -12,6 +12,7 @@
 
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { AlertTriangle, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { captureOperationalError } from '../../observability/telemetry';
 
 interface Props {
   children: ReactNode;
@@ -37,9 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // In production, send to your error tracking service here:
-    //   Sentry.captureException(error, { extra: errorInfo });
-    console.error('[WorkOS ErrorBoundary]', error, errorInfo);
+    captureOperationalError('react.root', 'react', error);
     this.setState({ errorInfo });
   }
 

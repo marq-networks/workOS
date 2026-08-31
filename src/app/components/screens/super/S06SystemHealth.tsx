@@ -3,8 +3,18 @@ import { LineChartComponent } from '../../shared/Charts';
 import { DataTable } from '../../shared/DataTable';
 import { StatusBadge } from '../../shared/StatusBadge';
 import { Activity, Server, Zap, Database } from 'lucide-react';
+import { useState } from 'react';
+import { createOperationalError } from '../../../../observability/operationalError';
+import { reportOperationalError } from '../../../../observability/telemetry';
 
 export function S06SystemHealth() {
+  const [selfTest, setSelfTest] = useState<string>();
+
+  const runMonitoringSelfTest = async () => {
+    const event = createOperationalError('platform.monitoring.self_test', 'self_test', new Error('synthetic'));
+    await reportOperationalError(event);
+    setSelfTest(`Test event submitted. Correlation ID: ${event.correlationId}`);
+  };
   const uptimeData = [
     { day: 'Mon', uptime: 99.9 },
     { day: 'Tue', uptime: 100 },
@@ -71,6 +81,16 @@ export function S06SystemHealth() {
       ]}
     >
       <div className="space-y-6">
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h3 className="mb-2">Operational error monitoring</h3>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Submit a safe synthetic event to verify the configured collection path. This does not verify production delivery.
+          </p>
+          <button className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground" onClick={() => void runMonitoringSelfTest()}>
+            Send monitoring self-test
+          </button>
+          {selfTest && <p className="mt-3 text-sm" role="status">{selfTest}</p>}
+        </div>
         <div className="rounded-lg border border-border bg-card p-6">
           <h3 className="mb-4">Weekly Uptime</h3>
           <LineChartComponent 
