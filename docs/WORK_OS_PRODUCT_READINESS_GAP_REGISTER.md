@@ -4,7 +4,7 @@
 
 **Scope:** whole-repository static production-readiness audit; registered routes, launch navigation, runtime state/data seams, Supabase migrations/policies, auth, operations, and build-quality baseline
 
-**Roadmap control:** **PHASE 5 — COMPLETE. PHASE 6 — IN PROGRESS. P6-1 — COMPLETE / production verified. P6-2 — NEXT. PHASE 7 — BLOCKED.** QA-1 through QA-4 passed Phase 5 production verification, and P6-1 production QA passed for Employee, Org Admin, and Platform Admin route containment. No P6-2 work, Phase 7/8 schema, or broad remediation was performed in this closeout.
+**Roadmap control:** **PHASE 5 — COMPLETE. PHASE 6 — IN PROGRESS. P6-1 — COMPLETE / production verified. P6-2 — COMPLETE. P6-3 — COMPLETE / production and Preview manually verified. P6-4 — COMPLETE / production verified. P6-5 — NEXT. PHASE 7 — BLOCKED.** QA-1 through QA-4 passed Phase 5 production verification, and the bounded Phase 6 gates through P6-4 have passed their recorded implementation and production-verification criteria. No P6-5 work, Phase 7/8 schema, or broad remediation was performed in this closeout.
 
 **Authority:** This register is the central production-readiness backlog. Approved product policy remains in `WORK_OS_DECISIONS.md`; this register does not supersede it.
 
@@ -306,7 +306,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-028 | P1 | **P6-2 CLOSED:** current-main measured 31 ESLint errors and 60 warnings in 36 retained prototype files; exact diagnostic identities are protected by the canonical local/CI ratchet | 6 | Shared | Verified 2026-08-28 | Prototype remediation stays with owning phases | `npm run quality` reports zero new/changed baseline identities |
 | GAP-029 | P1 | No browser E2E or real Supabase integration suite | 6/10 | Quality | No | staging/fixtures | critical role journeys automated |
 | GAP-030 | P1 | Custom SMTP/Auth templates/redirect configuration absent | 6/10 | Operations | No | provider/domain access | deliverability lifecycle tests |
-| GAP-031 | P1 | Production error monitoring/release visibility | 6 | Operations | IMPLEMENTED / production verification pending | Authenticated bounded telemetry collector and canonical self-test | captured safe test exception |
+| GAP-031 | P1 | **P6-4 CLOSED — PRODUCTION VERIFIED:** authenticated bounded telemetry collection, structured browser operational-error capture, release/deployment/environment identity, correlation/event ID, and trusted authenticated user identity were verified through a real Production synthetic event; Runtime Log privacy inspection passed | 6 | Operations | Verified 2026-08-31 | Phase 10 alerting, paging/on-call, long-term retention, and distributed tracing remain future hardening | `POST /api/operational-error` returned `202`; safe structured event captured in Vercel Runtime Logs |
 | GAP-032 | P1 | No backup/restore/migration recovery rehearsal evidence | 10 | Operations | No | Supabase plan/runbook | timed restore and integrity proof |
 | GAP-033 | P1 | Canonical forms/dialogs/tables/mobile/accessibility unverified | 6/10 | UX | No | QA tooling | keyboard/screen reader/320px audit |
 | GAP-034 | P2 | Department UI bypasses existing production table | 8 | People | No | repository/mutation semantics | CRUD/RLS/empty/error tests |
@@ -315,7 +315,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-037 | P2 | Account deletion/worker retention policy unresolved | 8/10 | Product | No | founder decision | recorded policy + tests |
 | GAP-038 | P2 | **PHASE 5 CLOSED — QA-1/3/4 VERIFIED:** deactivated organizations are excluded from switching/authorization; no-access state and its sign-out/logout/history behavior passed | 5/6 | Platform | Verified 2026-08-28 | None for Phase 5 | QA-1/3 plus PR #34 re-test |
 | GAP-039 | P2 | Loading/error/empty/retry states inconsistent | 6–8 | Shared | Yes per slice | error contract adoption | forced failure/empty tests |
-| GAP-040 | P2 | Structured-error foundation established; remaining domain adoption stays open for Phase 7/8 | 6 | Shared | Yes for production-foundation paths | structured errors/monitoring | surfaced bounded error + telemetry |
+| GAP-040 | P2 | **P6-4 FOUNDATION PRODUCTION VERIFIED:** bounded production-foundation service adoption is complete for P6-4; remaining per-domain structured-error adoption stays open for Phase 7/8 implementation slices | 6 | Shared | Complete for P6-4 production-foundation paths; not globally closed | Phase 7/8 domain implementation slices | surfaced bounded error + production-verified telemetry |
 | GAP-041 | P2 | Fake waits/toast-only success across canonical and legacy actions | 6–8 | Shared | Yes per slice | real repositories | durable result before success |
 | GAP-042 | P2 | Search/filter/pagination usually client-only | 7/8 | Domains | No | repositories/query contracts | large dataset tests |
 | GAP-043 | P2 | CSV exports lack robust escaping/scale/security review | 8/10 | Reporting/Audit | Yes bounded | production data contract | formula/quote/large export tests |
@@ -460,4 +460,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** **Phase 6 — Production Foundation is IN PROGRESS; P6-1 is COMPLETE / production verified and P6-2 Quality Baseline is NEXT.** Phase 7 remains blocked until all Phase 6 gates pass. Begin P6-2 only through a separately approved task. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. Stop this closeout without implementing P6-2 or Phase 7.
+**Next action:** **Phase 6 — Production Foundation is IN PROGRESS; P6-1 through P6-4 are COMPLETE, with P6-4 production verified, and P6-5 Browser E2E / Critical Auth Smoke Automation is NEXT.** Phase 7 remains blocked until all Phase 6 gates pass. Begin P6-5 only through a separately approved task. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. Stop this closeout without implementing P6-5 or Phase 7.
