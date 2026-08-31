@@ -1,4 +1,10 @@
 import type { LaunchRole } from './types';
+import { captureOperationalError } from '../../observability/telemetry';
+
+function serviceFailure(operation: string, message: string): Error {
+  captureOperationalError(operation, 'service', new Error('trusted service failure'));
+  return new Error(message);
+}
 
 export interface InviteMemberInput {
   email: string;
@@ -23,7 +29,7 @@ export async function deactivateOrganizationMembership(input: DeactivateOrganiza
   const { error } = await supabase.functions.invoke('identity-administration', {
     body: { action: 'deactivate', ...input },
   });
-  if (error) throw new Error('The membership could not be deactivated.');
+  if (error) throw serviceFailure('identity.membership.deactivate', 'The membership could not be deactivated.');
 }
 
 async function administerInvitation(action: 'invite' | 'resend', input: InviteMemberInput): Promise<InvitationResult> {
@@ -31,7 +37,7 @@ async function administerInvitation(action: 'invite' | 'resend', input: InviteMe
   const { data, error } = await supabase.functions.invoke('identity-administration', {
     body: { action, ...input },
   });
-  if (error) throw new Error('The invitation could not be created.');
+  if (error) throw serviceFailure(`identity.invitation.${action}`, 'The invitation could not be created.');
   return typeof data?.correlationId === 'string' ? { correlationId: data.correlationId } : {};
 }
 

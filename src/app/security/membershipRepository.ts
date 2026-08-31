@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase';
 import type { LaunchRole, ValidatedMembership } from './types';
+import { captureOperationalError } from '../../observability/telemetry';
 
 interface MembershipRow {
   id: string;
@@ -22,7 +23,10 @@ export async function listCurrentMemberships(userId: string): Promise<ValidatedM
     .is('deleted_at', null)
     .order('created_at');
 
-  if (error) throw new Error('Unable to load organization access.');
+  if (error) {
+    captureOperationalError('security.memberships.list', 'service', new Error('membership query failed'));
+    throw new Error('Unable to load organization access.');
+  }
 
   return ((data ?? []) as MembershipRow[]).map((row) => {
     const organization = Array.isArray(row.organizations) ? row.organizations[0] : row.organizations;

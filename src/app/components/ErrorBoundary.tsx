@@ -11,7 +11,7 @@
  */
 
 import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { AlertTriangle, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { captureOperationalError } from '../../observability/telemetry';
 
 interface Props {
@@ -24,13 +24,13 @@ interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
-  showDetails: boolean;
+  correlationId: string | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null, showDetails: false };
+    this.state = { hasError: false, error: null, errorInfo: null, correlationId: null };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -38,8 +38,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    captureOperationalError('react.root', 'react', error);
-    this.setState({ errorInfo });
+    const event = captureOperationalError('react.root', 'react', error);
+    this.setState({ errorInfo, correlationId: event.correlationId });
   }
 
   handleReload = () => {
@@ -47,11 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null, showDetails: false });
-  };
-
-  toggleDetails = () => {
-    this.setState(prev => ({ showDetails: !prev.showDetails }));
+    this.setState({ hasError: false, error: null, errorInfo: null, correlationId: null });
   };
 
   render() {
@@ -63,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return this.props.fallback;
     }
 
-    const { error, errorInfo, showDetails } = this.state;
+    const { correlationId } = this.state;
 
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -80,12 +76,10 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
           </div>
 
-          {/* Error message */}
-          {error && (
+          {correlationId && (
             <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 mb-4">
-              <p className="text-sm font-mono text-destructive break-all">
-                {error.message || 'Unknown error'}
-              </p>
+              <p className="text-sm text-muted-foreground">Reference ID</p>
+              <p className="text-sm font-mono break-all">{correlationId}</p>
             </div>
           )}
 
@@ -106,25 +100,6 @@ export class ErrorBoundary extends Component<Props, State> {
             </button>
           </div>
 
-          {/* Stack trace toggle */}
-          {errorInfo && (
-            <div className="border border-border rounded-lg overflow-hidden">
-              <button
-                onClick={this.toggleDetails}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-muted-foreground hover:bg-accent transition-colors"
-              >
-                <span>Technical details</span>
-                {showDetails
-                  ? <ChevronUp className="h-4 w-4" />
-                  : <ChevronDown className="h-4 w-4" />}
-              </button>
-              {showDetails && (
-                <pre className="px-4 pb-4 text-xs text-muted-foreground overflow-auto max-h-48 whitespace-pre-wrap break-all">
-                  {errorInfo.componentStack}
-                </pre>
-              )}
-            </div>
-          )}
         </div>
       </div>
     );

@@ -102,8 +102,7 @@ function SecuredApplication() {
   const initialPath = getDefaultRouteForRole(activeRole ?? 'employee');
   
   return (
-    <ErrorBoundary>
-      <ToastProvider>
+    <ToastProvider>
         <ProtectedShell login={<LoginScreen onLogin={signIn} onRequestPasswordReset={requestPasswordReset} />}>
           <Router initialPath={initialPath} isValidPath={isValidApplicationPath}>
           <ServiceProvider>
@@ -118,13 +117,12 @@ function SecuredApplication() {
           </ServiceProvider>
           </Router>
         </ProtectedShell>
-      </ToastProvider>
-    </ErrorBoundary>
+    </ToastProvider>
   );
 }
 
 export default function App() {
-  return <AuthProvider><AuthEntry /></AuthProvider>;
+  return <ErrorBoundary><AuthProvider><AuthEntry /></AuthProvider></ErrorBoundary>;
 }
 
 function SignedOutUrlGuard() {
