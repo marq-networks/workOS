@@ -1,7 +1,7 @@
+import { createRoot } from 'react-dom/client';
+import App from './app/App.tsx';
+import { installGlobalErrorCapture } from './observability/telemetry';
+import './styles/index.css';
 
-  import { createRoot } from "react-dom/client";
-  import App from "./app/App.tsx";
-  import "./styles/index.css";
-
-  createRoot(document.getElementById("root")!).render(<App />);
-  
+installGlobalErrorCapture();
+createRoot(document.getElementById('root')!).render(<App />);
