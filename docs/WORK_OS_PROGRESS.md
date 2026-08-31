@@ -1,7 +1,7 @@
 # Work OS Progress
 
 **Last updated:** 2026-08-31
-**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** **P6-1 Production Route Containment — COMPLETE / production verified. P6-2 Quality Baseline — COMPLETE. P6-3 Environment + Preview/Staging Safety — COMPLETE / production and Preview manually verified. P6-4 Error + Monitoring Foundation — COMPLETE / production verified. P6-5 Browser E2E / Critical Auth Smoke Automation — NEXT.** Phase 7 remains blocked until every Phase 6 gate passes.
+**Current checkpoint:** **PHASE 5 — COMPLETE. Phase 6 — IN PROGRESS.** **P6-1 Production Route Containment — COMPLETE / production verified. P6-2 Quality Baseline — COMPLETE. P6-3 Environment + Preview/Staging Safety — COMPLETE / production and Preview manually verified. P6-4 Error + Monitoring Foundation — COMPLETE / production verified. P6-5 Browser E2E / Critical Auth Smoke Automation — IMPLEMENTED / CI VERIFICATION REQUIRED.** Phase 7 remains blocked until every Phase 6 gate passes.
 
 **Final closeout:** Production QA verified backend-derived authority for all three launch roles; trusted organization, invitation, membership, and audit behavior; revocation revalidation; bounded authentication and recovery behavior; canonical routing/history; and durable logout protection. PR #33, “Fix canonical browser URL / router history synchronization,” resolved Router/browser URL divergence and was re-tested with the Employee forbidden deep link. PR #34, “Fix sign out from no-organization access state,” restored the existing AuthContext sign-out path and passed production logout, refresh, and history checks. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 
@@ -157,8 +157,8 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
   - **Preview manual QA:** Vercel Preview has neither Supabase variable and therefore does not inherit the Production backend. A real P6-3 Preview deployment reached ERROR / FAIL CLOSED: the build emitted the expected `DeploymentEnvironmentError` requiring an isolated non-production Supabase project and exited with code 1. This confirms policy rejection rather than an unrelated build failure. The controlled fixtures already prove an isolated fake non-production Preview configuration passes and a production-bound Preview fails; no risky live assignment of Production to Preview is required.
   - **Approved environment strategy:** Production uses the production Supabase project; Preview has no backend today and intentionally fails closed; a future Preview may use an explicitly approved isolated non-production project; local development uses developer-selected browser-safe configuration. No dedicated staging Supabase project was purchased or created. If an isolated Preview project is later approved, it will also need its own Edge Function secrets and `APP_URL`; no production Edge Function secret or deployment was changed in P6-3.
 - **P6-4 Error + Monitoring Foundation — COMPLETE / production verified (2026-08-31).** PR #44 passed the GitHub Actions Quality workflow. A Platform Admin used **Send test event** from the canonical Production route `/super/console`; the UI returned `Accepted` with a generated event/correlation ID. The corresponding Vercel Runtime Log showed `POST /api/operational-error` returning `202` and recorded the structured fields `eventType: client_operational_error`, `source: self_test`, `operation: monitoring_self_test`, `route: /super/console`, trusted authenticated `userId`, `release`, `deployment`, and `environment: production`. The request trace showed the collector contacting the configured production Supabase project to validate identity. Manual privacy/security inspection confirmed that the Runtime Log contained no access token, refresh token, email address, raw Supabase session, raw exception message, raw exception stack, raw request body, or client-supplied user identity. This closes the Phase 6 production-monitoring criterion; alerting, paging/on-call, long-term retention, and distributed tracing remain Phase 10 hardening concerns.
-- **P6-5 Browser E2E / Critical Auth Smoke Automation — NEXT.**
-- **P6-6 Initial Bundle + Accessibility Baseline / closeout — pending.**
+- **P6-5 Browser E2E / Critical Auth Smoke Automation — IMPLEMENTED / CI VERIFICATION REQUIRED.** A Chromium-only Playwright suite runs a local production build against deterministic intercepted Supabase Auth and membership responses. It covers signed-out canonicalization, safe invalid login, Employee restoration and containment, Org Admin allowed/default routing, Platform Admin routing, logout/Back safety, and no-organization sign-out. Hard request guards prohibit the Production Supabase and Work OS hosts. GitHub Actions `browser-smoke` is authoritative; the real Supabase integration portion of GAP-029 remains open because no isolated backend exists.
+- **P6-6 Initial Bundle + Accessibility Baseline / closeout — BLOCKED until P6-5 passes.**
 
 ## Known technical state
 - P6-2 current-main measurement: 25 Vitest files / 112 tests passed; the production build passed; strict TypeScript reported 322 diagnostics in 110 files; ESLint reported 31 errors and 60 warnings in 36 files, with errors in 12 files.
@@ -195,14 +195,15 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 - Do not treat route visibility or browser-selected role/org IDs as authorization.
 
 ## Next execution order
-1. **NEXT GATE — Phase 6 / P6-5: Browser E2E / Critical Auth Smoke Automation.** P6-1 through P6-4 are complete; Phase 6 remains in progress and Phase 7 remains blocked.
-2. Phase 7 Core Work Engine.
-3. Phase 8 People + Time + Reporting.
-4. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
-5. Phase 10 hardening and launch.
+1. **CURRENT GATE — Phase 6 / P6-5: Browser E2E / Critical Auth Smoke Automation — IMPLEMENTED / CI VERIFICATION REQUIRED.** P6-1 through P6-4 are complete; Phase 6 remains in progress and Phase 7 remains blocked.
+2. **EXACT NEXT GATE — P6-6 Initial Bundle + Accessibility Baseline / closeout — BLOCKED until P6-5 passes.**
+3. Phase 7 Core Work Engine.
+4. Phase 8 People + Time + Reporting.
+5. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
+6. Phase 10 hardening and launch.
 
 ## Stop rule
-P6-4 is complete and production verified. P6-5 is next; Phase 7 remains blocked until every Phase 6 gate passes.
+P6-5 is implemented but requires authoritative browser-smoke CI verification. P6-6 and Phase 7 remain blocked; do not begin either until the preceding gates pass.
 
 ## Phase 5 repository implementation — 2026-08-18
 - Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.

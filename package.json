@@ -12,6 +12,7 @@
     "lint:baseline": "node scripts/quality-ratchet.mjs lint",
     "quality": "npm run typecheck:baseline && npm run lint:baseline && npm test && npm run build",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "typecheck:baseline": "node scripts/quality-ratchet.mjs typecheck"
   },
@@ -73,6 +74,7 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "@eslint/js": "9.17.0",
     "@tailwindcss/vite": "4.1.12",
     "@types/node": "22.10.2",
