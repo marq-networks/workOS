@@ -1,133 +1,51 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * ERROR BOUNDARY — Global React Error Catch
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Wraps the entire app to catch render-time errors. Without this, any
- * uncaught component exception unmounts the entire app silently.
- *
- * Phase 14 gap closure — added to App.tsx root.
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
-import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { AlertTriangle, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { normalizeOperationalError } from '../../operations/operationalError';
+import { createEventId, reportOperationalError, type TelemetryResult } from '../../operations/telemetry';
 
 interface Props {
   children: ReactNode;
-  /** Optional fallback UI — defaults to the built-in recovery screen */
-  fallback?: ReactNode;
+  report?: (error: ReturnType<typeof normalizeOperationalError>, eventId: string) => Promise<TelemetryResult>;
 }
 
-interface State {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: ErrorInfo | null;
-  showDetails: boolean;
-}
+interface State { hasError: boolean; eventId: string | null }
 
+/** The root recovery boundary deliberately exposes neither exception messages nor stacks. */
 export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null, showDetails: false };
+  state: State = { hasError: false, eventId: null };
+
+  static getDerivedStateFromError(): Partial<State> {
+    return { hasError: true };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<State> {
-    return { hasError: true, error };
+  componentDidCatch(error: Error, _info: ErrorInfo) {
+    const eventId = createEventId();
+    this.setState({ eventId });
+    const normalized = normalizeOperationalError(error, {
+      code: 'react_render_failure', category: 'unknown', severity: 'critical', retryable: true,
+    });
+    void (this.props.report ?? reportOperationalError)(normalized, eventId).catch(() => undefined);
+    if (import.meta.env.DEV) console.error('[ErrorBoundary]', error);
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // In production, send to your error tracking service here:
-    //   Sentry.captureException(error, { extra: errorInfo });
-    console.error('[WorkOS ErrorBoundary]', error, errorInfo);
-    this.setState({ errorInfo });
-  }
-
-  handleReload = () => {
-    window.location.reload();
-  };
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null, showDetails: false });
-  };
-
-  toggleDetails = () => {
-    this.setState(prev => ({ showDetails: !prev.showDetails }));
-  };
+  private retry = () => this.setState({ hasError: false, eventId: null });
+  private reload = () => window.location.reload();
 
   render() {
-    if (!this.state.hasError) {
-      return this.props.children;
-    }
-
-    if (this.props.fallback) {
-      return this.props.fallback;
-    }
-
-    const { error, errorInfo, showDetails } = this.state;
-
+    if (!this.state.hasError) return this.props.children;
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="w-full max-w-lg">
-          {/* Icon + Heading */}
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
-              <AlertTriangle className="h-8 w-8 text-destructive" />
-            </div>
-            <h1 className="text-2xl font-bold mb-2">Something went wrong</h1>
-            <p className="text-muted-foreground text-sm max-w-sm">
-              An unexpected error occurred in the WorkOS interface.
-              Your data is safe — this is a display error only.
-            </p>
+      <main className="min-h-screen bg-background grid place-items-center p-6">
+        <section className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm" role="alert">
+          <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-destructive" aria-hidden="true" />
+          <h1 className="text-2xl font-bold">Work OS could not continue</h1>
+          <p className="mt-2 text-sm text-muted-foreground">An unexpected display error occurred. Try again or reload the page.</p>
+          {this.state.eventId && <p className="mt-3 text-xs text-muted-foreground">Reference: {this.state.eventId}</p>}
+          <div className="mt-6 flex justify-center gap-3">
+            <button type="button" onClick={this.retry} className="rounded-md bg-primary px-4 py-2 text-primary-foreground">Try again</button>
+            <button type="button" onClick={this.reload} className="flex items-center gap-2 rounded-md border px-4 py-2"><RefreshCw className="h-4 w-4" />Reload</button>
           </div>
-
-          {/* Error message */}
-          {error && (
-            <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4 mb-4">
-              <p className="text-sm font-mono text-destructive break-all">
-                {error.message || 'Unknown error'}
-              </p>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex flex-col gap-3 mb-4">
-            <button
-              onClick={this.handleReset}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              Try Again
-            </button>
-            <button
-              onClick={this.handleReload}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-card border border-border rounded-lg hover:bg-accent transition-colors text-sm"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Reload Page
-            </button>
-          </div>
-
-          {/* Stack trace toggle */}
-          {errorInfo && (
-            <div className="border border-border rounded-lg overflow-hidden">
-              <button
-                onClick={this.toggleDetails}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm text-muted-foreground hover:bg-accent transition-colors"
-              >
-                <span>Technical details</span>
-                {showDetails
-                  ? <ChevronUp className="h-4 w-4" />
-                  : <ChevronDown className="h-4 w-4" />}
-              </button>
-              {showDetails && (
-                <pre className="px-4 pb-4 text-xs text-muted-foreground overflow-auto max-h-48 whitespace-pre-wrap break-all">
-                  {errorInfo.componentStack}
-                </pre>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+        </section>
+      </main>
     );
   }
 }
