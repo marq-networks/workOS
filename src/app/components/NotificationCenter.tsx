@@ -127,6 +127,7 @@ export function NotificationCenter({ onNavigate }: NotificationCenterProps) {
         size="icon"
         className="relative"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Close notifications' : 'Open notifications'}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
@@ -170,6 +171,7 @@ export function NotificationCenter({ onNavigate }: NotificationCenterProps) {
                 size="icon"
                 className="h-7 w-7"
                 onClick={() => setIsOpen(false)}
+                aria-label="Close notifications"
               >
                 <X className="h-4 w-4" />
               </Button>

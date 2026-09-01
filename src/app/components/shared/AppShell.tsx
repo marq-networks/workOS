@@ -80,6 +80,7 @@ export function AppShell({
             size="icon"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="h-8 w-8"
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -179,6 +180,7 @@ export function AppShell({
               variant="ghost"
               size="icon"
               onClick={toggleDarkMode}
+              aria-label={darkMode ? 'Use light theme' : 'Use dark theme'}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
