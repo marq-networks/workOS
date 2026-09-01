@@ -2,6 +2,7 @@ import { expect, type BrowserContext, type Page } from '@playwright/test';
 
 export const SYNTHETIC_SUPABASE_ORIGIN = 'https://aaaaaaaaaaaaaaaaaaaa.supabase.co';
 const STORAGE_KEY = 'sb-aaaaaaaaaaaaaaaaaaaa-auth-token';
+const SEED_MARKER_KEY = 'work-os-e2e-auth-session-seeded';
 const FORBIDDEN_HOSTS = new Set([
   'zabpmtkzqetroiwbbofh.supabase.co',
   'work-os-ashen-xi.vercel.app',
@@ -83,7 +84,12 @@ export async function installSyntheticSupabase(page: Page, identity: SyntheticId
 
   if (identity !== 'signed_out') {
     const session = sessionFor(identity);
-    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [STORAGE_KEY, JSON.stringify(session)] as const);
+    await page.addInitScript(([storageKey, markerKey, value]) => {
+      if (sessionStorage.getItem(markerKey) === null) {
+        localStorage.setItem(storageKey, value);
+        sessionStorage.setItem(markerKey, 'true');
+      }
+    }, [STORAGE_KEY, SEED_MARKER_KEY, JSON.stringify(session)] as const);
   }
 
   return async () => expect(unexpectedRequests, 'The local E2E browser contacted a forbidden Production host').toEqual([]);
