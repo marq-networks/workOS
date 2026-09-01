@@ -80,7 +80,8 @@
         "typescript-eslint": "8.18.1",
         "vite": "6.3.5",
         "vitest": "2.1.8",
-        "@playwright/test": "1.55.0"
+        "@playwright/test": "1.55.0",
+        "@axe-core/playwright": "4.10.2"
       },
       "peerDependencies": {
         "react": "18.3.1",
@@ -8601,6 +8602,25 @@
       ],
       "engines": {
         "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+      }
+    },
+    "node_modules/@axe-core/playwright": {
+      "version": "4.10.2",
+      "resolved": "https://registry.npmjs.org/@axe-core/playwright/-/playwright-4.10.2.tgz",
+      "dev": true,
+      "dependencies": {
+        "axe-core": "4.10.2"
+      },
+      "peerDependencies": {
+        "playwright-core": ">= 1.0.0"
+      }
+    },
+    "node_modules/axe-core": {
+      "version": "4.10.2",
+      "resolved": "https://registry.npmjs.org/axe-core/-/axe-core-4.10.2.tgz",
+      "dev": true,
+      "engines": {
+        "node": ">=4"
       }
     }
   }

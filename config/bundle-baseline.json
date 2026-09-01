@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "measurement": {
+    "gzipLevel": 9,
+    "warningThresholdBytes": 500000,
+    "tolerancePercent": 2
+  },
+  "baseline": {
+    "totalJsRawBytes": 2900860,
+    "totalJsGzipBytes": 671670,
+    "largestJsRawBytes": 2900860,
+    "largestJsGzipBytes": 671670,
+    "totalCssRawBytes": 176990,
+    "totalCssGzipBytes": 25570,
+    "jsChunkCount": 1,
+    "jsChunksAbove500kB": 1
+  },
+  "ceilings": {
+    "totalJsRawBytes": 2958878,
+    "totalJsGzipBytes": 685104,
+    "largestJsRawBytes": 2958878,
+    "largestJsGzipBytes": 685104,
+    "totalCssRawBytes": 180530,
+    "totalCssGzipBytes": 26082
+  }
+}

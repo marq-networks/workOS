@@ -10,11 +10,12 @@
     "dev": "vite",
     "lint": "eslint .",
     "lint:baseline": "node scripts/quality-ratchet.mjs lint",
-    "quality": "npm run typecheck:baseline && npm run lint:baseline && npm test && npm run build",
+    "quality": "npm run typecheck:baseline && npm run lint:baseline && npm test && npm run build && npm run check:bundle",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
-    "typecheck:baseline": "node scripts/quality-ratchet.mjs typecheck"
+    "typecheck:baseline": "node scripts/quality-ratchet.mjs typecheck",
+    "check:bundle": "node scripts/check-bundle-baseline.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -89,7 +90,8 @@
     "typescript": "5.7.2",
     "typescript-eslint": "8.18.1",
     "vitest": "2.1.8",
-    "vite": "6.3.5"
+    "vite": "6.3.5",
+    "@axe-core/playwright": "4.10.2"
   },
   "peerDependencies": {
     "react": "18.3.1",
