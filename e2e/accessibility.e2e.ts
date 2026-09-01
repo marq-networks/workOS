@@ -35,6 +35,9 @@ for (const surface of surfaces) {
 test('login controls and the authenticated profile menu are keyboard reachable', async ({ page }) => {
   let assertSafe = await installSyntheticSupabase(page, 'signed_out');
   await page.goto('/login');
+  await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeDisabled();
+  await page.getByLabel('Email').fill('keyboard-user@example.invalid');
+  await page.getByLabel('Password', { exact: true }).fill('synthetic-password');
   await page.getByLabel('Email').focus();
   await expect(page.getByLabel('Email')).toBeFocused();
   await page.keyboard.press('Tab');
