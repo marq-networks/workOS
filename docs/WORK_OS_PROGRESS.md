@@ -1,7 +1,16 @@
 # Work OS Progress
 
 **Last updated:** 2026-09-02
-**Current checkpoint:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE. PHASE 7 — IN PROGRESS. P7-1 — IMPLEMENTED / REMOTE + AUTHORITATIVE VERIFICATION REQUIRED.** The bounded Project/Task database, RLS, repository, application hook, canonical `/work/projects` and `/work/tasks` integration, and focused local tests exist. The migration has not been applied remotely; authoritative database/security and GitHub CI evidence remains required. Phase 8 remains blocked.
+**Current checkpoint:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE. PHASE 7 — IN PROGRESS. P7-1 — NOT CLOSED / REMOTE VERIFICATION BLOCKED.** The bounded Project/Task migration, RLS, repository, application hook, canonical `/work/projects` and `/work/tasks` integration, and focused local tests exist in the repository. This verification environment had no Supabase credentials or CLI link, no role test credentials, no browser/deployment access, no Docker/Postgres runtime, no GitHub authentication, and outbound access to the intended Supabase endpoint was rejected by the environment proxy. Consequently, the remote migration state, real RLS behavior, durable CRUD/concurrency, browser behavior, security advisors, and authoritative CI were not proved. Phase 8 remains blocked.
+
+## P7-1 verification and closure attempt (2026-09-02)
+
+- **Environment:** repository deployment policy identifies production Supabase project reference `zabpmtkzqetroiwbbofh`, but this runner could not independently authenticate to or inspect that project. No `.env` credential, Supabase access token/database password, linked-project metadata, test-role login, production URL, or browser session was available. An unauthenticated reachability request to `https://zabpmtkzqetroiwbbofh.supabase.co/rest/v1/` failed at the environment CONNECT proxy with HTTP 403 before reaching Supabase. Project identity and remote migration presence therefore remain **unverified**, not absent.
+- **Remote database, tenant/RLS, role, CRUD, and concurrency gates:** **BLOCKED.** The runner could not query remote catalogs, apply safe transactional verification data, execute `supabase/tests/p7_1_work_rls.sql`, exercise the canonical repository with real sessions, or perform the required stale-client write. Source and fixture assertions were reviewed but are not substituted for remote evidence.
+- **Production UI authority inspection:** canonical route wrappers load `WorkProductionScreen`, whose `useWork` hook loads only `supabaseWorkRepository` for Project/Task operations. That hook clears Projects, Tasks, and assignees before each scope reload and rejects late prior-scope responses. No `localStorage`, fake delay, seeded fallback, `ExecutionOS`, or Work mock import occurs on this migrated path. Retained `workMockData`, `ExecutionOSContext`, and `ExecutionOSMockService` remain reachable only from unconverted Work surfaces and keep GAP-018/GAP-019 open.
+- **Browser gate:** **BLOCKED.** No production application URL, Employee/Org Admin credentials for two organizations, or browser session was supplied, so sign-in, refresh persistence, mutation, navigation/re-entry, and organization-switch behavior were not claimed.
+- **Local regression evidence:** focused P7-1 Vitest passed 3 files / 10 tests; the full Vitest suite passed 32 files / 147 tests; the baseline TypeScript ratchet passed with no new diagnostic identities; the baseline ESLint ratchet passed with 87/87 accepted diagnostics. Raw `tsc --noEmit` still reports 310 retained diagnostics, and raw ESLint reports 87 problems (27 errors, 60 warnings), so neither raw command is green. The production build passed after transforming 2,628 modules, with the existing mixed dynamic/static Supabase import and over-500-kB chunk warnings.
+- **Closure decision:** GAP-017, GAP-018, GAP-019, and GAP-054 remain **IN PROGRESS / NOT CLOSED**. P7-1 must not advance until an authorized operator supplies remote access and role/browser credentials and records actual schema, RLS, CRUD, stale-write, persistence, organization-switch, advisor, and authoritative CI results.
 
 ## P7-1 implementation record (2026-09-02)
 
@@ -205,14 +214,14 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 
 ## Next execution order
 1. **CURRENT STATUS — Phase 6 Production Foundation — COMPLETE.** P6-1 through P6-6 are complete; P6-6 passed authoritative GitHub `Quality` and `browser-smoke` CI.
-2. **EXACT NEXT PHASE — Phase 7 Core Work Engine — NEXT / NOT STARTED.**
-3. No Phase 7 implementation has begun.
+2. **CURRENT SLICE — P7-1 Project/Task vertical slice — NOT CLOSED / REMOTE VERIFICATION BLOCKED.**
+3. Do not begin P7-2 until the P7-1 remote, browser, and authoritative CI gates recorded above pass.
 4. Phase 8 People + Time + Reporting.
 5. Resolve OQ-004/OQ-005 before Phase 9 sensitive/Finance advanced modules.
 6. Phase 10 hardening and launch.
 
 ## Stop rule
-P6-1 through P6-6 and Phase 6 are complete. Phase 7 is next but has not started. This documentation closeout performs no Phase 7 implementation.
+P6-1 through P6-6 and Phase 6 are complete. P7-1 is implemented in the repository but is not closed because required remote proof was unavailable. Stop before P7-2 and do not infer remote correctness from local artifacts.
 
 ## Phase 5 repository implementation — 2026-08-18
 - Added Supabase Auth session lifecycle, membership-derived Organization context, and protected-shell state flow.

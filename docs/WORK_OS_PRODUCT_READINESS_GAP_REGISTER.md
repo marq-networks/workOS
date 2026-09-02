@@ -4,7 +4,7 @@
 
 **Scope:** whole-repository static production-readiness audit; registered routes, launch navigation, runtime state/data seams, Supabase migrations/policies, auth, operations, and build-quality baseline
 
-**Roadmap control:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE. P6-1 THROUGH P6-6 — COMPLETE. P6-6 — COMPLETE / authoritative GitHub CI verified. PHASE 7 — NEXT / NOT STARTED.** QA-1 through QA-4 passed Phase 5 production verification, and all bounded Phase 6 gates passed their recorded acceptance criteria. No Phase 7/8 schema or broad remediation was performed; no Phase 7 implementation has begun.
+**Roadmap control:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE. PHASE 7 — IN PROGRESS. P7-1 — NOT CLOSED / REMOTE VERIFICATION BLOCKED.** QA-1 through QA-4 passed Phase 5 production verification, and all bounded Phase 6 gates passed their recorded acceptance criteria. P7-1 repository artifacts and local checks exist, but the 2026-09-02 closure runner lacked remote Supabase, role/browser, local database, and GitHub access; no live P7-1 proof or closure is claimed.
 
 **Authority:** This register is the central production-readiness backlog. Approved product policy remains in `WORK_OS_DECISIONS.md`; this register does not supersede it.
 
@@ -292,9 +292,9 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-014 | P1 | Downstream domain stores do not invalidate/scope on organization switch | 6–8 | Shared | No | production query boundary | no stale/cross-org data test |
 | GAP-015 | P1 | **PHASE 5 CLOSED — QA-1 VERIFIED:** canonical Organizations uses authoritative reads and trusted create/update/deactivate; fake platform organization data no longer governs this slice | 5/6 | Platform | Verified 2026-08-28 | Broader settings remain GAP-016 | QA-1 persistence/audit/context evidence |
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
-| GAP-017 | P1 | P7-1 Project/Task schema, repository, persistence path, RLS, and tests implemented; remote authoritative verification required | 7 | Work | In progress; not closed | Remote apply/policy/CI evidence | secure project/task vertical slice |
-| GAP-018 | P1 | Canonical Projects/Tasks use one Supabase repository without dual writes; mock context/service remain for unconverted Work surfaces | 7 | Work | In progress; not closed | Later Work parity gates | parity and single-authority proof |
-| GAP-019 | P1 | P7-1 stabilizes a bounded typed Project/Task contract and canonical runtime; broader Work parity remains | 7 | Work | In progress; not closed | Authoritative verification and later parity | focused browser flows during Work implementation |
+| GAP-017 | P1 | P7-1 Project/Task schema source, repository, persistence path, RLS artifacts, and tests exist; the 2026-09-02 closure pass could not inspect the remote schema/policies or execute real tenant/CRUD/concurrency/browser proof | 7 | Work | In progress; not closed | Supabase credentials/link, role accounts, remote DB/RLS/CRUD proof, browser proof, advisors, authoritative CI | secure project/task vertical slice |
+| GAP-018 | P1 | Static production-path inspection confirms canonical Projects/Tasks use one Supabase repository without dual writes or fallback; mock context/service remain authoritative for unconverted Work surfaces | 7 | Work | In progress; not closed | Live persistence proof plus later Work parity gates | parity and single-authority proof |
+| GAP-019 | P1 | P7-1 stabilizes a bounded typed Project/Task contract and canonical runtime; remote/browser verification was blocked and broader Work parity remains explicitly deferred | 7 | Work | In progress; not closed | Authorized remote/browser verification and later parity | focused browser flows during Work implementation |
 | GAP-020 | P1 | Time has no production model/repository/RLS | 8 | Time | No | Phase 7 gate/policy | scoped session/entry vertical slice |
 | GAP-021 | P1 | Correction/review workflow is simulated and unaudited | 8 | Time | No | GAP-020 | atomic transition/concurrency/audit |
 | GAP-022 | P1 | Essential Reports is static/mock simulated generation | 8 | Reporting | No | production domain sources | accuracy/download/error E2E |
@@ -329,7 +329,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-051 | P2 | No structured logs/correlation IDs/health checks | 6/10 | Operations | No | observability contract | trace synthetic failure end-to-end |
 | GAP-052 | P2 | Client-generated audit-like events confuse trusted audit | 8 | Audit | No | audit/activity separation | provenance contract/test |
 | GAP-053 | P2 | Prototype Employee duplicate identity models risk integrity | 8 | People | No | lifecycle mapping | uniqueness/FK/migration tests |
-| GAP-054 | P2 | P7-1 Work Project/Task FK, scope, lifecycle, timestamp and optimistic-concurrency semantics implemented; remote DB proof and Time remain | 7/8 | Work/Time | In progress; not closed | Remote Work proof and Phase 8 Time schema | DB constraint/transaction tests |
+| GAP-054 | P2 | P7-1 migration source defines Work Project/Task FK, scope, lifecycle, timestamp and optimistic-concurrency semantics, but actual remote constraints and stale-write rejection were not inspectable; Phase 8 Time also remains | 7/8 | Work/Time | In progress; not closed | Authorized remote Work catalog/transaction proof and Phase 8 Time schema | DB constraint/transaction tests |
 | GAP-055 | P3 | Login portal advertises deferred Finance/leave/analytics features | 6 | UX | Yes | approved launch copy | content review |
 | GAP-056 | P3 | Mock notification count and chat dock appear in launch shell | 6/9 | UX/Communication | Yes | containment choice | launch composition test |
 | GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | OPEN — intentionally retained; production reachability containment does not justify deletion | import graph | zero production imports |
@@ -460,4 +460,4 @@ Work OS is production-ready only when all P0/P1 findings are closed with linked 
 
 ## 29. Exact next action and stop
 
-**Next action:** **Phase 6 — Production Foundation is COMPLETE; P6-1 through P6-6 are COMPLETE, and P6-6 Initial Bundle + Accessibility Baseline / closeout is COMPLETE / authoritative GitHub CI verified. Phase 7 — Core Work Engine is NEXT / NOT STARTED.** GitHub Actions Quality run #106 (run ID `33559814461`) passed `quality` job `100029328887` and `browser-smoke` job `100029701985`. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; this external dependency does not reopen Phase 5. No Phase 7 implementation has begun; stop without implementing Phase 7.
+**Next action:** **Phase 6 is COMPLETE. Phase 7 is IN PROGRESS, but P7-1 is NOT CLOSED because the required remote Supabase, role, repository, concurrency, browser, advisor, and authoritative CI proof was unavailable in the 2026-09-02 closure runner.** Supply controlled access, execute and record those gates, and reassess GAP-017/018/019/054 separately. Do not begin P7-2. Before production launch, upgrade the Supabase project to a supporting plan and enable Leaked Password Protection; that external dependency does not reopen Phase 5.
