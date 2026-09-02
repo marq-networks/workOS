@@ -1,7 +1,16 @@
 # Work OS Progress
 
 **Last updated:** 2026-09-02
-**Current checkpoint:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE.** **P6-1 Production Route Containment — COMPLETE / production verified. P6-2 Quality Baseline — COMPLETE. P6-3 Environment + Preview/Staging Safety — COMPLETE / production and Preview manually verified. P6-4 Error + Monitoring Foundation — COMPLETE / production verified. P6-5 Browser E2E / Critical Auth Smoke Automation — COMPLETE / authoritative GitHub `browser-smoke` CI passed. P6-6 Initial Bundle + Accessibility Baseline / closeout — COMPLETE / authoritative GitHub CI verified.** **Phase 7 — NEXT / NOT STARTED. No Phase 7 implementation has begun.**
+**Current checkpoint:** **PHASE 5 — COMPLETE. PHASE 6 — COMPLETE. PHASE 7 — IN PROGRESS. P7-1 — IMPLEMENTED / REMOTE + AUTHORITATIVE VERIFICATION REQUIRED.** The bounded Project/Task database, RLS, repository, application hook, canonical `/work/projects` and `/work/tasks` integration, and focused local tests exist. The migration has not been applied remotely; authoritative database/security and GitHub CI evidence remains required. Phase 8 remains blocked.
+
+## P7-1 implementation record (2026-09-02)
+
+- Added production `projects` and `tasks` with tenant/organization consistency, project and assignee scoped FKs, bounded lifecycle checks, non-destructive archive, useful indexes, trusted creator references, timestamps, and compare-on-`updated_at` stale-write behavior.
+- Forced RLS grants Employees only their assigned Tasks and minimum parent Projects; Employees can change only assigned Task status/progress. Org Admin authority is active-membership and organization scoped. Platform Admin has no implicit Work access.
+- Important Org Admin creates, updates, assignment changes, and archives write audit evidence in the protected database trigger using `auth.uid()` and backend membership; the browser does not create audit rows.
+- Added a framework-free Work repository contract, Supabase adapter, structured operational errors, and a Work application hook. Organization changes synchronously clear old results, reload the new validated scope, and ignore late old-scope results.
+- Canonical `/work/projects` and `/work/tasks` now use this production authority, with loading, empty, error/retry, durable mutation, and role-appropriate control states. `ExecutionOSContext`, `ExecutionOSMockService`, and mock data remain only for unconverted Work surfaces; migrated Project/Task operations do not dual-write or fall back.
+- Added focused Vitest contract coverage and a transactional pgTAP RLS suite. Local Supabase policy execution, remote deployment/advisors, browser verification, and authoritative CI are not yet claimed. GAP-017, GAP-018, GAP-019, and GAP-054 remain open until that evidence passes and later parity work completes.
 
 **Final closeout:** Production QA verified backend-derived authority for all three launch roles; trusted organization, invitation, membership, and audit behavior; revocation revalidation; bounded authentication and recovery behavior; canonical routing/history; and durable logout protection. PR #33, “Fix canonical browser URL / router history synchronization,” resolved Router/browser URL divergence and was re-tested with the Employee forbidden deep link. PR #34, “Fix sign out from no-organization access state,” restored the existing AuthContext sign-out path and passed production logout, refresh, and history checks. Remote migration `20260819180940`, RLS, and the trusted administration functions remain unchanged.
 

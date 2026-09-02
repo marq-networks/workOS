@@ -13,7 +13,7 @@ This roadmap reports evidence, not aspirational completion. Phase 0 and cloud Tr
 | 4. Technical Architecture | COMPLETE | Founder approved `WORK_OS_PHASE_4_TECHNICAL_ARCHITECTURE.md` on 2026-08-19; layer boundaries, Auth/organization contexts, data/state rules, browser/server split, validation/error model, trusted audit, and mock-migration strategy are locked. |
 | 5. Database / Security / RBAC | COMPLETE | Production QA verified the approved Auth, tenancy, membership, RLS, launch-role, and trusted audit foundation. |
 | 6. Production Foundation | COMPLETE | P6-1 through P6-6 are complete; P6-6 passed authoritative GitHub `Quality` and `browser-smoke` verification. |
-| 7. Core Work Engine | NEXT / NOT STARTED | Phase 6 acceptance gates have passed. No Phase 7 implementation has begun. |
+| 7. Core Work Engine | IN PROGRESS | **P7-1 IMPLEMENTED / REMOTE + AUTHORITATIVE VERIFICATION REQUIRED:** the bounded Project/Task slice is implemented; deployment, remote RLS verification, security advisors, and authoritative CI remain required. |
 | 8. People + Time + Reporting | BLOCKED | Core identity/hierarchy/time implementation is secured end-to-end. |
 | 9. Advanced Modules | BLOCKED | OQ-004/OQ-005 and other advanced-module policy decisions are approved after core dependencies. |
 | 10. Hardening & Launch | BLOCKED | Threat/performance/accessibility/recovery testing and launch runbooks pass. |
@@ -122,7 +122,11 @@ Phase 5 must not add Finance, payroll, fines, surveillance/productivity, advance
 ## Phases 5–10 — execution slices
 1. **Phase 5 — COMPLETE:** Auth/tenancy/RBAC foundation, Supabase session, protected shell, organization selection, memberships, deny-by-default RLS, policy tests, and production QA-1 through QA-4.
 2. **Phase 6 — COMPLETE:** P6-1 Production Route Containment, P6-2 Quality Baseline, P6-3 Environment + Preview/Staging Safety, P6-4 Error + Monitoring Foundation, P6-5 Browser E2E / Critical Auth Smoke Automation, and P6-6 Initial Bundle + Accessibility Baseline / closeout are complete. P6-6 passed authoritative GitHub `Quality` and `browser-smoke` CI.
-3. Phase 7: Work vertical slice — project/task lifecycle with audit events.
+3. **Phase 7 — IN PROGRESS:** P7-1 bounded Project/Task lifecycle, repository, canonical-screen integration, RLS and audit artifacts are implemented locally; authoritative remote and CI verification is still required.
+
+### Phase 7 — P7-1 status
+
+**P7-1 — IMPLEMENTED / REMOTE + AUTHORITATIVE VERIFICATION REQUIRED (2026-09-02).** A forward-only migration defines the first production `projects` and `tasks` slice with organization-consistent foreign keys, active-member assignment, bounded states, archive lifecycle, timestamps, optimistic concurrency, forced RLS, Employee assigned-task access, organization-scoped Org Admin management, no implicit Platform Admin access, and database-triggered trusted audit evidence. A domain-owned typed repository and application hook now power only canonical `/work/projects` and `/work/tasks`, clearing data and rejecting late results when validated organization scope changes. Broader Milestone/Assignment capability and unconverted Work screens continue using the retained prototype context/service and remain later Phase 7 gates. Local code and fixture tests do not close P7-1: remote migration/policy execution, Supabase security advisors, and authoritative GitHub CI are outstanding.
 4. Phase 8: People + Time + reporting production slices.
 5. Resolve OQ-004/OQ-005 before sensitive workforce or Finance implementation; then evaluate Phase 9 advanced modules.
 6. Phase 10 hardening: accessibility, threat model, performance budgets, backups/recovery, observability, incident and launch runbooks.
