@@ -60,7 +60,7 @@ describe('Supabase Work repository',()=>{
     query.maybeSingle.mockResolvedValue({data:taskRow(status,40),error:null});
     const result=await supabaseWorkRepository.updateTask(currentTask(from,40),{status});
     expect(query.update).toHaveBeenCalledTimes(1);
-    expect(query.update).toHaveBeenCalledWith(expect.objectContaining({status,progress:undefined}));
+    expect(query.update).toHaveBeenCalledWith(expect.objectContaining({status,progress:40}));
     expect(result.progress).toBe(40);
   });
   it('returns the normalized persisted value on refresh after reopening',async()=>{
