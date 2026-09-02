@@ -48,6 +48,19 @@ describe('Supabase Work repository',()=>{
     const result=await supabaseWorkRepository.updateTask(current,{status:'completed',progress:40});
     expect(query.update).toHaveBeenCalledWith(expect.objectContaining({status:'completed',progress:100})); expect(query.eq).toHaveBeenCalledWith('updated_at','old'); expect(result.progress).toBe(100);
   });
+  it('normalizes positive todo progress to in progress in one update',async()=>{
+    query.maybeSingle.mockResolvedValue({data:taskRow('in_progress',35),error:null});
+    const result=await supabaseWorkRepository.updateTask(currentTask('todo',0),{progress:35});
+    expect(query.update).toHaveBeenCalledTimes(1);
+    expect(query.update).toHaveBeenCalledWith(expect.objectContaining({status:'in_progress',progress:35}));
+    expect(query.eq).toHaveBeenCalledWith('updated_at','old');
+    expect(result).toEqual(expect.objectContaining({status:'in_progress',progress:35}));
+  });
+  it('refreshes the authoritative auto-started task',async()=>{
+    query.order.mockResolvedValue({data:[taskRow('in_progress',35,'auto-start-version')],error:null});
+    const refreshed=await supabaseWorkRepository.listTasks({tenantId:'t1',organizationId:'o1',membershipId:'m1'});
+    expect(refreshed[0]).toEqual(expect.objectContaining({status:'in_progress',progress:35,updatedAt:'auto-start-version'}));
+  });
   it.each(['in_progress','blocked','todo'] as const)('resets completed tasks to 0 when reopened as %s in one repository update',async(status)=>{
     query.maybeSingle.mockResolvedValue({data:taskRow(status,0),error:null});
     const result=await supabaseWorkRepository.updateTask(currentTask('completed',100),{status});

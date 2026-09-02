@@ -1,4 +1,5 @@
 import type { WorkTask, WorkRepository } from './types';
+import { progressChangePatch } from './taskLifecycle';
 
 export function parseProgressDraft(draft: string): number | null {
   if (draft.trim() === '') return null;
@@ -17,7 +18,7 @@ export async function commitTaskProgress(
   if (progress === task.progress) return task;
 
   try {
-    return await updateTask(task, { progress });
+    return await updateTask(task, progressChangePatch(task, progress));
   } catch (error) {
     await reload();
     throw error;
