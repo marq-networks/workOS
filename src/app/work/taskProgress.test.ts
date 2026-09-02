@@ -5,6 +5,11 @@ import type { WorkTask } from './types';
 const task: WorkTask={id:'task-1',projectId:'project-1',projectName:'Launch',title:'Ship',description:null,status:'in_progress',progress:0,assigneeMembershipId:'member-1',organizationId:'org-1',tenantId:'tenant-1',createdAt:'created',updatedAt:'version-1'};
 
 describe('task progress commit',()=>{
+  it('auto-starts todo progress with one authoritative update',async()=>{
+    const todo={...task,status:'todo' as const}; const saved={...todo,status:'in_progress' as const,progress:35,updatedAt:'version-2'}; const update=vi.fn().mockResolvedValue(saved);
+    await expect(commitTaskProgress(todo,'35',update,vi.fn())).resolves.toBe(saved);
+    expect(update).toHaveBeenCalledTimes(1); expect(update).toHaveBeenCalledWith(todo,{status:'in_progress',progress:35});
+  });
   it('keeps intermediate typing local and sends only the committed 40',async()=>{
     expect(parseProgressDraft('4')).toBe(4); expect(parseProgressDraft('40')).toBe(40);
     const saved={...task,progress:40,updatedAt:'version-2'}; const update=vi.fn().mockResolvedValue(saved); const reload=vi.fn();
