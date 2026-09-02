@@ -292,9 +292,9 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-014 | P1 | Downstream domain stores do not invalidate/scope on organization switch | 6–8 | Shared | No | production query boundary | no stale/cross-org data test |
 | GAP-015 | P1 | **PHASE 5 CLOSED — QA-1 VERIFIED:** canonical Organizations uses authoritative reads and trusted create/update/deactivate; fake platform organization data no longer governs this slice | 5/6 | Platform | Verified 2026-08-28 | Broader settings remain GAP-016 | QA-1 persistence/audit/context evidence |
 | GAP-016 | P1 | Organization settings are prototype/local | 6 | Platform | No | trusted update boundary | validation/RLS/audit E2E |
-| GAP-017 | P1 | Work has no production repository/schema/persistence | 7 | Work | No | Phases 5–6 gates | secure project/task vertical slice |
-| GAP-018 | P1 | Three Work state owners diverge | 7 | Work | No | GAP-017/contract choice | parity and single-authority proof |
-| GAP-019 | P1 | Canonical Work compile/lint debt is contained by the P6-2 ratchet; runtime/contract stabilization remains deferred | 7 | Work | No Phase 7 work started | Phase 6 gates and contract stabilization | focused browser flows during Work implementation |
+| GAP-017 | P1 | P7-1 Project/Task schema, repository, persistence path, RLS, and tests implemented; remote authoritative verification required | 7 | Work | In progress; not closed | Remote apply/policy/CI evidence | secure project/task vertical slice |
+| GAP-018 | P1 | Canonical Projects/Tasks use one Supabase repository without dual writes; mock context/service remain for unconverted Work surfaces | 7 | Work | In progress; not closed | Later Work parity gates | parity and single-authority proof |
+| GAP-019 | P1 | P7-1 stabilizes a bounded typed Project/Task contract and canonical runtime; broader Work parity remains | 7 | Work | In progress; not closed | Authoritative verification and later parity | focused browser flows during Work implementation |
 | GAP-020 | P1 | Time has no production model/repository/RLS | 8 | Time | No | Phase 7 gate/policy | scoped session/entry vertical slice |
 | GAP-021 | P1 | Correction/review workflow is simulated and unaudited | 8 | Time | No | GAP-020 | atomic transition/concurrency/audit |
 | GAP-022 | P1 | Essential Reports is static/mock simulated generation | 8 | Reporting | No | production domain sources | accuracy/download/error E2E |
@@ -329,7 +329,7 @@ Every finding has severity, category, roadmap phase, owner, safe-now decision, d
 | GAP-051 | P2 | No structured logs/correlation IDs/health checks | 6/10 | Operations | No | observability contract | trace synthetic failure end-to-end |
 | GAP-052 | P2 | Client-generated audit-like events confuse trusted audit | 8 | Audit | No | audit/activity separation | provenance contract/test |
 | GAP-053 | P2 | Prototype Employee duplicate identity models risk integrity | 8 | People | No | lifecycle mapping | uniqueness/FK/migration tests |
-| GAP-054 | P2 | Work/Time lack FK, uniqueness, timestamp/concurrency semantics | 7/8 | Work/Time | No | approved schemas | DB constraint/transaction tests |
+| GAP-054 | P2 | P7-1 Work Project/Task FK, scope, lifecycle, timestamp and optimistic-concurrency semantics implemented; remote DB proof and Time remain | 7/8 | Work/Time | In progress; not closed | Remote Work proof and Phase 8 Time schema | DB constraint/transaction tests |
 | GAP-055 | P3 | Login portal advertises deferred Finance/leave/analytics features | 6 | UX | Yes | approved launch copy | content review |
 | GAP-056 | P3 | Mock notification count and chat dock appear in launch shell | 6/9 | UX/Communication | Yes | containment choice | launch composition test |
 | GAP-057 | P3 | Legacy storage auth/token/role modules remain in source | 6 | Security | OPEN — intentionally retained; production reachability containment does not justify deletion | import graph | zero production imports |
