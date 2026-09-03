@@ -5,8 +5,9 @@ type TaskPatch = Partial<Pick<WorkTask, 'title'|'description'|'status'|'progress
 
 export function normalizedTaskPatch(task: WorkTask, patch: TaskPatch): TaskPatch {
   if (patch.status === 'completed') return { ...patch, progress: 100 };
+  if (patch.status === 'todo') return { ...patch, progress: 0 };
   if (task.status === 'completed' && patch.status && reopenedStatuses.has(patch.status)) return { ...patch, progress: 0 };
-  if (task.status === 'todo' && (patch.progress ?? 0) > 0 && (!patch.status || patch.status === 'todo')) return { ...patch, status: 'in_progress' };
+  if (task.status === 'todo' && (patch.progress ?? 0) > 0 && !patch.status) return { ...patch, status: 'in_progress' };
   if (patch.status && patch.progress === undefined) return { ...patch, progress: task.progress };
   return patch;
 }

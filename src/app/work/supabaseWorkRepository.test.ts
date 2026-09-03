@@ -61,6 +61,12 @@ describe('Supabase Work repository',()=>{
     const refreshed=await supabaseWorkRepository.listTasks({tenantId:'t1',organizationId:'o1',membershipId:'m1'});
     expect(refreshed[0]).toEqual(expect.objectContaining({status:'in_progress',progress:35,updatedAt:'auto-start-version'}));
   });
+  it.each([['in_progress',40],['blocked',40],['completed',100]] as const)('sends status and zero progress together when %s is changed to todo',async(from,progress)=>{
+    query.maybeSingle.mockResolvedValue({data:taskRow('todo',0),error:null});
+    await supabaseWorkRepository.updateTask(currentTask(from,progress),{status:'todo'});
+    expect(query.update).toHaveBeenCalledTimes(1);
+    expect(query.update).toHaveBeenCalledWith(expect.objectContaining({status:'todo',progress:0}));
+  });
   it.each(['in_progress','blocked','todo'] as const)('resets completed tasks to 0 when reopened as %s in one repository update',async(status)=>{
     query.maybeSingle.mockResolvedValue({data:taskRow(status,0),error:null});
     const result=await supabaseWorkRepository.updateTask(currentTask('completed',100),{status});

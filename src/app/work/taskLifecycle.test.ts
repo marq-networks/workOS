@@ -8,6 +8,9 @@ const task = (status: WorkTaskStatus, progress: number): WorkTask => ({
 });
 
 describe('task lifecycle status patches',()=>{
+  it.each([['in_progress',40],['blocked',40],['completed',100]] as const)('resets %s progress to zero when manually changed to todo',(from,progress)=>{
+    expect(statusChangePatch(task(from,progress),'todo')).toEqual({status:'todo',progress:0});
+  });
   it.each(['in_progress','blocked','todo'] as const)('sends status and zero progress together when reopening as %s',(status)=>{
     expect(statusChangePatch(task('completed',100),status)).toEqual({status,progress:0});
   });
