@@ -18,11 +18,11 @@ function KPICard({ title, value, change, changeType = 'neutral', icon }: KPICard
   }[changeType];
 
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="premium-surface group p-5 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/20">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className="text-sm text-muted-foreground">{title}</p>
-          <h3 className="mt-2 text-3xl">{value}</h3>
+          <h3 className="mt-2 text-3xl font-semibold tracking-tight">{value}</h3>
           {change && (
             <p className={`mt-2 text-sm ${changeColor}`}>
               {change}
@@ -30,7 +30,7 @@ function KPICard({ title, value, change, changeType = 'neutral', icon }: KPICard
           )}
         </div>
         {icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/10 bg-primary/5 text-primary">
             {icon}
           </div>
         )}
@@ -58,11 +58,12 @@ export function PageLayout({ title, description, actions, kpis, children, subNav
   return (
     <div className="relative flex h-full">
       <div className="flex-1 overflow-auto">
-        <div className="p-6">
+        <div className="premium-page">
           {/* Page Header */}
-          <div className="mb-6 flex items-start justify-between">
+          <div className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl">{title}</h1>
+              <p className="premium-eyebrow">Work OS</p>
+              <h1 className="premium-title mt-1">{title}</h1>
               {description && (
                 <p className="mt-1 text-muted-foreground">{description}</p>
               )}
@@ -71,11 +72,11 @@ export function PageLayout({ title, description, actions, kpis, children, subNav
           </div>
 
           {/* Sub Navigation */}
-          {subNav && <div className="-mx-6 -mt-6 mb-6">{subNav}</div>}
+          {subNav && <div className="premium-tabs">{subNav}</div>}
 
           {/* KPI Strip */}
           {kpis && kpis.length > 0 && (
-            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="premium-grid">
               {kpis.map((kpi, index) => (
                 <KPICard key={index} {...kpi} />
               ))}

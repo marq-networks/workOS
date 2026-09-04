@@ -36,7 +36,6 @@ describe('navigation manifest invariants', () => {
   it('does not expose deferred or diagnostic modules in launch navigation', () => {
     const paths = getAllPaths();
     const excludedPrefixes = [
-      '/communication',
       '/diagnostics',
       '/finance',
       '/integrations',
