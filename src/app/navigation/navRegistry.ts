@@ -8,6 +8,8 @@
  */
 
 import { type Role } from '../nav/navManifest';
+import { V2AssignmentsScreen, V2DepartmentsScreen, V2MilestonesScreen, V2MyWorkScreen, V2PeopleScreen, V2SessionsScreen, V2TimeEntriesScreen, V2WorkReportsScreen, V2WorkSessionScreen } from '../v2/V2RouteScreens';
+import { V2AgentCenterScreen, V2AiCopilotScreen, V2AutomationScreen, V2CommandCenterScreen, V2CommunicationScreen, V2FilesEvidenceScreen, V2ProjectWorkspaceScreen, V2SearchScreen } from '../v2/Pass3RouteScreens';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // COMPONENT IMPORTS
@@ -17,10 +19,7 @@ import { type Role } from '../nav/navManifest';
 import { WorkMyWorkOS }      from '../components/screens/work/WorkMyWorkOS';
 import { WorkProjectsOS }    from '../components/screens/work/WorkProjectsOS';
 import { WorkTasksOS }       from '../components/screens/work/WorkTasksOS';
-import { WorkMilestonesOS }  from '../components/screens/work/WorkMilestonesOS';
-import { WorkAssignmentsOS } from '../components/screens/work/WorkAssignmentsOS';
 import { WorkCalendarOS }    from '../components/screens/work/WorkCalendarOS';
-import { WorkReportsOS }     from '../components/screens/work/WorkReportsOS';
 import { WorkEmailOS }       from '../components/screens/work/WorkEmailOS';
 
 // Employee Screens
@@ -31,7 +30,6 @@ import { EC02ChannelView } from '../components/screens/employee/EC02ChannelView'
 import { EC03DirectMessages } from '../components/screens/employee/EC03DirectMessages';
 import { E02MyDay } from '../components/screens/employee/E02MyDay';
 import { E03MyActivity } from '../components/screens/employee/E03MyActivity';
-import { E04TimeLogs } from '../components/screens/employee/E04TimeLogs';
 import { E05Leave } from '../components/screens/employee/E05Leave';
 import { ET01MyFines } from '../components/screens/employee/ET01MyFines';
 import { E06ActivityOverview } from '../components/screens/employee/E06ActivityOverview';
@@ -250,9 +248,9 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   { path: '/employee/communicate', component: EC01CommunicateHome, roles: ['employee'] },
   { path: '/employee/communicate/channel', component: EC02ChannelView, roles: ['employee'] },
   { path: '/employee/communicate/dm', component: EC03DirectMessages, roles: ['employee'] },
-  { path: '/employee/my-day', component: E02MyDay, roles: ['employee'] },
+  { path: '/employee/my-day', component: V2WorkSessionScreen, roles: ['employee'] },
   { path: '/employee/my-activity', component: E03MyActivity, roles: ['employee'] },
-  { path: '/employee/time-logs', component: E04TimeLogs, roles: ['employee'] },
+  { path: '/employee/time-logs', component: V2TimeEntriesScreen, roles: ['employee'] },
   { path: '/employee/leave', component: E05Leave, roles: ['employee'] },
   { path: '/employee/my-fines', component: ET01MyFines, roles: ['employee'] },
   { path: '/employee/activity-overview', component: E06ActivityOverview, roles: ['employee'] },
@@ -274,7 +272,7 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   // ═════════════════════════════════════════════════════════════════════
   
   { path: '/admin/dashboard', component: A01AdminDashboard, roles: ['org_admin'] },
-  { path: '/org/admin/dashboard', component: A01AdminDashboard, roles: ['org_admin'] },
+  { path: '/org/admin/dashboard', component: V2CommandCenterScreen, roles: ['org_admin'] },
   { path: '/admin/live-activity', component: A02LiveActivity, roles: ['org_admin'] },
   { path: '/admin/work-home', component: W00WorkHome, roles: ['org_admin'] },
   { path: '/admin/projects', component: W02Projects, roles: ['org_admin'] },
@@ -354,29 +352,30 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   // ═══════════════════════════════════════════════════════════════════════
   
   { path: '/work/home', component: WorkHome, roles: ['employee', 'org_admin'] },
-  { path: '/work/my-work', component: WorkMyWorkOS, roles: ['employee', 'org_admin'] },
+  { path: '/work/my-work', component: V2MyWorkScreen, roles: ['employee', 'org_admin'] },
   { path: '/work/projects', component: WorkProjectsOS, roles: ['employee', 'org_admin'] },
   { path: '/work/tasks', component: WorkTasksOS, roles: ['employee', 'org_admin'] },
-  { path: '/work/milestones', component: WorkMilestonesOS, roles: ['employee', 'org_admin'] },
-  { path: '/work/assignments', component: WorkAssignmentsOS, roles: ['employee', 'org_admin'] },
+  { path: '/work/milestones', component: V2MilestonesScreen, roles: ['employee', 'org_admin'] },
+  { path: '/work/assignments', component: V2AssignmentsScreen, roles: ['employee', 'org_admin'] },
   { path: '/work/calendar', component: WorkCalendarOS, roles: ['employee', 'org_admin'] },
   { path: '/work/email', component: WorkEmailOS, roles: ['employee', 'org_admin'] },
-  { path: '/work/reports', component: WorkReportsOS, roles: ['employee', 'org_admin'] },
+  { path: '/work/reports', component: V2WorkReportsScreen, roles: ['employee', 'org_admin'] },
+  { path: '/work/workspace', component: V2ProjectWorkspaceScreen, roles: ['employee', 'org_admin'] },
   
   // ═══════════════════════════════════════════════════════════════════════
   // PEOPLE DOMAIN ROUTES
   // ═══════════════════════════════════════════════════════════════════════
   
-  { path: '/people/employees', component: A03Users, roles: ['org_admin'] },
+  { path: '/people/employees', component: V2PeopleScreen, roles: ['org_admin'] },
   { path: '/people/members', component: A04Members, roles: ['org_admin'] },
-  { path: '/people/departments', component: A05Departments, roles: ['org_admin'] },
+  { path: '/people/departments', component: V2DepartmentsScreen, roles: ['org_admin'] },
   { path: '/people/roles-access', component: A06RolesAccess, roles: ['org_admin'] },
   
   // ═══════════════════════════════════════════════════════════════════════
   // TIME DOMAIN ROUTES
   // ═══════════════════════════════════════════════════════════════════════
   
-  { path: '/time/tracking', component: W04TimeLogs, roles: ['org_admin'] },
+  { path: '/time/tracking', component: V2TimeEntriesScreen, roles: ['org_admin'] },
   { 
     path: '/time/time-logs',
     roles: ['employee', 'org_admin'],
@@ -388,8 +387,8 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   },
   { path: '/time/my-day', component: E02MyDay, roles: ['employee'] },
   { path: '/time/leave', component: E05Leave, roles: ['employee', 'org_admin'] },
-  { path: '/time/sessions', component: A07Sessions, roles: ['org_admin'] },
-  { path: '/time/corrections', component: A10Corrections, roles: ['org_admin'] },
+  { path: '/time/sessions', component: V2SessionsScreen, roles: ['org_admin'] },
+  { path: '/time/corrections', component: V2TimeEntriesScreen, roles: ['org_admin'] },
   { path: '/time/break-rules', component: A09BreakRules, roles: ['org_admin'] },
   { path: '/time/workday-rules', component: A08WorkdayRules, roles: ['org_admin'] },
   { path: '/time/leave-management', component: A11LeaveManagement, roles: ['org_admin'] },
@@ -429,24 +428,29 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   
   { 
     path: '/communication/team-hub',
-    component: AC00TeamHub,
+    component: V2CommunicationScreen,
     roles: ['org_admin']
   },
   { 
     path: '/communication/conversations',
-    component: AC01CommunicateHome,
+    component: V2CommunicationScreen,
     roles: ['org_admin']
   },
   { 
     path: '/communication/channels',
-    component: AC02ChannelManagement,
+    component: V2CommunicationScreen,
     roles: ['org_admin']
   },
   { 
     path: '/communication/communicate',
-    component: EC01CommunicateHome,
+    component: V2CommunicationScreen,
     roles: ['employee', 'org_admin']
   },
+  { path: '/search', component: V2SearchScreen, roles: ['employee', 'org_admin'] },
+  { path: '/knowledge/files', component: V2FilesEvidenceScreen, roles: ['employee', 'org_admin'] },
+  { path: '/automation/rules', component: V2AutomationScreen, roles: ['org_admin'] },
+  { path: '/ai/agents', component: V2AgentCenterScreen, roles: ['org_admin'] },
+  { path: '/ai/copilots', component: V2AiCopilotScreen, roles: ['employee', 'org_admin'] },
   
   // ═══════════════════════════════════════════════════════════════════════
   // ANALYTICS DOMAIN ROUTES

@@ -30,7 +30,7 @@ export function SidebarNav({ items, currentPath, onNavigate, collapsed = false }
   };
 
   return (
-    <nav className="space-y-1">
+    <nav className="space-y-1" aria-label="Primary navigation">
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = currentPath === item.path;
@@ -48,14 +48,16 @@ export function SidebarNav({ items, currentPath, onNavigate, collapsed = false }
                   onNavigate(item.path);
                 }
               }}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
+              aria-current={isActive || isChildActive ? 'page' : undefined}
+              aria-expanded={hasChildren ? isExpanded : undefined}
+              className={`flex min-h-10 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
                 isActive || isChildActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
               } ${collapsed ? 'justify-center' : ''}`}
               title={collapsed ? item.label : undefined}
             >
-              <Icon className="h-5 w-5 flex-shrink-0" />
+              <Icon className="h-[18px] w-[18px] flex-shrink-0" />
               {!collapsed && (
                 <>
                   <span className="flex-1 text-left text-sm">{item.label}</span>
@@ -84,7 +86,8 @@ export function SidebarNav({ items, currentPath, onNavigate, collapsed = false }
                     <button
                       key={child.id}
                       onClick={() => onNavigate(child.path)}
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                      aria-current={isChildItemActive ? 'page' : undefined}
+                      className={`flex min-h-9 w-full items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         isChildItemActive
                           ? 'bg-accent text-accent-foreground font-medium'
                           : 'text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground'
