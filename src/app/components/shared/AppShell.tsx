@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Search, Bell, User, Settings, Building2, LogOut, Moon, Sun, Command } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -49,8 +49,10 @@ export function AppShell({
   onLogout
 }: AppShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const cmdPalette = useCommandPalette();
+
+  useEffect(() => { document.documentElement.classList.add('dark'); }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -61,7 +63,7 @@ export function AppShell({
     <div className="flex min-h-screen w-full overflow-hidden bg-background text-foreground">
       {/* Sidebar */}
       <aside 
-        className={`relative z-20 hidden flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 md:flex ${
+        className={`relative z-20 hidden flex-col border-r border-sidebar-border bg-sidebar/95 shadow-[18px_0_60px_-45px_#000] transition-all duration-200 md:flex ${
           sidebarCollapsed ? 'w-[4.5rem]' : 'w-[17rem]'
         }`}
       >
@@ -122,7 +124,7 @@ export function AppShell({
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="sticky top-0 z-10 flex h-[4.5rem] items-center justify-between border-b bg-card px-4 sm:px-6">
+        <header className="sticky top-0 z-10 flex h-[4.5rem] items-center justify-between border-b bg-card/80 px-4 backdrop-blur-xl sm:px-6">
           {/* Search */}
           <div className="flex flex-1 items-center gap-4">
             <button

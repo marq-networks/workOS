@@ -8,7 +8,7 @@
   --card-foreground: oklch(0.2 0.018 255);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.52 0.19 258);
+  --primary: oklch(0.58 0.135 205);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.0058 264.53);
   --secondary-foreground: #030213;
@@ -35,7 +35,10 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.75rem;
+  --radius: 0.9rem;
+  --surface-raised: oklch(0.99 0.004 245);
+  --surface-recessed: oklch(0.955 0.008 245);
+  --shadow-environment: 0 18px 50px -30px oklch(0.2 0.04 240 / 0.28);
   --sidebar: oklch(0.965 0.01 255);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #030213;
@@ -47,13 +50,13 @@
 }
 
 .dark {
-  --background: oklch(0.17 0.018 255);
+  --background: oklch(0.135 0.014 245);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.215 0.018 255);
+  --card: oklch(0.185 0.017 245);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.225 0.018 255);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.16 258);
+  --primary: oklch(0.77 0.13 195);
   --primary-foreground: oklch(0.16 0.02 255);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -63,7 +66,7 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.32 0.02 255);
+  --border: oklch(0.29 0.018 245);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
   --font-weight-medium: 500;
@@ -73,7 +76,7 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.19 0.02 255);
+  --sidebar: oklch(0.155 0.016 245);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -81,6 +84,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --surface-raised: oklch(0.205 0.019 245);
+  --surface-recessed: oklch(0.155 0.014 245);
+  --shadow-environment: 0 26px 70px -34px oklch(0.02 0.02 245 / 0.9);
 }
 
 @theme inline {
@@ -133,12 +139,26 @@
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "cv02", "cv03";
     letter-spacing: -0.008em;
+    background-image: radial-gradient(
+      circle at 82% -10%,
+      color-mix(in oklab, var(--primary) 7%, transparent),
+      transparent 34%
+    );
   }
 
-  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
   }
 
   /**
@@ -194,13 +214,344 @@
 }
 
 @layer components {
-  .premium-surface { @apply rounded-xl border bg-card shadow-sm; }
-  .premium-page { @apply mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8; }
-  .premium-eyebrow { @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary; }
-  .premium-title { @apply text-2xl font-semibold tracking-tight sm:text-3xl; }
-  .premium-tabs { @apply flex gap-1 overflow-x-auto rounded-xl border bg-muted/55 p-1; scrollbar-width: thin; }
-  .premium-status { @apply inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium; }
-  .premium-grid { @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4; }
-  .premium-empty { @apply flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 p-8 text-center text-muted-foreground; }
-  .ai-surface { border-color: color-mix(in oklab, var(--ai) 28%, var(--border)); background: linear-gradient(145deg, color-mix(in oklab, var(--ai) 7%, var(--card)), var(--card)); }
+  .premium-surface {
+    @apply rounded-xl border bg-card;
+    box-shadow: var(--shadow-environment);
+  }
+  .premium-page {
+    @apply mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8;
+  }
+  .premium-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.16em] text-primary;
+  }
+  .premium-title {
+    @apply text-2xl font-semibold tracking-tight sm:text-3xl;
+  }
+  .premium-tabs {
+    @apply flex gap-1 overflow-x-auto rounded-xl border bg-muted/55 p-1;
+    scrollbar-width: thin;
+  }
+  .premium-status {
+    @apply inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium;
+  }
+  .premium-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+  .premium-empty {
+    @apply flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 p-8 text-center text-muted-foreground;
+  }
+  .ai-surface {
+    border-color: color-mix(in oklab, var(--ai) 28%, var(--border));
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--ai) 7%, var(--card)),
+      var(--card)
+    );
+  }
+  .gold-surface {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    background: linear-gradient(145deg, var(--surface-raised), var(--card));
+    box-shadow: var(--shadow-environment);
+  }
+  .gold-edge-live::before,
+  .gold-edge-healthy::before,
+  .gold-edge-attention::before,
+  .gold-edge-critical::before,
+  .gold-edge-ai::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--primary);
+  }
+  .gold-edge-healthy::before {
+    background: var(--success);
+  }
+  .gold-edge-attention::before {
+    background: var(--warning);
+  }
+  .gold-edge-critical::before {
+    background: var(--destructive);
+  }
+  .gold-edge-ai::before {
+    background: var(--ai);
+  }
+  .gold-badge {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.69rem;
+    font-weight: 650;
+    line-height: 1;
+    text-transform: capitalize;
+    color: var(--muted-foreground);
+    background: color-mix(in oklab, var(--muted) 45%, transparent);
+  }
+  .gold-badge-live {
+    color: var(--primary);
+    border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
+  }
+  .gold-badge-healthy {
+    color: var(--success);
+  }
+  .gold-badge-attention {
+    color: var(--warning);
+  }
+  .gold-badge-critical {
+    color: var(--destructive);
+  }
+  .gold-badge-ai {
+    color: var(--ai);
+  }
+  .gold-presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+  }
+  .gold-presence-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--offline);
+  }
+  .gold-dot-live {
+    background: var(--primary);
+    box-shadow: 0 0 10px color-mix(in oklab, var(--primary) 55%, transparent);
+  }
+  .gold-progress-copy {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+  }
+  .gold-progress-copy strong {
+    color: var(--foreground);
+  }
+  .gold-progress-track {
+    height: 0.35rem;
+    margin-top: 0.45rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--muted);
+  }
+  .gold-progress-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--primary);
+  }
+  .gold-task-row {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .gold-task-row:last-child {
+    border-bottom: 0;
+  }
+  .gold-task-row:hover strong {
+    color: var(--primary);
+  }
+  .gold-task-copy {
+    display: grid;
+    min-width: 0;
+  }
+  .gold-task-copy strong,
+  .gold-task-copy small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gold-task-copy small {
+    margin-top: 0.18rem;
+    color: var(--muted-foreground);
+  }
+  .gold-task-progress {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+  }
+  .gold-person {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .gold-person > span:last-child {
+    display: grid;
+  }
+  .gold-person small {
+    font-size: 0.68rem;
+    color: var(--muted-foreground);
+  }
+  .gold-avatar {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .gold-avatar svg {
+    width: 0.85rem;
+  }
+  .gold-activity {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.7rem 0;
+  }
+  .gold-activity > i {
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-top: 0.4rem;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+  .gold-activity strong {
+    font-size: 0.82rem;
+  }
+  .gold-activity p,
+  .gold-activity time {
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+  }
+  .gold-ai {
+    padding: 1.2rem;
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--ai) 9%, var(--surface-raised)),
+      var(--card)
+    );
+  }
+  .gold-ai > header {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1rem;
+    font-size: 0.77rem;
+    font-weight: 650;
+  }
+  .gold-ai > header svg {
+    width: 1rem;
+    color: var(--ai);
+  }
+  .gold-ai > header .gold-badge {
+    margin-left: auto;
+  }
+  .gold-state {
+    display: flex;
+    min-height: 12rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 2rem;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: color-mix(in oklab, var(--surface-recessed) 72%, transparent);
+  }
+  .gold-state svg {
+    width: 1.15rem;
+    color: var(--muted-foreground);
+  }
+  .gold-state p {
+    max-width: 32rem;
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+  }
+  .gold-state-error svg {
+    color: var(--destructive);
+  }
+  .gold-spin {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .gold-drawer {
+    position: fixed;
+    z-index: 40;
+    inset: 4.5rem 0 0 auto;
+    width: min(28rem, 100vw);
+    border-left: 1px solid var(--border);
+    background: color-mix(in oklab, var(--card) 94%, transparent);
+    box-shadow: -25px 0 70px -45px #000;
+    backdrop-filter: blur(18px);
+  }
+  .gold-drawer > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .gold-drawer small {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--primary);
+  }
+  .gold-drawer h2 {
+    font-size: 1rem;
+  }
+  .gold-drawer header button {
+    font-size: 1.5rem;
+    color: var(--muted-foreground);
+  }
+  .gold-drawer-body {
+    padding: 1.2rem;
+    overflow: auto;
+    height: calc(100% - 5rem);
+  }
+  .gold-file {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 1rem;
+  }
+  .gold-file svg {
+    color: var(--primary);
+  }
+  .gold-file p {
+    font-size: 0.72rem;
+    color: var(--muted-foreground);
+  }
+  .gold-chunk {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 0;
+    font-size: 0.8rem;
+  }
+  .gold-chunk > span {
+    display: grid;
+    width: 1rem;
+    height: 1rem;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+  }
+  .gold-chunk .is-complete {
+    background: var(--success);
+    color: white;
+  }
+  .gold-chunk svg {
+    width: 0.7rem;
+  }
 }
