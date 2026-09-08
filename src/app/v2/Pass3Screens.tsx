@@ -49,6 +49,16 @@ import type {
   SearchResult,
 } from "./pass3Types";
 import type { ProjectWorkspaceData } from "./closureTypes";
+import {
+  ActivityRow as V5ActivityRow,
+  AttentionSurface,
+  IntelligenceSurface,
+  KernelButton,
+  MatteSurface,
+  Status as V5Status,
+  WorkRow,
+  WorkspaceState as V5WorkspaceState,
+} from "../ui-v5/WorkOSKernel";
 const repository: Promise<Pass3Repository> =
   import("./supabasePass3Repository").then((m) => m.supabasePass3Repository);
 function useScope() {
@@ -660,10 +670,12 @@ export function CommandCenterScreen() {
   const blocked = work.tasks.filter((t) => t.status === "blocked");
   const active = work.tasks.filter((t) => t.status === "in_progress");
   const unread = records.filter((n) => !n.readAt);
+  const nextWork = [...blocked, ...active, ...work.tasks.filter((t) => t.status !== "blocked" && t.status !== "in_progress")];
+  const openWork = () => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/work/tasks' } }));
   if (work.loading)
     return (
-      <main className="premium-page">
-        <WorkspaceState
+      <main className="v5-page">
+        <V5WorkspaceState
           kind="loading"
           title="Preparing Command Center"
           detail="Loading your authorized operating picture."
@@ -672,149 +684,31 @@ export function CommandCenterScreen() {
     );
   if (work.error)
     return (
-      <main className="premium-page">
-        <header className="command-hero"><div><p className="premium-eyebrow">Command Center · connection interrupted</p><h1 className="premium-title">Your operating picture</h1><p>The workspace shell is ready, but authorized work data could not be reached.</p></div><Button onClick={() => void work.reload()}><RefreshCw />Retry connection</Button></header>
-        <section className="command-offline-grid">
-          {['Work in progress','Needs attention','Team signals','Active sessions'].map(label=><Surface key={label} className="p-5"><p className="text-xs text-muted-foreground">{label}</p><strong className="offline-value">—</strong><span className="connection-label">Data unavailable</span></Surface>)}
-        </section>
-        <section className="grid gap-4 xl:grid-cols-[1.35fr_.85fr]"><Surface className="p-5"><p className="premium-eyebrow">Execution queue</p><h2 className="mt-1 font-semibold">Authorized work</h2><WorkspaceState kind="error" title="Queue unavailable" detail={work.error.message}/></Surface><div className="grid gap-4"><Surface className="p-5"><p className="premium-eyebrow">Operational status</p><h2 className="mt-1 font-semibold">Connection required</h2><p className="mt-3 text-sm text-muted-foreground">Metrics remain blank rather than presenting cached or invented activity.</p></Surface><AiSurface title="Attention briefing"><p className="text-sm text-muted-foreground">Unavailable until both authorized work data and an AI provider are connected.</p></AiSurface></div></section>
+      <main className="v5-page v5-command-center">
+        <header className="v5-command-header"><div><p>COMMAND CENTER / CONNECTION INTERRUPTED</p><h1>Organization operations</h1><span>The new workspace remains available while authorized work reconnects.</span></div><KernelButton onClick={() => void work.reload()}><RefreshCw/>Retry connection</KernelButton></header>
+        <div className="v5-offline-workspace">
+          <MatteSurface className="v5-offline-primary" signal="critical"><div className="v5-section-heading"><div><small>EXECUTION LANE</small><h2>Your working set</h2></div><V5Status signal="critical">Data offline</V5Status></div><V5WorkspaceState kind="error" title="Authorized work is unavailable" detail={work.error.message}/></MatteSurface>
+          <aside><AttentionSurface signal="critical"><small>NEEDS ATTENTION</small><h2>Connection required</h2><p>No operational state is inferred while the organization repository is unavailable.</p></AttentionSurface><IntelligenceSurface title="Operational briefing"><p>Intelligence stays unavailable until authorized context and a configured provider are connected.</p></IntelligenceSurface></aside>
+        </div>
       </main>
     );
   return (
-    <main className="premium-page">
-      <header className="flex flex-wrap items-end justify-between gap-4 border-b pb-5">
-        <div>
-          <p className="premium-eyebrow">
-            Command Center · authorized live state
-          </p>
-          <h1 className="premium-title">Your operating picture</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            What is moving, what needs attention, and what comes next.
-          </p>
-        </div>
-        <StatusBadge signal="live">Repository connected</StatusBadge>
-      </header>
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Surface signal="live" className="p-5">
-          <p className="text-xs text-muted-foreground">In progress</p>
-          <strong className="mt-4 block text-4xl">{active.length}</strong>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Authorized tasks moving now
-          </p>
-        </Surface>
-        <Surface
-          signal={blocked.length ? "critical" : "healthy"}
-          className="p-5"
-        >
-          <p className="text-xs text-muted-foreground">Blocked</p>
-          <strong className="mt-4 block text-4xl">{blocked.length}</strong>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Work requiring intervention
-          </p>
-        </Surface>
-        <Surface
-          signal={unread.length ? "attention" : "neutral"}
-          className="p-5"
-        >
-          <p className="text-xs text-muted-foreground">Unread changes</p>
-          <strong className="mt-4 block text-4xl">{unread.length}</strong>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Authorized notifications
-          </p>
-        </Surface>
-        <Surface signal={activeSessions ? "live" : "neutral"} className="p-5">
-          <p className="text-xs text-muted-foreground">Work sessions</p>
-          <strong className="mt-4 block text-4xl">{activeSessions}</strong>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Currently active records
-          </p>
-        </Surface>
+    <main className="v5-page v5-command-center">
+      <header className="v5-command-header"><div><p>COMMAND CENTER / AUTHORIZED LIVE STATE</p><h1>Organization operations</h1><span>Move work forward without leaving the operating context.</span></div><div className="v5-live-context"><V5Status signal="live">Repository connected</V5Status><span>{activeSessions ? `${activeSessions} active work session${activeSessions === 1 ? '' : 's'}` : 'No active work sessions'}</span></div></header>
+      <section className="v5-operating-strip">
+        <div className="v5-now"><small>HAPPENING NOW</small><strong>{active.length ? `${active.length} task${active.length === 1 ? '' : 's'} moving` : 'No work in progress'}</strong><span>{activeSessions ? 'Active time is being captured.' : 'No active session is currently recorded.'}</span></div>
+        <div className={blocked.length ? 'is-risk' : 'is-clear'}><small>ATTENTION</small><strong>{blocked.length ? `${blocked.length} blocked` : 'Queue clear'}</strong><span>{blocked.length ? 'Intervention is required.' : 'No authorized blockers.'}</span></div>
+        <div><small>RECENT SIGNALS</small><strong>{unread.length ? `${unread.length} unread` : 'All caught up'}</strong><span>Organization notifications</span></div>
+        <KernelButton onClick={openWork}>Open all work <span>→</span></KernelButton>
       </section>
-      <section className="grid gap-4 xl:grid-cols-[1.35fr_.85fr]">
-        <Surface className="p-5">
-          <header className="mb-2 flex items-center justify-between">
-            <div>
-              <p className="premium-eyebrow">My work</p>
-              <h2 className="mt-1 font-semibold">
-                Next in the execution queue
-              </h2>
-            </div>
-            <StatusBadge>{work.tasks.length} total</StatusBadge>
-          </header>
-          {work.tasks.length ? (
-            work.tasks
-              .slice(0, 7)
-              .map((t) => (
-                <TaskRow
-                  key={t.id}
-                  title={t.title}
-                  context={t.projectName}
-                  status={t.status}
-                  progress={t.progress}
-                />
-              ))
-          ) : (
-            <WorkspaceState
-              kind="empty"
-              title="No assigned work"
-              detail="Your authorized working set is empty."
-            />
-          )}
-        </Surface>
-        <div className="grid gap-4">
-          <Surface
-            signal={blocked.length ? "critical" : "healthy"}
-            className="p-5"
-          >
-            <p className="premium-eyebrow">Attention</p>
-            <h2 className="mt-1 font-semibold">Blocked or at risk</h2>
-            <div className="mt-3">
-              {blocked.length ? (
-                blocked
-                  .slice(0, 4)
-                  .map((t) => (
-                    <TaskRow
-                      key={t.id}
-                      title={t.title}
-                      context={t.projectName}
-                      status={t.status}
-                    />
-                  ))
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No blocked authorized tasks.
-                </p>
-              )}
-            </div>
-          </Surface>
-          <Surface className="p-5">
-            <p className="premium-eyebrow">Recent change</p>
-            <div className="mt-2">
-              {records.length ? (
-                records
-                  .slice(0, 4)
-                  .map((n) => (
-                    <ActivityRow
-                      key={n.id}
-                      title={n.title}
-                      detail={n.body || undefined}
-                    />
-                  ))
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  No authorized notifications yet.
-                </p>
-              )}
-            </div>
-          </Surface>
-          <AiSurface title="Attention briefing">
-            <p className="text-sm text-muted-foreground">
-              AI only analyzes authorized context. Configure a provider to
-              enable an operational briefing.
-            </p>
-          </AiSurface>
-        </div>
-      </section>
+      <div className="v5-operations-grid">
+        <MatteSurface className="v5-execution-lane" signal={blocked.length ? 'attention' : 'live'}><div className="v5-section-heading"><div><small>NEXT BEST WORK</small><h2>Execution lane</h2><p>Blocked work first, then active and queued assignments.</p></div><V5Status signal={blocked.length ? 'attention' : 'live'}>{work.tasks.length} authorized</V5Status></div><div className="v5-work-list">{nextWork.length ? nextWork.slice(0, 8).map(t => <WorkRow key={t.id} title={t.title} context={t.projectName} status={t.status} progress={t.progress} onClick={openWork}/>) : <V5WorkspaceState kind="empty" title="No assigned work" detail="Your authorized working set is empty."/>}</div><footer><button onClick={openWork}>Continue in My Work <span>→</span></button></footer></MatteSurface>
+        <aside className="v5-signal-lane">
+          <AttentionSurface signal={blocked.length ? 'critical' : 'attention'}><div className="v5-section-heading"><div><small>NEEDS ATTENTION</small><h2>{blocked.length ? 'Blocked work' : 'No blockers'}</h2></div><V5Status signal={blocked.length ? 'critical' : 'healthy'}>{blocked.length ? 'Action needed' : 'Healthy'}</V5Status></div>{blocked.length ? blocked.slice(0, 3).map(t => <WorkRow key={t.id} title={t.title} context={t.projectName} status={t.status} onClick={openWork}/>) : <p className="v5-calm-copy">No blocked authorized tasks require intervention.</p>}</AttentionSurface>
+          <MatteSurface className="v5-change-feed"><div className="v5-section-heading"><div><small>WHAT CHANGED</small><h2>Recent signals</h2></div><V5Status signal={unread.length ? 'attention' : 'neutral'}>{unread.length} unread</V5Status></div>{records.length ? records.slice(0, 5).map(n => <V5ActivityRow key={n.id} title={n.title} detail={n.body}/>) : <V5WorkspaceState kind="empty" title="No recent changes" detail="Authorized notifications will appear here."/>}</MatteSurface>
+          <IntelligenceSurface title="Attention briefing"><p>AI analysis is permission-scoped and remains unavailable until an intelligence provider is configured.</p><button onClick={() => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/ai/copilots' } }))}>Review availability <span>→</span></button></IntelligenceSurface>
+        </aside>
+      </div>
     </main>
   );
 }
