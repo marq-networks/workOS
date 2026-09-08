@@ -9,7 +9,7 @@
 
 import { type Role } from '../nav/navManifest';
 import { V2AssignmentsScreen, V2DepartmentsScreen, V2MilestonesScreen, V2MyWorkScreen, V2PeopleScreen, V2SessionsScreen, V2TimeEntriesScreen, V2WorkReportsScreen, V2WorkSessionScreen } from '../v2/V2RouteScreens';
-import { V2AgentCenterScreen, V2AiCopilotScreen, V2AutomationScreen, V2CommandCenterScreen, V2CommunicationScreen, V2FilesEvidenceScreen, V2ProjectWorkspaceScreen, V2SearchScreen } from '../v2/Pass3RouteScreens';
+import { V2AgentCenterScreen, V2AiCopilotScreen, V2AutomationScreen, V2CommandCenterScreen, V2CommunicationScreen, V2FilesEvidenceScreen, V2ProjectWorkspaceScreen, V2SearchScreen } from '../v2/Pass3RouteScreens'; import { FinanceOperationsScreen } from '../v2/FinanceOperationsScreen';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // COMPONENT IMPORTS
@@ -404,7 +404,7 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   // FINANCE DOMAIN ROUTES
   // ═══════════════════════════════════════════════════════════════════════
   
-  { path: '/finance/cockpit', component: FC01FinanceCockpit, roles: ['org_admin'] },
+  { path: '/finance/cockpit', component: FinanceOperationsScreen, roles: ['org_admin'] },
   { path: '/finance/inbox', component: FC02FinanceInbox, roles: ['org_admin'] },
   { path: '/finance/quick-add', component: FinanceQuickAdd, roles: ['org_admin'] },
   { path: '/finance/ledger', component: FinanceLedger, roles: ['org_admin'] },
