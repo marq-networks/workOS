@@ -673,17 +673,11 @@ export function CommandCenterScreen() {
   if (work.error)
     return (
       <main className="premium-page">
-        <WorkspaceState
-          kind="error"
-          title="Command Center unavailable"
-          detail={work.error.message}
-          action={
-            <Button onClick={() => void work.reload()}>
-              <RefreshCw />
-              Retry
-            </Button>
-          }
-        />
+        <header className="command-hero"><div><p className="premium-eyebrow">Command Center · connection interrupted</p><h1 className="premium-title">Your operating picture</h1><p>The workspace shell is ready, but authorized work data could not be reached.</p></div><Button onClick={() => void work.reload()}><RefreshCw />Retry connection</Button></header>
+        <section className="command-offline-grid">
+          {['Work in progress','Needs attention','Team signals','Active sessions'].map(label=><Surface key={label} className="p-5"><p className="text-xs text-muted-foreground">{label}</p><strong className="offline-value">—</strong><span className="connection-label">Data unavailable</span></Surface>)}
+        </section>
+        <section className="grid gap-4 xl:grid-cols-[1.35fr_.85fr]"><Surface className="p-5"><p className="premium-eyebrow">Execution queue</p><h2 className="mt-1 font-semibold">Authorized work</h2><WorkspaceState kind="error" title="Queue unavailable" detail={work.error.message}/></Surface><div className="grid gap-4"><Surface className="p-5"><p className="premium-eyebrow">Operational status</p><h2 className="mt-1 font-semibold">Connection required</h2><p className="mt-3 text-sm text-muted-foreground">Metrics remain blank rather than presenting cached or invented activity.</p></Surface><AiSurface title="Attention briefing"><p className="text-sm text-muted-foreground">Unavailable until both authorized work data and an AI provider are connected.</p></AiSurface></div></section>
       </main>
     );
   return (
@@ -1158,7 +1152,7 @@ export function ProjectWorkspaceScreen() {
             <Progress value={selectedTask.progress} />
             <div>
               <h3 className="text-sm font-semibold">Work chunks</h3>
-              {data.subtasks
+              {data?.subtasks
                 .filter((s) => s.taskId === selectedTask.id)
                 .map((s) => (
                   <WorkChunkRow
@@ -1167,7 +1161,7 @@ export function ProjectWorkspaceScreen() {
                     complete={s.status === "completed"}
                   />
                 ))}
-              {!data.subtasks.some((s) => s.taskId === selectedTask.id) && (
+              {!data?.subtasks.some((s) => s.taskId === selectedTask.id) && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   No work chunks recorded.
                 </p>

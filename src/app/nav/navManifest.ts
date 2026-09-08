@@ -131,6 +131,7 @@ export const NAV_MANIFEST: NavItem[] = [
   { key: 'org-audit', label: 'Audit Log', path: '/security/audit-logs', roles: ['org_admin'], icon: FileText },
   { key: 'org-communication', label: 'Communication', path: '/communication/conversations', roles: ['org_admin'], icon: MessageSquare },
   { key: 'org-workspace', label: 'Project Workspace', path: '/work/workspace', roles: ['org_admin'], icon: Briefcase },
+  { key: 'org-finance', label: 'Finance', path: '/finance/cockpit', roles: ['org_admin'], icon: FileSpreadsheet },
   { key: 'org-files', label: 'Files & Evidence', path: '/knowledge/files', roles: ['org_admin'], icon: Files },
   { key: 'org-automation', label: 'Automation', path: '/automation/rules', roles: ['org_admin'], icon: Settings },
   { key: 'org-agents', label: 'Agent Center', path: '/ai/agents', roles: ['org_admin'], icon: Bot },
