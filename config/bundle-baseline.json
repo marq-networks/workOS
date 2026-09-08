@@ -6,21 +6,21 @@
     "tolerancePercent": 2
   },
   "baseline": {
-    "totalJsRawBytes": 2696297,
-    "totalJsGzipBytes": 646028,
-    "largestJsRawBytes": 2626210,
-    "largestJsGzipBytes": 624445,
-    "totalCssRawBytes": 187188,
-    "totalCssGzipBytes": 27232,
+    "totalJsRawBytes": 2658590,
+    "totalJsGzipBytes": 636626,
+    "largestJsRawBytes": 2584221,
+    "largestJsGzipBytes": 613512,
+    "totalCssRawBytes": 208716,
+    "totalCssGzipBytes": 31702,
     "jsChunkCount": 11,
     "jsChunksAbove500kB": 1
   },
   "ceilings": {
-    "totalJsRawBytes": 2750223,
-    "totalJsGzipBytes": 658949,
-    "largestJsRawBytes": 2678734,
-    "largestJsGzipBytes": 636934,
-    "totalCssRawBytes": 190932,
-    "totalCssGzipBytes": 27777
+    "totalJsRawBytes": 2711762,
+    "totalJsGzipBytes": 649359,
+    "largestJsRawBytes": 2635906,
+    "largestJsGzipBytes": 625783,
+    "totalCssRawBytes": 212891,
+    "totalCssGzipBytes": 32336
   }
 }

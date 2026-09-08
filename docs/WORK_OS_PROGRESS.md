@@ -146,6 +146,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 | Audit | Security & Audit | Cross-cutting audit owner | Audit Event | Org Admin audit; Platform Admin global audit |
 
 ## Completed
+- UI Clean Cutover V5 founder candidate: the Org Admin authenticated experience now selects an isolated `ui-v5` shell and Command Center. The legacy `AppShell`, `DynamicSidebar`, `GoldenPrimitives`, generic page-header/card-grid grammar, and legacy command/notification visuals are **DELETE LATER** candidates for this route only; they remain intact for unmigrated Employee, Platform Admin, and product routes until founder approval and consumer proof permit deletion.
 - Phase 0 repository/product audit.
 - Cloud Track A: GitHub/Vercel deployment and Supabase browser-client foundation.
 - Durable repository guidance and roadmap/decision/progress/open-question memory.
