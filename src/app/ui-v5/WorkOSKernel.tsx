@@ -90,9 +90,10 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
   const go = (path: string) => { navigate(path); setCommandOpen(false); setMobileOpen(false); };
 
   return <div className="v5-canvas">
+    <div className="v6-environment" aria-hidden="true"><i/><i/><i/></div>
     <header className="v5-system-bar">
       <button className="v5-mobile-trigger" onClick={() => setMobileOpen(v => !v)} aria-label="Open product navigation"><Menu /></button>
-      <button className="v5-brand" onClick={() => go('/org/admin/dashboard')}><span className="v5-brand-mark">W</span><span><strong>WORK OS</strong><small>OPERATIONS</small></span></button>
+      <button className="v5-brand" onClick={() => go('/org/admin/dashboard')}><span className="v5-brand-mark">W</span><span><strong>WORK OS</strong><small>OPERATIONS</small></span><i className="v6-brand-live"/></button>
       <button className="v5-org-switch"><Building2/><span>{currentOrg?.name || 'Organization'}</span><ChevronDown/></button>
       <button className="v5-command-trigger" onClick={() => setCommandOpen(true)}><Search/><span>Find work or go anywhere</span><kbd><Command/> K</kbd></button>
       <div className="v5-system-actions">

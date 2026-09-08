@@ -10,8 +10,8 @@
     "totalJsGzipBytes": 636626,
     "largestJsRawBytes": 2584221,
     "largestJsGzipBytes": 613512,
-    "totalCssRawBytes": 208716,
-    "totalCssGzipBytes": 31702,
+    "totalCssRawBytes": 214700,
+    "totalCssGzipBytes": 33187,
     "jsChunkCount": 11,
     "jsChunksAbove500kB": 1
   },
@@ -20,7 +20,7 @@
     "totalJsGzipBytes": 649359,
     "largestJsRawBytes": 2635906,
     "largestJsGzipBytes": 625783,
-    "totalCssRawBytes": 212891,
-    "totalCssGzipBytes": 32336
+    "totalCssRawBytes": 218994,
+    "totalCssGzipBytes": 33851
   }
 }
