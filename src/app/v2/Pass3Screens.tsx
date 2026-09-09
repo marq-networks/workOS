@@ -671,7 +671,7 @@ export function CommandCenterScreen() {
   const active = work.tasks.filter((t) => t.status === "in_progress");
   const unread = records.filter((n) => !n.readAt);
   const nextWork = [...blocked, ...active, ...work.tasks.filter((t) => t.status !== "blocked" && t.status !== "in_progress")];
-  const openWork = () => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/work/tasks' } }));
+  const openWork = () => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/work/my-work' } }));
   if (work.loading)
     return (
       <main className="v5-page">
