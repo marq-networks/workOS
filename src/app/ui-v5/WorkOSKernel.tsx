@@ -70,7 +70,7 @@ interface ShellProps {
 export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSwitch, onLogout }: ShellProps) {
   const { currentPath, navigate } = useRouter();
   const [commandOpen, setCommandOpen] = useState(false);
-  const [contextOpen, setContextOpen] = useState(false);
+  const [contextMode, setContextMode] = useState<'profile' | 'organization' | 'notifications' | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [lightMode, setLightMode] = useState(false);
   const [query, setQuery] = useState('');
@@ -79,7 +79,7 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
     document.documentElement.dataset.workosUi = 'v5';
     const key = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setCommandOpen(true); }
-      if (event.key === 'Escape') { setCommandOpen(false); setContextOpen(false); setMobileOpen(false); }
+      if (event.key === 'Escape') { setCommandOpen(false); setContextMode(null); setMobileOpen(false); }
     };
     window.addEventListener('keydown', key);
     return () => { delete document.documentElement.dataset.workosUi; window.removeEventListener('keydown', key); };
@@ -94,12 +94,12 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
     <header className="v5-system-bar">
       <button className="v5-mobile-trigger" onClick={() => setMobileOpen(v => !v)} aria-label="Open product navigation"><Menu /></button>
       <button className="v5-brand" onClick={() => go('/org/admin/dashboard')}><span className="v5-brand-mark">W</span><span><strong>WORK OS</strong><small>OPERATIONS</small></span><i className="v6-brand-live"/></button>
-      <button className="v5-org-switch"><Building2/><span>{currentOrg?.name || 'Organization'}</span><ChevronDown/></button>
+      <button className="v5-org-switch" onClick={() => setContextMode('organization')} aria-label="Switch organization"><Building2/><span>{currentOrg?.name || 'Organization'}</span><ChevronDown/></button>
       <button className="v5-command-trigger" onClick={() => setCommandOpen(true)}><Search/><span>Find work or go anywhere</span><kbd><Command/> K</kbd></button>
       <div className="v5-system-actions">
         <KernelButton variant="icon" label={lightMode ? 'Use dark appearance' : 'Use light appearance'} onClick={() => setLightMode(v => !v)}><SunMoon/></KernelButton>
-        <KernelButton variant="icon" label="Open notifications" onClick={() => setContextOpen(true)}><Bell/><span className="v5-unread-dot"/></KernelButton>
-        <button className="v5-profile" onClick={() => setContextOpen(true)}><span>{user.name.slice(0, 1).toUpperCase()}</span><i><strong>{user.name}</strong><small>{user.role}</small></i></button>
+        <KernelButton variant="icon" label="Open notifications" onClick={() => setContextMode('notifications')}><Bell/><span className="v5-unread-dot"/></KernelButton>
+        <button className="v5-profile" onClick={() => setContextMode('profile')} aria-label={`Open profile for ${user.name}`}><span>{user.name.slice(0, 1).toUpperCase()}</span><i><strong>{user.name}</strong><small>{user.role}</small></i></button>
       </div>
     </header>
     <nav className={`v5-product-nav ${mobileOpen ? 'is-open' : ''}`} aria-label="Product navigation">
@@ -107,7 +107,7 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
       <div className="v5-nav-secondary"><button onClick={() => go('/security/audit-logs')}><FileStack/><span>Audit</span></button><button onClick={() => go('/platform/org-settings')}><Settings/><span>Settings</span></button></div>
     </nav>
     <div className="v5-workspace">{children}</div>
-    {contextOpen && <><button className="v5-scrim" aria-label="Close context panel" onClick={() => setContextOpen(false)}/><aside className="v5-context-panel" aria-label="Context panel"><header><div><small>STAY IN CONTEXT</small><h2>Workspace access</h2></div><KernelButton variant="icon" label="Close context panel" onClick={() => setContextOpen(false)}><X/></KernelButton></header><MatteSurface className="v5-context-identity"><Status signal="live">Signed in</Status><h3>{user.name}</h3><p>{user.email}</p><p>{currentOrg?.name}</p></MatteSurface><div className="v5-context-actions"><button onClick={() => go('/communication/conversations')}><MessageCircle/>Open communication<span>→</span></button><button onClick={() => go('/search')}><Search/>Advanced search<span>→</span></button><button onClick={() => go('/platform/org-settings')}><Settings/>Organization settings<span>→</span></button></div>{organizations.length > 1 && <label className="v5-org-select">Organization<select value={organizations.find(o => o.name === currentOrg?.name)?.id} onChange={e => onOrgSwitch(e.target.value)}>{organizations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>}<button className="v5-logout" onClick={onLogout}><LogOut/>Sign out</button></aside></>}
+    {contextMode && <><button className="v5-scrim" aria-label="Close context panel" onClick={() => setContextMode(null)}/><aside className="v5-context-panel" aria-label="Context panel"><header><div><small>STAY IN CONTEXT</small><h2>{contextMode === 'notifications' ? 'Notification center' : contextMode === 'organization' ? 'Organization context' : 'Workspace access'}</h2></div><KernelButton variant="icon" label="Close context panel" onClick={() => setContextMode(null)}><X/></KernelButton></header>{contextMode === 'notifications' ? <MatteSurface className="v5-context-identity"><Status signal="attention">Live surface</Status><h3>Operational signals</h3><p>Authorized notification detail remains in the Command Center’s recent signals feed.</p><button className="v5-context-link" onClick={() => { go('/org/admin/dashboard'); setContextMode(null); }}>Open recent signals <span>→</span></button></MatteSurface> : <><MatteSurface className="v5-context-identity"><Status signal="live">Signed in</Status><h3>{user.name}</h3><p>{user.email}</p><p>{currentOrg?.name}</p></MatteSurface><div className="v5-context-actions"><button onClick={() => go('/communication/conversations')}><MessageCircle/>Open communication<span>→</span></button><button onClick={() => go('/search')}><Search/>Advanced search<span>→</span></button><button onClick={() => go('/platform/org-settings')}><Settings/>Organization settings<span>→</span></button></div>{organizations.length > 1 ? <label className="v5-org-select">Organization<select value={organizations.find(o => o.name === currentOrg?.name)?.id} onChange={e => onOrgSwitch(e.target.value)}>{organizations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></label> : <p className="v5-single-org">This identity has one authorized organization.</p>}<button className="v5-logout" onClick={onLogout}><LogOut/>Sign out</button></>}</aside></>}
     {commandOpen && <div className="v5-command-layer" role="dialog" aria-modal="true" aria-label="Global command and search"><button className="v5-command-scrim" onClick={() => setCommandOpen(false)} aria-label="Close command search"/><section className="v5-command"><header><Search/><input ref={commandInput} value={query} onChange={e => setQuery(e.target.value)} placeholder="Search product destinations…"/><kbd>ESC</kbd></header><div className="v5-command-label">AUTHORIZED DESTINATIONS</div><div className="v5-command-results">{results.map((item, index) => { const Icon = item.icon; return <button key={item.path} onClick={() => go(item.path)}><Icon/><span><strong>{item.label}</strong><small>{item.path}</small></span>{index < 3 && <em>Quick access</em>}<b>↵</b></button>; })}{!results.length && <WorkspaceState kind="empty" title="No destination found" detail="Try a product name such as Projects, People, or Time."/>}</div><footer><span>↑↓ Navigate</span><span>↵ Open</span><span>Esc Close</span></footer></section></div>}
   </div>;
 }
