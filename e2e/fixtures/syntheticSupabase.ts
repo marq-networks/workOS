@@ -64,6 +64,12 @@ const workTasks = [
   ['82000000-0000-4000-8000-000000000005','81000000-0000-4000-8000-000000000001','Review support playbook','Check escalation paths before publishing.','todo',0,'Customer onboarding'],
   ['82000000-0000-4000-8000-000000000006','81000000-0000-4000-8000-000000000002','Publish internal preview','The preview is live and has passed review.','completed',100,'Mobile release'],
 ].map(([id,project_id,title,description,status,progress,projectName])=>({id,project_id,title,description,status,progress,projects:{name:projectName},tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',assignee_membership_id:'50000000-0000-4000-8000-000000000005',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T09:00:00Z'}));
+const workSubtasks = [
+  {id:'83000000-0000-4000-8000-000000000001',task_id:'82000000-0000-4000-8000-000000000001',title:'Confirm final interaction notes',status:'completed',progress:100,estimated_minutes:20,revision:1},
+  {id:'83000000-0000-4000-8000-000000000002',task_id:'82000000-0000-4000-8000-000000000001',title:'Package approved assets',status:'completed',progress:100,estimated_minutes:30,revision:1},
+  {id:'83000000-0000-4000-8000-000000000003',task_id:'82000000-0000-4000-8000-000000000001',title:'Review handoff checklist',status:'in_progress',progress:50,estimated_minutes:25,revision:1},
+  {id:'83000000-0000-4000-8000-000000000004',task_id:'82000000-0000-4000-8000-000000000001',title:'Send final handoff',status:'todo',progress:0,estimated_minutes:15,revision:1},
+].map(row=>({...row,tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T09:00:00Z'}));
 
 export async function installSyntheticSupabase(page: Page, identity: SyntheticIdentity) {
   const unexpectedRequests: string[] = [];
@@ -98,6 +104,10 @@ export async function installSyntheticSupabase(page: Page, identity: SyntheticId
     }
     if (url.pathname === '/rest/v1/tasks') {
       await route.fulfill({ status:200,contentType:'application/json',body:JSON.stringify(workTasks) });
+      return;
+    }
+    if (url.pathname === '/rest/v1/subtasks') {
+      await route.fulfill({ status:200,contentType:'application/json',body:JSON.stringify(workSubtasks) });
       return;
     }
     await route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ message: 'Unhandled synthetic Supabase request' }) });
