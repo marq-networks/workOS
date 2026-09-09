@@ -88,6 +88,13 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
   useEffect(() => { if (lightMode) document.documentElement.dataset.workosTheme = 'light'; else delete document.documentElement.dataset.workosTheme; }, [lightMode]);
   const results = useMemo(() => productDestinations.filter(item => item.label.toLowerCase().includes(query.toLowerCase())), [query]);
   const go = (path: string) => { navigate(path); setCommandOpen(false); setMobileOpen(false); };
+  const isProductActive = (label: string, path: string) => {
+    if (label === 'My Work') return currentPath === '/work/my-work';
+    if (label === 'Projects') return currentPath.startsWith('/work/') && currentPath !== '/work/my-work';
+    if (label === 'Home') return currentPath === path;
+    const section = path.split('/').slice(0, 2).join('/');
+    return currentPath === path || currentPath.startsWith(`${section}/`);
+  };
 
   return <div className="v5-canvas">
     <div className="v6-environment" aria-hidden="true"><i/><i/><i/></div>
@@ -103,7 +110,7 @@ export function WorkOSShell({ children, user, currentOrg, organizations, onOrgSw
       </div>
     </header>
     <nav className={`v5-product-nav ${mobileOpen ? 'is-open' : ''}`} aria-label="Product navigation">
-      <div className="v5-nav-products">{productDestinations.map(item => { const Icon = item.icon; const active = currentPath === item.path || (item.label !== 'Home' && currentPath.startsWith(item.path.split('/').slice(0, 2).join('/'))); return <button key={item.label} aria-current={active ? 'page' : undefined} onClick={() => go(item.path)}><Icon/><span>{item.label}</span></button>; })}</div>
+      <div className="v5-nav-products">{productDestinations.map(item => { const Icon = item.icon; const active = isProductActive(item.label, item.path); return <button key={item.label} aria-current={active ? 'page' : undefined} onClick={() => go(item.path)}><Icon/><span>{item.label}</span></button>; })}</div>
       <div className="v5-nav-secondary"><button onClick={() => go('/security/audit-logs')}><FileStack/><span>Audit</span></button><button onClick={() => go('/platform/org-settings')}><Settings/><span>Settings</span></button></div>
     </nav>
     <div className="v5-workspace">{children}</div>
