@@ -11,7 +11,7 @@ export type V5Signal = 'neutral' | 'live' | 'healthy' | 'attention' | 'critical'
 
 const productDestinations: Array<{ label: string; path: string; icon: LucideIcon }> = [
   { label: 'Home', path: '/org/admin/dashboard', icon: Home },
-  { label: 'My Work', path: '/work/tasks', icon: BriefcaseBusiness },
+  { label: 'My Work', path: '/work/my-work', icon: BriefcaseBusiness },
   { label: 'Projects', path: '/work/projects', icon: FileStack },
   { label: 'People', path: '/people/employees', icon: Users },
   { label: 'Communication', path: '/communication/conversations', icon: MessageCircle },
