@@ -18,7 +18,7 @@ import { PasswordRecoveryGate } from './security/PasswordRecoveryGate';
 import { InvitationAcceptanceGate } from './security/InvitationAcceptanceGate';
 import { InvitationAcceptanceScreen } from './components/screens/auth/InvitationAcceptanceScreen';
 import { AppShell } from './components/shared/AppShell';
-import { WorkOSShell } from './ui-v5/WorkOSKernel';
+import { WorkOSFoundation } from './ui-v8/WorkOSFoundation';
 import { canonicalizeSignedOutUrl } from './contexts/authOperations';
 
 // Navigation System
@@ -82,13 +82,13 @@ function AppContent() {
     </>;
 
   if (activeRole === 'org_admin') return (
-    <WorkOSShell
+    <WorkOSFoundation
       user={currentUser}
       currentOrg={activeMembership ? { name: activeMembership.organizationName } : undefined}
       organizations={memberships.map((membership) => ({ id: membership.organizationId, name: membership.organizationName }))}
       onOrgSwitch={(organizationId) => void switchOrganization(organizationId)}
       onLogout={() => void signOut()}
-    >{routes}</WorkOSShell>
+    >{routes}</WorkOSFoundation>
   );
 
   return (
