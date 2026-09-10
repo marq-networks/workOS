@@ -208,14 +208,14 @@ export function A04Members() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input type="text" placeholder="Search by name or email..." className="w-full rounded-md border border-border bg-background py-2 pl-10 pr-4 text-sm" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} />
           </div>
-          <select className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterRole} onChange={(event) => setFilterRole(event.target.value)}>
+          <select aria-label="Filter members by role" className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterRole} onChange={(event) => setFilterRole(event.target.value)}>
             <option value="all">All Roles</option><option value="employee">Employee</option><option value="org_admin">Organization Admin</option>
             {members.some((member) => member.role === 'platform_admin') && <option value="platform_admin">Platform Admin</option>}
           </select>
-          <select className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterDepartment} onChange={(event) => setFilterDepartment(event.target.value)}>
+          <select aria-label="Filter members by department" className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterDepartment} onChange={(event) => setFilterDepartment(event.target.value)}>
             <option value="all">All Departments</option>{uniqueDepartments.map((department) => <option key={department} value={department}>{department}</option>)}
           </select>
-          <select className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)}>
+          <select aria-label="Filter members by status" className="rounded-md border border-border bg-background px-3 py-2 text-sm" value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)}>
             <option value="all">All Statuses</option><option value="invited">Invited</option><option value="active">Active</option><option value="inactive">Inactive</option>
           </select>
         </div>

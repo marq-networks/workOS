@@ -81,8 +81,9 @@ function AppContent() {
       {generateRoutes()}
     </>;
 
-  if (activeRole === 'org_admin') return (
+  if (activeRole === 'org_admin' || activeRole === 'employee') return (
     <WorkOSFoundation
+      role={activeRole}
       user={currentUser}
       currentOrg={activeMembership ? { name: activeMembership.organizationName } : undefined}
       organizations={memberships.map((membership) => ({ id: membership.organizationId, name: membership.organizationName }))}
