@@ -243,3 +243,10 @@ P6-1 through P6-6 and Phase 6 are complete. P7-1 is implemented in the repositor
 - Built the isolated V8 application foundation for the Org Admin experience: authored dark and light material tokens, environmental lighting, focus/support surfaces, status semantics, controls, responsive shell, product navigation, system bar, global command, contextual drawer, and split-inspector primitive.
 - Kept V8 work at the shared-system layer. Individual product modules remain outside this acceptance slice; the existing Command Center is used only as the live composition proving the foundation.
 - Added Playwright visual/interaction coverage for the dark command surface, dark contextual drawer, authored light theme, and compact responsive navigation. Founder review remains required; this candidate is not self-approved.
+
+# V8 Full Customer UI/UX Cutover Candidate (2026-09-10)
+
+- Replaced the split customer shell strategy with one V8 operating frame for both Employee and Org Admin while leaving Platform Admin explicitly outside the cutover.
+- Added role-filtered product navigation, persistent route context, in-section workspace views, a contextual utility rail, retained global command, and in-context profile/organization surfaces. Privileged destinations remain absent for Employee presentation and route authority remains unchanged.
+- Applied the V8 material and control grammar across every active customer route through a compatibility membrane, preserving the existing repositories, hooks, trusted mutations, organization scope, and server authority while preventing legacy light/grey surfaces from leaking into the customer frame.
+- Persisted authored dark/light choice and added the required fourteen-view founder review capture loop under `/tmp/workos-v8-cutover/final/`, plus Employee containment coverage. The deterministic bundle baseline was deliberately remeasured for the shared V8 material layer (rather than hiding the system in route-local styles). Screenshots remain outside Git and founder approval is still required.
