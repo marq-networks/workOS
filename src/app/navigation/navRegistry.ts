@@ -8,7 +8,8 @@
  */
 
 import { type Role } from '../nav/navManifest';
-import { V2AssignmentsScreen, V2DepartmentsScreen, V2MilestonesScreen, V2MyWorkScreen, V2PeopleScreen, V2SessionsScreen, V2TimeEntriesScreen, V2WorkReportsScreen, V2WorkSessionScreen } from '../v2/V2RouteScreens';
+import { V9MyWorkScreen } from '../v9/V9RouteScreens';
+import { V2AssignmentsScreen, V2DepartmentsScreen, V2MilestonesScreen, V2PeopleScreen, V2SessionsScreen, V2TimeEntriesScreen, V2WorkReportsScreen, V2WorkSessionScreen } from '../v2/V2RouteScreens';
 import { V2AgentCenterScreen, V2AiCopilotScreen, V2AutomationScreen, V2CommandCenterScreen, V2CommunicationScreen, V2FilesEvidenceScreen, V2ProjectWorkspaceScreen, V2SearchScreen } from '../v2/Pass3RouteScreens'; import { FinanceOperationsScreen } from '../v2/FinanceOperationsScreen';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -352,7 +353,7 @@ export const ROUTE_REGISTRY: RouteDefinition[] = [
   // ═══════════════════════════════════════════════════════════════════════
   
   { path: '/work/home', component: WorkHome, roles: ['employee', 'org_admin'] },
-  { path: '/work/my-work', component: V2MyWorkScreen, roles: ['employee', 'org_admin'] },
+  { path: '/work/my-work', component: V9MyWorkScreen, roles: ['employee', 'org_admin'] },
   { path: '/work/projects', component: WorkProjectsOS, roles: ['employee', 'org_admin'] },
   { path: '/work/tasks', component: WorkTasksOS, roles: ['employee', 'org_admin'] },
   { path: '/work/milestones', component: V2MilestonesScreen, roles: ['employee', 'org_admin'] },
