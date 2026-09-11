@@ -7,7 +7,7 @@ const repository=readFileSync(new URL('./supabaseV2Repository.ts',import.meta.ur
 describe('V2 production application wiring',()=>{
   it('routes canonical Work, People, and Time paths to production screens',()=>{
     const expected=[
-      ["'/work/my-work'",'V2MyWorkScreen'],["'/work/milestones'",'V2MilestonesScreen'],
+      ["'/work/my-work'",'V9MyWorkScreen'],["'/work/milestones'",'V2MilestonesScreen'],
       ["'/work/assignments'",'V2AssignmentsScreen'],["'/work/reports'",'V2WorkReportsScreen'],
       ["'/people/employees'",'V2PeopleScreen'],["'/people/departments'",'V2DepartmentsScreen'],
       ["'/time/tracking'",'V2TimeEntriesScreen'],["'/time/sessions'",'V2SessionsScreen'],
