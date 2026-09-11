@@ -18,6 +18,7 @@ import { PasswordRecoveryGate } from './security/PasswordRecoveryGate';
 import { InvitationAcceptanceGate } from './security/InvitationAcceptanceGate';
 import { InvitationAcceptanceScreen } from './components/screens/auth/InvitationAcceptanceScreen';
 import { AppShell } from './components/shared/AppShell';
+import { WorkOSFoundation } from './ui-v8/WorkOSFoundation';
 import { canonicalizeSignedOutUrl } from './contexts/authOperations';
 
 // Navigation System
@@ -69,6 +70,28 @@ function AppContent() {
     role: getUserRoleLabel(activeRole),
   };
 
+  const routes = <>
+      {/* Root redirect */}
+      <Route path="/">
+        <RoleBasedRedirect />
+      </Route>
+      <Route path="/login">
+        <RoleBasedRedirect />
+      </Route>
+      {generateRoutes()}
+    </>;
+
+  if (activeRole === 'org_admin' || activeRole === 'employee') return (
+    <WorkOSFoundation
+      role={activeRole}
+      user={currentUser}
+      currentOrg={activeMembership ? { name: activeMembership.organizationName } : undefined}
+      organizations={memberships.map((membership) => ({ id: membership.organizationId, name: membership.organizationName }))}
+      onOrgSwitch={(organizationId) => void switchOrganization(organizationId)}
+      onLogout={() => void signOut()}
+    >{routes}</WorkOSFoundation>
+  );
+
   return (
     <AppShell
       sidebarContent={<DynamicSidebar />}
@@ -80,18 +103,7 @@ function AppContent() {
       onOrgSwitch={(organizationId) => void switchOrganization(organizationId)}
       onLogout={() => void signOut()}
     >
-      {/* Root redirect */}
-      <Route path="/">
-        <RoleBasedRedirect />
-      </Route>
-      
-      {/* Login redirect (if somehow navigated to /login while authenticated) */}
-      <Route path="/login">
-        <RoleBasedRedirect />
-      </Route>
-      
-      {/* All routes auto-generated from navigation registry */}
-      {generateRoutes()}
+      {routes}
     </AppShell>
   );
 }
