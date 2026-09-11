@@ -52,6 +52,25 @@ function membershipsFor(identity: Exclude<SyntheticIdentity, 'signed_out'>) {
   }];
 }
 
+const workProjects = [
+  { id:'81000000-0000-4000-8000-000000000001',tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',name:'Customer onboarding',description:'Launch the improved onboarding path.',status:'active',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T09:00:00Z' },
+  { id:'81000000-0000-4000-8000-000000000002',tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',name:'Mobile release',description:'Prepare the next product release.',status:'active',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T08:00:00Z' },
+];
+const workTasks = [
+  ['82000000-0000-4000-8000-000000000001','81000000-0000-4000-8000-000000000001','Finalize onboarding handoff','Resolve the final interaction notes and prepare the handoff package.','in_progress',50,'Customer onboarding'],
+  ['82000000-0000-4000-8000-000000000002','81000000-0000-4000-8000-000000000002','Validate release candidate','Run the release checklist against the signed build.','in_progress',25,'Mobile release'],
+  ['82000000-0000-4000-8000-000000000003','81000000-0000-4000-8000-000000000001','Confirm analytics events','Waiting on the event taxonomy decision from product.','blocked',25,'Customer onboarding'],
+  ['82000000-0000-4000-8000-000000000004','81000000-0000-4000-8000-000000000002','Write rollout notes','Summarize customer impact and operational steps.','todo',0,'Mobile release'],
+  ['82000000-0000-4000-8000-000000000005','81000000-0000-4000-8000-000000000001','Review support playbook','Check escalation paths before publishing.','todo',0,'Customer onboarding'],
+  ['82000000-0000-4000-8000-000000000006','81000000-0000-4000-8000-000000000002','Publish internal preview','The preview is live and has passed review.','completed',100,'Mobile release'],
+].map(([id,project_id,title,description,status,progress,projectName])=>({id,project_id,title,description,status,progress,projects:{name:projectName},tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',assignee_membership_id:'50000000-0000-4000-8000-000000000005',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T09:00:00Z'}));
+const workSubtasks = [
+  {id:'83000000-0000-4000-8000-000000000001',task_id:'82000000-0000-4000-8000-000000000001',title:'Confirm final interaction notes',status:'completed',progress:100,estimated_minutes:20,revision:1},
+  {id:'83000000-0000-4000-8000-000000000002',task_id:'82000000-0000-4000-8000-000000000001',title:'Package approved assets',status:'completed',progress:100,estimated_minutes:30,revision:1},
+  {id:'83000000-0000-4000-8000-000000000003',task_id:'82000000-0000-4000-8000-000000000001',title:'Review handoff checklist',status:'in_progress',progress:50,estimated_minutes:25,revision:1},
+  {id:'83000000-0000-4000-8000-000000000004',task_id:'82000000-0000-4000-8000-000000000001',title:'Send final handoff',status:'todo',progress:0,estimated_minutes:15,revision:1},
+].map(row=>({...row,tenant_id:'60000000-0000-4000-8000-000000000006',organization_id:'70000000-0000-4000-8000-000000000007',created_at:'2026-09-01T09:00:00Z',updated_at:'2026-09-09T09:00:00Z'}));
+
 export async function installSyntheticSupabase(page: Page, identity: SyntheticIdentity) {
   const unexpectedRequests: string[] = [];
   page.on('request', (request) => {
@@ -77,6 +96,18 @@ export async function installSyntheticSupabase(page: Page, identity: SyntheticId
       const isAuthorizationQuery = url.searchParams.get('select')?.includes('organizations!inner');
       const body = identity !== 'signed_out' && isAuthorizationQuery ? membershipsFor(identity) : [];
       await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'content-range': `0-${Math.max(body.length - 1, 0)}/${body.length}` }, body: JSON.stringify(body) });
+      return;
+    }
+    if (url.pathname === '/rest/v1/projects') {
+      await route.fulfill({ status:200,contentType:'application/json',body:JSON.stringify(workProjects) });
+      return;
+    }
+    if (url.pathname === '/rest/v1/tasks') {
+      await route.fulfill({ status:200,contentType:'application/json',body:JSON.stringify(workTasks) });
+      return;
+    }
+    if (url.pathname === '/rest/v1/subtasks') {
+      await route.fulfill({ status:200,contentType:'application/json',body:JSON.stringify(workSubtasks) });
       return;
     }
     await route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ message: 'Unhandled synthetic Supabase request' }) });

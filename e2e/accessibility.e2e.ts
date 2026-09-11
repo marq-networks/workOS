@@ -6,7 +6,7 @@ const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 const surfaces: Array<{ identity: SyntheticIdentity; path: string; heading: RegExp | string }> = [
   { identity: 'signed_out', path: '/login', heading: 'Sign in to Work OS' },
   { identity: 'employee', path: '/work/my-work', heading: 'My Work' },
-  { identity: 'org_admin', path: '/org/admin/dashboard', heading: /Dashboard/ },
+  { identity: 'org_admin', path: '/org/admin/dashboard', heading: /Good work starts with/ },
   { identity: 'org_admin', path: '/people/members', heading: 'Memberships & Invitations' },
   { identity: 'platform_admin', path: '/super/console', heading: /Console/ },
 ];
