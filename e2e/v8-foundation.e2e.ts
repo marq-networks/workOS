@@ -19,7 +19,7 @@ test('command and contextual surfaces preserve the workspace', async ({ page }) 
 
   await page.getByRole('button', { name: 'Open notifications' }).click();
   await expect(page.getByRole('complementary', { name: 'Context panel' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Organization operations' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Good work starts with/ })).toBeVisible();
   await page.screenshot({ path: 'artifacts/v8/foundation-drawer-dark.png', fullPage: true });
 });
 
