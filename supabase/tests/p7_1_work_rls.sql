@@ -44,5 +44,8 @@ select set_config('request.jwt.claim.sub','01000000-0000-0000-0000-000000000004'
 select is((select count(*)::int from public.tasks),0,'platform admin has no implicit Work access');
 select set_config('request.jwt.claim.sub','01000000-0000-0000-0000-000000000001',true);
 select is((select count(*)::int from public.tasks where organization_id='21000000-0000-0000-0000-000000000002'),0,'fabricated organization filter grants nothing');
-select is((with stale as (update public.tasks set progress=30 where id='51000000-0000-0000-0000-000000000001' and updated_at='2000-01-01' returning 1) select count(*)::int from stale),0,'stale timestamp update deterministically changes no row');
+update public.tasks set progress=30
+  where id='51000000-0000-0000-0000-000000000001' and updated_at='2000-01-01';
+select is((select progress from public.tasks where id='51000000-0000-0000-0000-000000000001'),25::smallint,
+  'stale timestamp update deterministically preserves the stored row');
 select * from finish(); rollback;

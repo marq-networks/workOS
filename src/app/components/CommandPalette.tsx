@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Search, ArrowRight, Clock, Star, Hash, Zap, Users, Briefcase,
-  Calendar, CreditCard, Shield, BarChart3, MessageSquare, Bell,
+  CreditCard, Shield, BarChart3, MessageSquare,
   Settings, FileText, ChevronRight, Command, CornerDownLeft
 } from 'lucide-react';
 import { useRouter } from './router';
@@ -105,80 +105,9 @@ function flattenNav(items: NavItem[], role: Role, parentDomain?: string): Search
 // QUICK ACTIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function buildQuickActions(navigate: (p: string) => void, role: Role): SearchResult[] {
-  const actions: SearchResult[] = [
-    {
-      id: 'action-new-task',
-      label: 'Create New Task',
-      description: 'Add a task to your work queue',
-      category: 'action',
-      icon: Zap,
-      path: '/work/tasks',
-      keywords: ['create', 'new', 'task', 'add'],
-    },
-    {
-      id: 'action-clock-in',
-      label: 'Clock In / Out',
-      description: 'Start or end your work session',
-      category: 'action',
-      icon: Clock,
-      path: role === 'employee' ? '/employee/my-day' : '/time/tracking',
-      keywords: ['clock', 'in', 'out', 'time', 'start', 'end'],
-    },
-    {
-      id: 'action-view-notifications',
-      label: 'View Notifications',
-      description: 'Check your unread notifications',
-      category: 'action',
-      icon: Bell,
-      path: role === 'employee' ? '/employee/notifications' : '/admin/notifications',
-      keywords: ['notifications', 'alerts', 'unread'],
-    },
-  ];
-
-  if (role === 'org_admin' || role === 'platform_admin') {
-    actions.push(
-      {
-        id: 'action-add-employee',
-        label: 'Add Employee',
-        description: 'Create a new employee record',
-        category: 'action',
-        icon: Users,
-        path: '/people/employees',
-        keywords: ['add', 'employee', 'new', 'hire', 'user'],
-      },
-      {
-        id: 'action-approve-leave',
-        label: 'Approve Leave Requests',
-        description: 'Review pending leave approvals',
-        category: 'action',
-        icon: Calendar,
-        path: '/time/leave-approvals',
-        keywords: ['approve', 'leave', 'request', 'vacation', 'pto'],
-      },
-      {
-        id: 'action-view-analytics',
-        label: 'View Live Activity',
-        description: 'See real-time employee activity',
-        category: 'action',
-        icon: BarChart3,
-        path: '/analytics/live-activity',
-        keywords: ['live', 'activity', 'real-time', 'analytics'],
-      },
-      {
-        id: 'action-finance-cockpit',
-        label: 'Finance Cockpit',
-        description: 'Go to Finance command center',
-        category: 'action',
-        icon: CreditCard,
-        path: '/org/finance/cockpit',
-        keywords: ['finance', 'cockpit', 'money', 'billing'],
-      },
-    );
-  }
-
-  return actions;
-}
+// Actions return here only once a supported mutation can be invoked directly.
+// Navigation to a prototype screen is not presented as an executed action.
+function buildQuickActions(): SearchResult[] { return []; }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // FUZZY SEARCH
@@ -234,9 +163,9 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   // Build search index
   const allResults = useMemo(() => {
     const navResults = flattenNav(NAV_MANIFEST, role);
-    const actions = buildQuickActions(navigate, role);
+    const actions = buildQuickActions();
     return [...actions, ...navResults];
-  }, [role, navigate]);
+  }, [role]);
 
   // Build recent items
   const recentResults = useMemo(() => {

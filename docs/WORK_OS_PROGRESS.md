@@ -146,6 +146,7 @@ Run these four journeys once, in order, with dedicated QA email addresses. Recor
 | Audit | Security & Audit | Cross-cutting audit owner | Audit Event | Org Admin audit; Platform Admin global audit |
 
 ## Completed
+- UI Clean Cutover V5 founder candidate: the Org Admin authenticated experience now selects an isolated `ui-v5` shell and Command Center. The legacy `AppShell`, `DynamicSidebar`, `GoldenPrimitives`, generic page-header/card-grid grammar, and legacy command/notification visuals are **DELETE LATER** candidates for this route only; they remain intact for unmigrated Employee, Platform Admin, and product routes until founder approval and consumer proof permit deletion.
 - Phase 0 repository/product audit.
 - Cloud Track A: GitHub/Vercel deployment and Supabase browser-client foundation.
 - Durable repository guidance and roadmap/decision/progress/open-question memory.
@@ -237,3 +238,15 @@ P6-1 through P6-6 and Phase 6 are complete. P7-1 is implemented in the repositor
 - The same manual run exposed GAP-064: password persistence succeeded but recovery displayed a false failure. Tracing confirmed password update and subsequent sign-out were sequential within one throwing operation. They are now distinct outcomes: only `updateUser` failure rejects, sign-out failure returns a bounded cleanup result, and the screen always acknowledges an accepted update truthfully. Safe mappings distinguish same-password, weak-password, invalid recovery session, and unknown provider failure without exposing raw details.
 - GAP-002 repository remediation implements the `identity-administration` Edge Function. A verified bearer identity is re-authorized from active backend memberships before Auth invitation, the database remains the final authorization boundary, failed membership creation compensates the new Auth identity, and invited users can activate only their own JWT-derived memberships through a service-role-only function that writes correlated audit evidence in the same transaction. Payload regressions and the deployed real invitation/acceptance journeys passed QA-2.
 - **Phase status: COMPLETE (2026-08-28).** Production QA-1 through QA-4 verified the real login, backend-derived roles/memberships, trusted administration, revocation, recovery, session, routing, and logout acceptance criteria.
+# V8 Foundation Candidate (2026-09-09)
+
+- Built the isolated V8 application foundation for the Org Admin experience: authored dark and light material tokens, environmental lighting, focus/support surfaces, status semantics, controls, responsive shell, product navigation, system bar, global command, contextual drawer, and split-inspector primitive.
+- Kept V8 work at the shared-system layer. Individual product modules remain outside this acceptance slice; the existing Command Center is used only as the live composition proving the foundation.
+- Added Playwright visual/interaction coverage for the dark command surface, dark contextual drawer, authored light theme, and compact responsive navigation. Founder review remains required; this candidate is not self-approved.
+
+# V8 Full Customer UI/UX Cutover Candidate (2026-09-10)
+
+- Replaced the split customer shell strategy with one V8 operating frame for both Employee and Org Admin while leaving Platform Admin explicitly outside the cutover.
+- Added role-filtered product navigation, persistent route context, in-section workspace views, a contextual utility rail, retained global command, and in-context profile/organization surfaces. Privileged destinations remain absent for Employee presentation and route authority remains unchanged.
+- Applied the V8 material and control grammar across every active customer route through a compatibility membrane, preserving the existing repositories, hooks, trusted mutations, organization scope, and server authority while preventing legacy light/grey surfaces from leaking into the customer frame.
+- Persisted authored dark/light choice and added the required fourteen-view founder review capture loop under `/tmp/workos-v8-cutover/final/`, plus Employee containment coverage. The deterministic bundle baseline was deliberately remeasured for the shared V8 material layer (rather than hiding the system in route-local styles). Screenshots remain outside Git and founder approval is still required.
