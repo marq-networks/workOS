@@ -49,16 +49,7 @@ import type {
   SearchResult,
 } from "./pass3Types";
 import type { ProjectWorkspaceData } from "./closureTypes";
-import {
-  ActivityRow as V5ActivityRow,
-  AttentionSurface,
-  IntelligenceSurface,
-  KernelButton,
-  MatteSurface,
-  Status as V5Status,
-  WorkRow,
-  WorkspaceState as V5WorkspaceState,
-} from "../ui-v8/WorkOSFoundation";
+import { V9CommandCenter } from "../v9/V9CommandCenter";
 const repository: Promise<Pass3Repository> =
   import("./supabasePass3Repository").then((m) => m.supabasePass3Repository);
 function useScope() {
@@ -654,63 +645,7 @@ export function AgentCenterScreen() {
   );
 }
 export function CommandCenterScreen() {
-  const work = useWork();
-  const sessions = useV2Module("sessions");
-  const notifications = useV2Module("notifications");
-  const records = notifications.records as {
-    id: string;
-    title: string;
-    body: string | null;
-    readAt: string | null;
-    createdAt?: string;
-  }[];
-  const activeSessions = (
-    sessions.records as { endedAt: string | null }[]
-  ).filter((s) => !s.endedAt).length;
-  const blocked = work.tasks.filter((t) => t.status === "blocked");
-  const active = work.tasks.filter((t) => t.status === "in_progress");
-  const unread = records.filter((n) => !n.readAt);
-  const nextWork = [...blocked, ...active, ...work.tasks.filter((t) => t.status !== "blocked" && t.status !== "in_progress")];
-  const openWork = () => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/work/my-work' } }));
-  if (work.loading)
-    return (
-      <main className="v8-page">
-        <V5WorkspaceState
-          kind="loading"
-          title="Preparing Command Center"
-          detail="Loading your authorized operating picture."
-        />
-      </main>
-    );
-  if (work.error)
-    return (
-      <main className="v8-page v8-command-center">
-        <header className="v8-command-header"><div><p>COMMAND CENTER / CONNECTION INTERRUPTED</p><h1>Organization operations</h1><span>The new workspace remains available while authorized work reconnects.</span></div><KernelButton onClick={() => void work.reload()}><RefreshCw/>Retry connection</KernelButton></header>
-        <div className="v8-offline-workspace">
-          <MatteSurface className="v8-offline-primary" signal="critical"><div className="v8-section-heading"><div><small>EXECUTION LANE</small><h2>Your working set</h2><p>The operating surface is holding its secure boundary while data reconnects.</p></div><V5Status signal="critical">Data offline</V5Status></div><div className="v8-offline-focus"><V5WorkspaceState kind="error" title="Authorized work is unavailable" detail={work.error.message}/><div className="v8-continuity" aria-label="Connection continuity"><span><i/>Organization context <b>Preserved</b></span><span><i/>Operational metrics <b>Not inferred</b></span><span><i/>Next action <b>Reconnect source</b></span></div></div><div className="v8-boundary-strip" aria-label="Protected workspace state"><span><small>IDENTITY</small><b>Authenticated</b></span><span><small>SCOPE</small><b>Organization locked</b></span><span><small>DATA POLICY</small><b>No synthetic fallback</b></span></div></MatteSurface>
-          <aside><AttentionSurface signal="critical"><small>NEEDS ATTENTION</small><h2>Connection required</h2><p>No operational state is inferred while the organization repository is unavailable.</p></AttentionSurface><IntelligenceSurface title="Operational briefing"><p>Intelligence stays unavailable until authorized context and a configured provider are connected.</p></IntelligenceSurface></aside>
-        </div>
-      </main>
-    );
-  return (
-    <main className="v8-page v8-command-center">
-      <header className="v8-command-header"><div><p>COMMAND CENTER / AUTHORIZED LIVE STATE</p><h1>Organization operations</h1><span>Move work forward without leaving the operating context.</span></div><div className="v8-live-context"><V5Status signal="live">Repository connected</V5Status><span>{activeSessions ? `${activeSessions} active work session${activeSessions === 1 ? '' : 's'}` : 'No active work sessions'}</span></div></header>
-      <section className="v8-operating-strip">
-        <div className="v8-now"><small>HAPPENING NOW</small><strong>{active.length ? `${active.length} task${active.length === 1 ? '' : 's'} moving` : 'No work in progress'}</strong><span>{activeSessions ? 'Active time is being captured.' : 'No active session is currently recorded.'}</span></div>
-        <div className={blocked.length ? 'is-risk' : 'is-clear'}><small>ATTENTION</small><strong>{blocked.length ? `${blocked.length} blocked` : 'Queue clear'}</strong><span>{blocked.length ? 'Intervention is required.' : 'No authorized blockers.'}</span></div>
-        <div><small>RECENT SIGNALS</small><strong>{unread.length ? `${unread.length} unread` : 'All caught up'}</strong><span>Organization notifications</span></div>
-        <KernelButton onClick={openWork}>Open all work <span>→</span></KernelButton>
-      </section>
-      <div className="v8-operations-grid">
-        <MatteSurface className="v8-execution-lane" signal={blocked.length ? 'attention' : 'live'}><div className="v8-section-heading"><div><small>NEXT BEST WORK</small><h2>Execution lane</h2><p>Blocked work first, then active and queued assignments.</p></div><V5Status signal={blocked.length ? 'attention' : 'live'}>{work.tasks.length} authorized</V5Status></div><div className="v8-work-list">{nextWork.length ? nextWork.slice(0, 8).map(t => <WorkRow key={t.id} title={t.title} context={t.projectName} status={t.status} progress={t.progress} onClick={openWork}/>) : <V5WorkspaceState kind="empty" title="No assigned work" detail="Your authorized working set is empty."/>}</div><footer><button onClick={openWork}>Continue in My Work <span>→</span></button></footer></MatteSurface>
-        <aside className="v8-signal-lane">
-          <AttentionSurface signal={blocked.length ? 'critical' : 'attention'}><div className="v8-section-heading"><div><small>NEEDS ATTENTION</small><h2>{blocked.length ? 'Blocked work' : 'No blockers'}</h2></div><V5Status signal={blocked.length ? 'critical' : 'healthy'}>{blocked.length ? 'Action needed' : 'Healthy'}</V5Status></div>{blocked.length ? blocked.slice(0, 3).map(t => <WorkRow key={t.id} title={t.title} context={t.projectName} status={t.status} onClick={openWork}/>) : <p className="v8-calm-copy">No blocked authorized tasks require intervention.</p>}</AttentionSurface>
-          <MatteSurface className="v8-change-feed"><div className="v8-section-heading"><div><small>WHAT CHANGED</small><h2>Recent signals</h2></div><V5Status signal={unread.length ? 'attention' : 'neutral'}>{unread.length} unread</V5Status></div>{records.length ? records.slice(0, 5).map(n => <V5ActivityRow key={n.id} title={n.title} detail={n.body}/>) : <V5WorkspaceState kind="empty" title="No recent changes" detail="Authorized notifications will appear here."/>}</MatteSurface>
-          <IntelligenceSurface title="Attention briefing"><p>AI analysis is permission-scoped and remains unavailable until an intelligence provider is configured.</p><button onClick={() => window.dispatchEvent(new CustomEvent('workos-navigate', { detail: { path: '/ai/copilots' } }))}>Review availability <span>→</span></button></IntelligenceSurface>
-        </aside>
-      </div>
-    </main>
-  );
+  return <V9CommandCenter />;
 }
 export function ProjectWorkspaceScreen() {
   const { scope } = useScope();
