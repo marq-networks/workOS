@@ -33,10 +33,12 @@ describe('navigation manifest invariants', () => {
     }
   });
 
-  it('exposes only the truthful finance connection surface, not deferred finance operations', () => {
+  it('does not expose deferred or diagnostic modules in launch navigation', () => {
     const paths = getAllPaths();
     const excludedPrefixes = [
+      '/communication',
       '/diagnostics',
+      '/finance',
       '/integrations',
       '/org/finance',
     ];
@@ -44,8 +46,6 @@ describe('navigation manifest invariants', () => {
     for (const prefix of excludedPrefixes) {
       expect(paths.some((path) => path.startsWith(prefix))).toBe(false);
     }
-
-    expect(paths.filter((path) => path.startsWith('/finance'))).toEqual(['/finance/cockpit']);
 
     expect(paths).not.toContain('/platform/billing');
     expect(paths).not.toContain('/time/fines');

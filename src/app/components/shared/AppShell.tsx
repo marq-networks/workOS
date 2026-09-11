@@ -1,4 +1,4 @@
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, Search, Bell, User, Settings, Building2, LogOut, Moon, Sun, Command } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -49,10 +49,8 @@ export function AppShell({
   onLogout
 }: AppShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const cmdPalette = useCommandPalette();
-
-  useEffect(() => { document.documentElement.classList.add('dark'); }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -60,21 +58,21 @@ export function AppShell({
   };
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-background text-foreground">
+    <div className="flex h-screen w-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <aside 
-        className={`relative z-20 hidden flex-col border-r border-sidebar-border bg-sidebar/95 shadow-[18px_0_60px_-45px_#000] transition-all duration-200 md:flex ${
-          sidebarCollapsed ? 'w-[4.5rem]' : 'w-[17rem]'
+        className={`flex flex-col border-r border-border bg-card transition-all duration-300 ${
+          sidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex h-[4.5rem] items-center justify-between border-b border-sidebar-border px-4">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
           {!sidebarCollapsed && (
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                <Building2 className="h-[18px] w-[18px]" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Building2 className="h-5 w-5" />
               </div>
-              <div><span className="block text-sm font-semibold tracking-tight">Work OS</span><span className="block text-[10px] uppercase tracking-[.18em] text-muted-foreground">Mission control</span></div>
+              <span className="font-semibold">WorkOS</span>
             </div>
           )}
           <Button
@@ -116,7 +114,7 @@ export function AppShell({
         )}
 
         {/* Sidebar Navigation */}
-        <div className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="flex-1 overflow-y-auto p-3">
           {sidebarContent}
         </div>
       </aside>
@@ -124,15 +122,15 @@ export function AppShell({
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="sticky top-0 z-10 flex h-[4.5rem] items-center justify-between border-b bg-card/80 px-4 backdrop-blur-xl sm:px-6">
+        <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
           {/* Search */}
           <div className="flex flex-1 items-center gap-4">
             <button
               onClick={cmdPalette.open}
-              className="relative flex w-11 items-center gap-2 rounded-xl border bg-background/75 px-3 py-2.5 text-sm text-muted-foreground shadow-sm transition-colors hover:border-primary/30 hover:bg-accent/50 sm:w-80 lg:w-96"
+              className="relative flex w-96 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm text-muted-foreground hover:bg-accent/50 transition-colors"
             >
               <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">Search work, people, actions…</span>
+              <span>Search screens, actions...</span>
               <kbd className="ml-auto hidden sm:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-xs">
                 <Command className="h-3 w-3" />K
               </kbd>
@@ -141,7 +139,7 @@ export function AppShell({
 
           {/* Operating Mode Switcher */}
           {onRoleChange && (
-            <div className="hidden items-center gap-1 rounded-xl border bg-background/70 p-1 lg:flex">
+            <div className="flex items-center gap-1 rounded-lg border border-border bg-background p-1">
               <button
                 onClick={() => onRoleChange('employee')}
                 className={`px-4 py-1.5 text-xs font-medium rounded-md transition-colors ${
@@ -236,7 +234,7 @@ export function AppShell({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto overscroll-contain bg-transparent">
+        <main className="flex-1 overflow-auto bg-background">
           {children}
         </main>
       </div>
